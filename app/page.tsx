@@ -81,13 +81,12 @@ export default function Home() {
     }));
   }, []);
 
-  const currentSurah = useMemo(() => {
-    let value = surahs[0];
-    for (const surah of surahs) {
-      if (surah.page <= page) value = surah;
-      else break;
-    }
-    return value;
+  const surahsOnPage = useMemo(() => {
+    return surahs.filter((surah, i) => {
+      if (surah.page > page) return false;
+      const next = surahs[i + 1];
+      return surah.page === page || !next || next.page > page;
+    });
   }, [page, surahs]);
 
   const currentJuz = useMemo(() => {
@@ -227,7 +226,7 @@ export default function Home() {
     <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
       <header className="relative flex items-center justify-between gap-3 px-4 pb-3 pt-1">
           <div className="min-w-0">
-            <div className="truncate text-[15px] font-semibold">Sūrah {currentSurah.name}</div>
+            <div className="truncate text-[15px] font-semibold">Sūrah {surahsOnPage.map(s => s.name).join(", ")}</div>
             <div className="mt-px text-xs text-(--fg2)">
               Juz {currentJuz.num} · Page {page + 1}
               <span className="ml-1.5 opacity-50">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
