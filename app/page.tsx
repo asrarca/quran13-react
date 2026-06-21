@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   BookOpen,
   Bookmark,
@@ -14,6 +15,8 @@ import {
 } from "lucide-react";
 
 import Image from "next/image";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/components/ui/button";
@@ -61,18 +64,7 @@ export default function Home() {
   const [pageInput, setPageInput] = useState("");
   // Record<internalPage, ISO date string>
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
-  const [rtlSwipe] = useState(true);
-  const [dx, setDx] = useState(0);
-  const [animating, setAnimating] = useState(false);
-  const [pendingDelta, setPendingDelta] = useState(0);
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
-
-  const pointerStart = useRef(0);
-  const widthRef = useRef(320);
-  const movedRef = useRef(false);
-  // Refs mirror event-handler state to avoid stale React closures on mobile
-  const draggingRef = useRef(false);
-  const dxRef = useRef(0);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -154,85 +146,10 @@ export default function Home() {
   }, [bookmarks, mounted]);
 
   const goToPage = useCallback((targetPage: number) => {
-    draggingRef.current = false;
-    dxRef.current = 0;
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
-    setDx(0);
-    setAnimating(false);
-    setPendingDelta(0);
   }, []);
-
-  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (activeSheet) return;
-    pointerStart.current = event.clientX;
-    widthRef.current = event.currentTarget.offsetWidth || 320;
-    movedRef.current = false;
-    draggingRef.current = true;
-    setAnimating(false);
-  };
-
-  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current) return;
-
-    let nextDx = event.clientX - pointerStart.current;
-    if (!movedRef.current && Math.abs(nextDx) > 6) {
-      movedRef.current = true;
-      event.currentTarget.setPointerCapture(event.pointerId);
-    }
-
-    if (!movedRef.current) return;
-
-    const direction = rtlSwipe ? 1 : -1;
-    if (nextDx > 0 && (page + direction < FIRST_PAGE || page + direction > LAST_PAGE)) {
-      nextDx *= 0.25;
-    }
-    if (nextDx < 0 && (page - direction < FIRST_PAGE || page - direction > LAST_PAGE)) {
-      nextDx *= 0.25;
-    }
-
-    dxRef.current = nextDx;
-    setDx(nextDx);
-  };
-
-  const onPointerUp = () => {
-    if (!draggingRef.current) return;
-    draggingRef.current = false;
-
-    if (!movedRef.current) return;
-
-    movedRef.current = false;
-    const width = widthRef.current || 320;
-    const threshold = Math.max(48, width * 0.2);
-    const direction = rtlSwipe ? 1 : -1;
-    const currentDx = dxRef.current;
-
-    let targetDx = 0;
-    let delta = 0;
-
-    if (currentDx > threshold && page + direction <= LAST_PAGE) {
-      targetDx = width;
-      delta = direction;
-    } else if (currentDx < -threshold && page - direction >= FIRST_PAGE) {
-      targetDx = -width;
-      delta = -direction;
-    }
-
-    dxRef.current = 0;
-    setAnimating(true);
-    setDx(targetDx);
-    setPendingDelta(delta);
-  };
-
-  const onTrackTransitionEnd = () => {
-    if (!animating) return;
-    dxRef.current = 0;
-    setPage((prev) => clampPage(prev + pendingDelta));
-    setAnimating(false);
-    setDx(0);
-    setPendingDelta(0);
-  };
 
   const toggleBookmark = () => {
     setBookmarks((prev) => {
@@ -273,14 +190,6 @@ export default function Home() {
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   };
 
-  const direction = rtlSwipe ? 1 : -1;
-  const leftPage = page + direction;
-  const rightPage = page - direction;
-
-  const trackTransition = animating
-    ? "transform 0.32s cubic-bezier(0.22,0.61,0.36,1)"
-    : "none";
-
   const canRenderPage = (candidate: number) => candidate >= FIRST_PAGE && candidate <= LAST_PAGE;
 
   const renderPageCard = (candidate: number) => {
@@ -288,7 +197,7 @@ export default function Home() {
     const missing = missingImages[candidate];
 
     return (
-      <div className="relative h-full w-full overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]">
+      <div className="relative w-full aspect-568/750 overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]">
         {missing ? (
           <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-(--fg2)">
             Page {candidate} image is unavailable
@@ -298,7 +207,8 @@ export default function Home() {
             src={imagePath(candidate)}
             alt={`Quran page ${candidate}`}
             fill
-            className="object-contain"
+            className="object-cover object-top"
+            style={theme === "dark" ? { filter: "invert(1)" } : undefined}
             draggable={false}
             priority={candidate === page}
             onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
@@ -314,8 +224,7 @@ export default function Home() {
 
   return (
     <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
-      <div className="mx-auto w-full max-w-md">
-        <header className="flex items-center justify-between gap-3 border-b border-border px-4 pb-3 pt-1">
+      <header className="flex items-center justify-between gap-3 border-b border-border px-4 pb-3 pt-1">
           <div className="min-w-0">
             <div className="truncate text-[15px] font-semibold">Sūrah {currentSurah.name}</div>
             <div className="mt-px text-xs text-(--fg2)">Juz {currentJuz.num} · Page {page + 1}</div>
@@ -345,36 +254,49 @@ export default function Home() {
               {theme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}
             </Button>
           </div>
-        </header>
-      </div>
+      </header>
 
-      <section
-        className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]"
-        style={{ touchAction: "pan-y" }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
-        onPointerCancel={onPointerUp}
-      >
-        <div
-          className="absolute left-0 top-0 flex h-full w-[300%]"
-          style={{
-            transform: `translateX(calc(-33.3333% + ${dx}px))`,
-            transition: trackTransition,
-            willChange: "transform",
-          }}
-          onTransitionEnd={onTrackTransitionEnd}
-        >
-          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-0 landscape:p-0">
-            {renderPageCard(leftPage)}
-          </div>
-          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-0 landscape:p-0">
-            {renderPageCard(page)}
-          </div>
-          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-0 landscape:p-0">
-            {renderPageCard(rightPage)}
-          </div>
+      <section className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]">
+        <div className="absolute inset-0">
+          <Swiper
+            dir="rtl"
+            initialSlide={1}
+            slidesPerView={1}
+            speed={320}
+            threshold={8}
+            resistance
+            resistanceRatio={0.65}
+            allowTouchMove={!activeSheet}
+            onSlideChangeTransitionEnd={(swiper) => {
+              const idx = swiper.activeIndex;
+              if (idx === 1) return;
+              // RTL: swipe right → idx 2 (next page); swipe left → idx 0 (prev page)
+              const delta = idx === 0 ? -1 : 1;
+              flushSync(() => setPage((prev) => clampPage(prev + delta)));
+              swiper.slideTo(1, 0, false);
+            }}
+            className="h-full"
+            style={{ touchAction: "pan-y" } as React.CSSProperties}
+          >
+            {/* RTL: index 0 = prev page */}
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
+                {renderPageCard(page - 1)}
+              </div>
+            </SwiperSlide>
+            {/* index 1 = current page */}
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
+                {renderPageCard(page)}
+              </div>
+            </SwiperSlide>
+            {/* index 2 = next page */}
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
+                {renderPageCard(page + 1)}
+              </div>
+            </SwiperSlide>
+          </Swiper>
         </div>
 
         <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-(--bg2) px-3.5 py-1.5 text-[13px] text-(--fg2)">
