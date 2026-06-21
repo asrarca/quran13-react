@@ -11,6 +11,7 @@ import {
   Layers,
   Moon,
   Sun,
+  SunMoon,
   X,
 } from "lucide-react";
 
@@ -21,7 +22,7 @@ import "swiper/css";
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/components/ui/button";
 
-type Theme = "light" | "dark";
+type Theme = "light" | "dark" | "dark-invert";
 type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "about";
 
 type Surah = {
@@ -101,8 +102,8 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
     const storedTheme = localStorage.getItem("quran13-theme");
-    if (storedTheme === "light" || storedTheme === "dark") {
-      setTheme(storedTheme);
+    if (storedTheme === "light" || storedTheme === "dark" || storedTheme === "dark-invert") {
+      setTheme(storedTheme as Theme);
     } else {
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       setTheme(prefersDark ? "dark" : "light");
@@ -131,7 +132,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!mounted) return;
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.classList.toggle("dark", theme === "dark" || theme === "dark-invert");
     localStorage.setItem("quran13-theme", theme);
   }, [mounted, theme]);
 
@@ -208,7 +209,7 @@ export default function Home() {
             alt={`Quran page ${candidate}`}
             fill
             className="object-cover object-top"
-            style={theme === "dark" ? { filter: "invert(1)" } : undefined}
+            style={theme === "dark-invert" ? { filter: "invert(1)" } : undefined}
             draggable={false}
             priority={candidate === page}
             onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
@@ -248,10 +249,10 @@ export default function Home() {
               size="icon"
               variant="ghost"
               className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
-              onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+              onClick={() => setTheme((prev) => prev === "light" ? "dark" : prev === "dark" ? "dark-invert" : "light")}
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}
+              {theme === "light" ? <Sun className="size-4.5" /> : theme === "dark" ? <SunMoon className="size-4.5" /> : <Moon className="size-4.5" />}
             </Button>
           </div>
       </header>
@@ -274,6 +275,8 @@ export default function Home() {
               const delta = idx === 0 ? -1 : 1;
               flushSync(() => setPage((prev) => clampPage(prev + delta)));
               swiper.slideTo(1, 0, false);
+              swiper.slides[1].scrollTop = 0;
+              window.scrollTo(0, 0);
             }}
             className="h-full"
             style={{ touchAction: "pan-y" } as React.CSSProperties}
@@ -299,11 +302,11 @@ export default function Home() {
           </Swiper>
         </div>
 
-        <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-(--bg2) px-3.5 py-1.5 text-[13px] text-(--fg2)">
+        {false && <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-(--bg2) px-3.5 py-1.5 text-[13px] text-(--fg2)">
           <span className="font-amiri text-[17px] text-(--fg)">{toArabicNumber(page + 1)}</span>
           <span className="opacity-50">·</span>
           <span className="tabular-nums">{page + 1}</span>
-        </div>
+        </div>}
       </section>
 
       <div className="mx-auto w-full max-w-md">
@@ -516,9 +519,11 @@ export default function Home() {
               <div className="mt-1 text-[13px] text-(--fg2)">Quran Reader · v2.0</div>
               <div className="my-4 h-px w-full bg-border" />
               <p className="m-0 text-center text-[13px] leading-[1.65] text-(--fg2)">
-                13-line Mushaf reader with offline support.
+                13-line Mushaf reader.
                 <br />
                 Swipe to turn pages and use Surah, Juz, or Page to jump.
+                <br />
+                Developed by Asrar Abbasi.
               </p>
               <button
                 type="button"
