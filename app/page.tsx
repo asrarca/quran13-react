@@ -297,19 +297,19 @@ export default function Home() {
           >
             {/* RTL: index 0 = prev page */}
             <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
+              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
                 {renderPageCard(page - 1)}
               </div>
             </SwiperSlide>
             {/* index 1 = current page */}
             <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
+              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
                 {renderPageCard(page)}
               </div>
             </SwiperSlide>
             {/* index 2 = next page */}
             <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
+              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
                 {renderPageCard(page + 1)}
               </div>
             </SwiperSlide>
