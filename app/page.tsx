@@ -66,6 +66,7 @@ export default function Home() {
   // Record<internalPage, ISO date string>
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
+  const [navVisible, setNavVisible] = useState(true);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -265,7 +266,10 @@ export default function Home() {
           </div>
       </header>
 
-      <section className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]">
+      <section
+        className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]"
+        onClick={() => { if (!activeSheet) setNavVisible(v => !v); }}
+      >
         <div className="absolute inset-0">
           <Swiper
             dir="rtl"
@@ -319,7 +323,7 @@ export default function Home() {
         </div>}
       </section>
 
-      <div className="mx-auto w-full max-w-md">
+      <div className={`fixed inset-x-0 bottom-0 z-30 transition-opacity duration-300 ${navVisible ? "opacity-99" : "opacity-0 pointer-events-none"}`}>
         <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
           <button
             type="button"
