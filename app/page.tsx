@@ -197,7 +197,7 @@ export default function Home() {
     const missing = missingImages[candidate];
 
     return (
-      <div className="relative w-full max-h-full aspect-[568/750] overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]">
+      <div className="relative w-full aspect-568/750 overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]">
         {missing ? (
           <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-(--fg2)">
             Page {candidate} image is unavailable
@@ -207,7 +207,7 @@ export default function Home() {
             src={imagePath(candidate)}
             alt={`Quran page ${candidate}`}
             fill
-            className="object-cover"
+            className="object-cover object-top"
             draggable={false}
             priority={candidate === page}
             onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
@@ -223,8 +223,7 @@ export default function Home() {
 
   return (
     <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
-      <div className="mx-auto w-full max-w-md">
-        <header className="flex items-center justify-between gap-3 border-b border-border px-4 pb-3 pt-1">
+      <header className="flex items-center justify-between gap-3 border-b border-border px-4 pb-3 pt-1">
           <div className="min-w-0">
             <div className="truncate text-[15px] font-semibold">Sūrah {currentSurah.name}</div>
             <div className="mt-px text-xs text-(--fg2)">Juz {currentJuz.num} · Page {page + 1}</div>
@@ -254,8 +253,7 @@ export default function Home() {
               {theme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}
             </Button>
           </div>
-        </header>
-      </div>
+      </header>
 
       <section className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]">
         <div className="absolute inset-0">
@@ -280,20 +278,20 @@ export default function Home() {
             style={{ touchAction: "pan-y" } as React.CSSProperties}
           >
             {/* RTL: index 0 = prev page */}
-            <SwiperSlide>
-              <div className="flex h-full w-full items-center justify-center pb-11.5 landscape:p-0">
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
                 {renderPageCard(page - 1)}
               </div>
             </SwiperSlide>
             {/* index 1 = current page */}
-            <SwiperSlide>
-              <div className="flex h-full w-full items-center justify-center pb-11.5 landscape:p-0">
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
                 {renderPageCard(page)}
               </div>
             </SwiperSlide>
             {/* index 2 = next page */}
-            <SwiperSlide>
-              <div className="flex h-full w-full items-center justify-center pb-11.5 landscape:p-0">
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-center pb-12 landscape:pb-0">
                 {renderPageCard(page + 1)}
               </div>
             </SwiperSlide>
