@@ -225,10 +225,13 @@ export default function Home() {
 
   return (
     <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
-      <header className="flex items-center justify-between gap-3 border-b border-border px-4 pb-3 pt-1">
+      <header className="relative flex items-center justify-between gap-3 px-4 pb-3 pt-1">
           <div className="min-w-0">
             <div className="truncate text-[15px] font-semibold">Sūrah {currentSurah.name}</div>
-            <div className="mt-px text-xs text-(--fg2)">Juz {currentJuz.num} · Page {page + 1}</div>
+            <div className="mt-px text-xs text-(--fg2)">
+              Juz {currentJuz.num} · Page {page + 1}
+              <span className="ml-1.5 opacity-50">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -254,6 +257,12 @@ export default function Home() {
             >
               {theme === "light" ? <Sun className="size-4.5" /> : theme === "dark" ? <SunMoon className="size-4.5" /> : <Moon className="size-4.5" />}
             </Button>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-[2px] bg-black/[0.07] dark:bg-white/[0.07]">
+            <div
+              className="h-full bg-gray-500"
+              style={{ width: `${((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE)) * 100}%` }}
+            />
           </div>
       </header>
 
