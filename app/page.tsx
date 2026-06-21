@@ -208,6 +208,7 @@ export default function Home() {
             alt={`Quran page ${candidate}`}
             fill
             className="object-cover object-top"
+            style={theme === "dark" ? { filter: "invert(1)" } : undefined}
             draggable={false}
             priority={candidate === page}
             onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
