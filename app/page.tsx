@@ -19,13 +19,14 @@ import quranData from "@/data/quran-data.json";
 import { Button } from "@/components/ui/button";
 
 type Theme = "light" | "dark";
-type ActiveSheet = null | "surah" | "juz" | "page" | "about";
+type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "about";
 
 type Surah = {
   num: number;
   name: string;
   arabic: string;
   page: number;
+  ayah: number;
 };
 
 type Juz = {
@@ -58,7 +59,8 @@ export default function Home() {
   const [page, setPage] = useState(DEFAULT_START_PAGE);
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
-  const [bookmarks, setBookmarks] = useState<Set<number>>(new Set());
+  // Record<internalPage, ISO date string>
+  const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [rtlSwipe] = useState(true);
   const [dx, setDx] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -120,10 +122,17 @@ export default function Home() {
     const rawBookmarks = localStorage.getItem("quran13-bookmarks");
     if (rawBookmarks) {
       try {
-        const parsed = JSON.parse(rawBookmarks) as number[];
-        setBookmarks(new Set(parsed));
+        const parsed = JSON.parse(rawBookmarks);
+        if (Array.isArray(parsed)) {
+          // Migrate from old Set<number> format — assign today's date
+          const migrated: Record<number, string> = {};
+          for (const p of parsed as number[]) migrated[p] = new Date().toISOString();
+          setBookmarks(migrated);
+        } else {
+          setBookmarks(parsed as Record<number, string>);
+        }
       } catch {
-        setBookmarks(new Set());
+        setBookmarks({});
       }
     }
   }, []);
@@ -141,7 +150,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem("quran13-bookmarks", JSON.stringify([...bookmarks]));
+    localStorage.setItem("quran13-bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks, mounted]);
 
   const goToPage = useCallback((targetPage: number) => {
@@ -227,9 +236,9 @@ export default function Home() {
 
   const toggleBookmark = () => {
     setBookmarks((prev) => {
-      const next = new Set(prev);
-      if (next.has(page)) next.delete(page);
-      else next.add(page);
+      const next = { ...prev };
+      if (page in next) delete next[page];
+      else next[page] = new Date().toISOString();
       return next;
     });
   };
@@ -243,7 +252,26 @@ export default function Home() {
   };
 
   const pageDisplay = pageInput === "" ? "—" : pageInput;
-  const isBookmarked = bookmarks.has(page);
+  const isBookmarked = page in bookmarks;
+
+  const getSurahForPage = (p: number) => {
+    let result = surahs[0];
+    for (const surah of surahs) {
+      if (surah.page <= p) result = surah;
+      else break;
+    }
+    return result;
+  };
+
+  const sortedBookmarks = Object.entries(bookmarks)
+    .map(([p, date]) => ({ page: Number(p), date }))
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const formatBookmarkDate = (iso: string) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
 
   const direction = rtlSwipe ? 1 : -1;
   const leftPage = page + direction;
@@ -321,7 +349,7 @@ export default function Home() {
       </div>
 
       <section
-        className="relative min-h-0 flex-1 overflow-hidden bg-(--bg)"
+        className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]"
         style={{ touchAction: "pan-y" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -338,13 +366,13 @@ export default function Home() {
           }}
           onTransitionEnd={onTrackTransitionEnd}
         >
-          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-4">
+          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-0 landscape:p-0">
             {renderPageCard(leftPage)}
           </div>
-          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-4">
+          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-0 landscape:p-0">
             {renderPageCard(page)}
           </div>
-          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-4">
+          <div className="flex h-full w-1/3 items-center justify-center pb-11.5 pt-0 landscape:p-0">
             {renderPageCard(rightPage)}
           </div>
         </div>
@@ -357,7 +385,7 @@ export default function Home() {
       </section>
 
       <div className="mx-auto w-full max-w-md">
-        <nav className="grid grid-cols-4 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
+        <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
           <button
             type="button"
             onClick={() => setActiveSheet("surah")}
@@ -384,6 +412,14 @@ export default function Home() {
           >
             <Hash className="size-5.5" />
             <span className="text-[11px] font-medium">Page</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSheet("bookmarks")}
+            className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
+          >
+            <Bookmark className="size-5.5" fill={activeSheet === "bookmarks" ? "currentColor" : "none"} />
+            <span className="text-[11px] font-medium">Saved</span>
           </button>
           <button
             type="button"
@@ -506,6 +542,45 @@ export default function Home() {
                 >
                   Go
                 </button>
+              </div>
+            </div>
+          )}
+
+          {activeSheet === "bookmarks" && (
+            <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
+              <div className="mx-auto mt-2 h-1.25 w-9.5 rounded-full bg-border" />
+              <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+                <span className="text-[13px] font-semibold tracking-[2px] uppercase">SAVED PAGES</span>
+                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                  <X className="size-4" />
+                </Button>
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                {sortedBookmarks.length === 0 ? (
+                  <div className="flex h-full flex-col items-center justify-center gap-2 text-(--fg3)">
+                    <Bookmark className="size-8 opacity-30" />
+                    <span className="text-sm">No saved pages yet</span>
+                    <span className="text-xs text-(--fg3)">Tap the bookmark icon while reading</span>
+                  </div>
+                ) : (
+                  sortedBookmarks.map(({ page: p, date }) => {
+                    const surah = getSurahForPage(p);
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => goToPage(p)}
+                        className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
+                      >
+                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                          <span className="truncate text-base font-medium text-(--fg)">{surah.name}</span>
+                          <span className="text-xs text-(--fg3)">{formatBookmarkDate(date)}</span>
+                        </div>
+                        <span className="text-sm tabular-nums text-(--fg3)">p.{p + 1}</span>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
           )}
