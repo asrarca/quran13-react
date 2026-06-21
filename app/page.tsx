@@ -277,6 +277,8 @@ export default function Home() {
             resistance
             resistanceRatio={0.65}
             allowTouchMove={!activeSheet}
+            allowSlideNext={page < LAST_PAGE}
+            allowSlidePrev={page > FIRST_PAGE}
             onSlideChangeTransitionEnd={(swiper) => {
               const idx = swiper.activeIndex;
               if (idx === 1) return;
