@@ -61,7 +61,6 @@ export default function Home() {
   const [bookmarks, setBookmarks] = useState<Set<number>>(new Set());
   const [rtlSwipe] = useState(true);
   const [dx, setDx] = useState(0);
-  const [dragging, setDragging] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [pendingDelta, setPendingDelta] = useState(0);
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
@@ -69,6 +68,9 @@ export default function Home() {
   const pointerStart = useRef(0);
   const widthRef = useRef(320);
   const movedRef = useRef(false);
+  // Refs mirror event-handler state to avoid stale React closures on mobile
+  const draggingRef = useRef(false);
+  const dxRef = useRef(0);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -143,12 +145,13 @@ export default function Home() {
   }, [bookmarks, mounted]);
 
   const goToPage = useCallback((targetPage: number) => {
+    draggingRef.current = false;
+    dxRef.current = 0;
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
     setDx(0);
     setAnimating(false);
-    setDragging(false);
     setPendingDelta(0);
   }, []);
 
@@ -157,12 +160,12 @@ export default function Home() {
     pointerStart.current = event.clientX;
     widthRef.current = event.currentTarget.offsetWidth || 320;
     movedRef.current = false;
-    setDragging(true);
+    draggingRef.current = true;
     setAnimating(false);
   };
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
 
     let nextDx = event.clientX - pointerStart.current;
     if (!movedRef.current && Math.abs(nextDx) > 6) {
@@ -180,34 +183,34 @@ export default function Home() {
       nextDx *= 0.25;
     }
 
+    dxRef.current = nextDx;
     setDx(nextDx);
   };
 
   const onPointerUp = () => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
 
-    if (!movedRef.current) {
-      setDragging(false);
-      return;
-    }
+    if (!movedRef.current) return;
 
     movedRef.current = false;
     const width = widthRef.current || 320;
     const threshold = Math.max(48, width * 0.2);
     const direction = rtlSwipe ? 1 : -1;
+    const currentDx = dxRef.current;
 
     let targetDx = 0;
     let delta = 0;
 
-    if (dx > threshold && page + direction <= LAST_PAGE) {
+    if (currentDx > threshold && page + direction <= LAST_PAGE) {
       targetDx = width;
       delta = direction;
-    } else if (dx < -threshold && page - direction >= FIRST_PAGE) {
+    } else if (currentDx < -threshold && page - direction >= FIRST_PAGE) {
       targetDx = -width;
       delta = -direction;
     }
 
-    setDragging(false);
+    dxRef.current = 0;
     setAnimating(true);
     setDx(targetDx);
     setPendingDelta(delta);
@@ -215,6 +218,7 @@ export default function Home() {
 
   const onTrackTransitionEnd = () => {
     if (!animating) return;
+    dxRef.current = 0;
     setPage((prev) => clampPage(prev + pendingDelta));
     setAnimating(false);
     setDx(0);
