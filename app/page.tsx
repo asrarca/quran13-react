@@ -537,6 +537,8 @@ export default function Home() {
                 <br />
                 Swipe to turn pages and use Surah, Juz, or Page to jump.
                 <br />
+                Tap anywhere on the page to show/hide navigation.
+                <br />
                 Developed by Asrar Abbasi.
               </p>
               <button
