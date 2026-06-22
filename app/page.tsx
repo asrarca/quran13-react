@@ -102,7 +102,7 @@ function lineAtFraction(frac: number, bands: LineBand[]) {
   return -1;
 }
 
-const LONG_PRESS_MS = 450;
+const LONG_PRESS_MS = 600;
 const LONG_PRESS_MOVE_TOLERANCE = 10;
 
 export default function Home() {
@@ -326,7 +326,11 @@ export default function Home() {
     const pageHighlights = (highlights[candidate] ?? []).filter((line) => bands[line]);
 
     return (
-      <div className="relative w-full aspect-568/750 overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]">
+      <div
+        className="relative w-full aspect-568/750 select-none overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]"
+        style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+        onContextMenu={(e) => e.preventDefault()}
+      >
         {missing ? (
           <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-(--fg2)">
             Page {candidate} image is unavailable
@@ -346,7 +350,8 @@ export default function Home() {
             {/* Long-press a line to toggle a yellow highlight on it. */}
             <div
               className="absolute inset-0"
-              style={{ touchAction: "pan-y" }}
+              style={{ touchAction: "pan-y", WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+              onContextMenu={(e) => e.preventDefault()}
               onPointerDown={(e) => handlePressStart(e, candidate)}
               onPointerMove={handlePressMove}
               onPointerUp={cancelPress}
