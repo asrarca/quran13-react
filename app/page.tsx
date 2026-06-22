@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import {
   BookOpen,
@@ -59,6 +59,52 @@ function imagePath(page: number) {
   return `/quran-pages/P-${String(page + 1).padStart(3, "0")}.gif`;
 }
 
+type LineCoord = { x: number; y: number; w: number };
+// left/right are the normalized horizontal edges of the highlight (x ± w/2).
+type LineBand = { top: number; bottom: number; left: number; right: number };
+
+// Per-page line coordinates, keyed by the padded page number (matching the
+// image filename, e.g. "002"). Pages without a specific key use "default".
+const LINE_COORDS_MAP = quranData.meta.lineCoordinates as Record<string, LineCoord[]>;
+
+// Vertical band [top, bottom] and horizontal extent [left, right] (normalized
+// 0-1) for each line. Vertical boundaries sit midway between consecutive line
+// centers; horizontal extent comes from each line's x (center) and w (width).
+function computeBands(coords: LineCoord[]): LineBand[] {
+  return coords.map((coord, i, arr) => {
+    const prev = arr[i - 1]?.y;
+    const next = arr[i + 1]?.y;
+    const top = prev === undefined ? Math.max(0, coord.y - (next - coord.y) / 2) : (prev + coord.y) / 2;
+    const bottom = next === undefined ? Math.min(1, coord.y + (coord.y - prev) / 2) : (coord.y + next) / 2;
+    return { top, bottom, left: coord.x - coord.w / 2, right: coord.x + coord.w / 2 };
+  });
+}
+
+const LINE_BANDS_MAP: Record<string, LineBand[]> = Object.fromEntries(
+  Object.entries(LINE_COORDS_MAP).map(([key, coords]) => [key, computeBands(coords)])
+);
+
+function pageKey(p: number) {
+  return String(p + 1).padStart(3, "0");
+}
+
+function bandsForPage(p: number): LineBand[] {
+  return LINE_BANDS_MAP[pageKey(p)] ?? LINE_BANDS_MAP.default;
+}
+
+// Map a normalized vertical position (0 = top, 1 = bottom of the page) to a line
+// index, or -1 if it falls outside the text lines (e.g. the surah header or margins).
+function lineAtFraction(frac: number, bands: LineBand[]) {
+  if (frac < bands[0].top || frac >= bands[bands.length - 1].bottom) return -1;
+  for (let i = 0; i < bands.length; i++) {
+    if (frac < bands[i].bottom) return i;
+  }
+  return -1;
+}
+
+const LONG_PRESS_MS = 450;
+const LONG_PRESS_MOVE_TOLERANCE = 10;
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
@@ -70,6 +116,12 @@ export default function Home() {
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
   const [navVisible, setNavVisible] = useState(true);
   const [showSections, setShowSections] = useState(false);
+  // Record<internalPage, lineIndex[]> — yellow line highlights
+  const [highlights, setHighlights] = useState<Record<number, number[]>>({});
+
+  const pressTimer = useRef<number | null>(null);
+  const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -131,6 +183,15 @@ export default function Home() {
         setBookmarks({});
       }
     }
+
+    const rawHighlights = localStorage.getItem("quran13-highlights");
+    if (rawHighlights) {
+      try {
+        setHighlights(JSON.parse(rawHighlights) as Record<number, number[]>);
+      } catch {
+        setHighlights({});
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -149,11 +210,73 @@ export default function Home() {
     localStorage.setItem("quran13-bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks, mounted]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("quran13-highlights", JSON.stringify(highlights));
+  }, [highlights, mounted]);
+
   const goToPage = useCallback((targetPage: number) => {
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
   }, []);
+
+  const toggleHighlight = useCallback((targetPage: number, line: number) => {
+    setHighlights((prev) => {
+      const current = prev[targetPage] ?? [];
+      const nextLines = current.includes(line)
+        ? current.filter((l) => l !== line)
+        : [...current, line].sort((a, b) => a - b);
+      const next = { ...prev };
+      if (nextLines.length) next[targetPage] = nextLines;
+      else delete next[targetPage];
+      return next;
+    });
+  }, []);
+
+  const cancelPress = useCallback(() => {
+    if (pressTimer.current !== null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+    pressInfo.current = null;
+  }, []);
+
+  const handlePressStart = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>, candidate: number) => {
+      if (activeSheet) return;
+      suppressClick.current = false;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const frac = (event.clientY - rect.top) / rect.height;
+      const line = lineAtFraction(frac, bandsForPage(candidate));
+      if (line < 0) return; // pressed outside the text lines (header/margins) — ignore
+      pressInfo.current = { page: candidate, line, x: event.clientX, y: event.clientY };
+      if (pressTimer.current !== null) window.clearTimeout(pressTimer.current);
+      pressTimer.current = window.setTimeout(() => {
+        pressTimer.current = null;
+        const info = pressInfo.current;
+        if (!info) return;
+        suppressClick.current = true;
+        navigator.vibrate?.(15);
+        toggleHighlight(info.page, info.line);
+      }, LONG_PRESS_MS);
+    },
+    [activeSheet, toggleHighlight]
+  );
+
+  const handlePressMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const info = pressInfo.current;
+      if (!info || pressTimer.current === null) return;
+      if (
+        Math.abs(event.clientX - info.x) > LONG_PRESS_MOVE_TOLERANCE ||
+        Math.abs(event.clientY - info.y) > LONG_PRESS_MOVE_TOLERANCE
+      ) {
+        cancelPress();
+      }
+    },
+    [cancelPress]
+  );
 
   const toggleBookmark = () => {
     setBookmarks((prev) => {
@@ -199,6 +322,8 @@ export default function Home() {
   const renderPageCard = (candidate: number) => {
     if (!canRenderPage(candidate)) return null;
     const missing = missingImages[candidate];
+    const bands = bandsForPage(candidate);
+    const pageHighlights = (highlights[candidate] ?? []).filter((line) => bands[line]);
 
     return (
       <div className="relative w-full aspect-568/750 overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]">
@@ -207,16 +332,41 @@ export default function Home() {
             Page {candidate} image is unavailable
           </div>
         ) : (
-          <Image
-            src={imagePath(candidate)}
-            alt={`Quran page ${candidate}`}
-            fill
-            className="object-cover object-top"
-            style={theme === "dark-invert" ? { filter: "invert(1)" } : undefined}
-            draggable={false}
-            priority={candidate === page}
-            onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
-          />
+          <>
+            <Image
+              src={imagePath(candidate)}
+              alt={`Quran page ${candidate}`}
+              fill
+              className="object-cover object-top"
+              style={theme === "dark-invert" ? { filter: "invert(1)" } : undefined}
+              draggable={false}
+              priority={candidate === page}
+              onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
+            />
+            {/* Long-press a line to toggle a yellow highlight on it. */}
+            <div
+              className="absolute inset-0"
+              style={{ touchAction: "pan-y" }}
+              onPointerDown={(e) => handlePressStart(e, candidate)}
+              onPointerMove={handlePressMove}
+              onPointerUp={cancelPress}
+              onPointerCancel={cancelPress}
+              onPointerLeave={cancelPress}
+            >
+              {pageHighlights.map((line) => (
+                <div
+                  key={line}
+                  className="pointer-events-none absolute bg-[#ffe600] opacity-35 mix-blend-multiply"
+                  style={{
+                    top: `${bands[line].top * 100}%`,
+                    height: `${(bands[line].bottom - bands[line].top) * 100}%`,
+                    left: `${bands[line].left * 100}%`,
+                    width: `${(bands[line].right - bands[line].left) * 100}%`,
+                  }}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     );
@@ -271,7 +421,10 @@ export default function Home() {
 
       <section
         className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]"
-        onClick={() => { if (!activeSheet) setNavVisible(v => !v); }}
+        onClick={() => {
+          if (suppressClick.current) { suppressClick.current = false; return; }
+          if (!activeSheet) setNavVisible(v => !v);
+        }}
       >
         <div className="absolute inset-0">
           <Swiper
