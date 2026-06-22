@@ -121,35 +121,455 @@
     { "num": 114,"name": "Naas",       "arabic": "الناس",     "page": 847, "ayah": 6   }
   ],
   "juz": [
-    { "num": 1,  "name": "Juz 1",  "arabicStart": "الٓمٓ",                "page": 1 },
-    { "num": 2,  "name": "Juz 2",  "arabicStart": "سَيَقُولُ",            "page": 28 },
-    { "num": 3,  "name": "Juz 3",  "arabicStart": "تِلْكَ الرُّسُلُ",       "page": 56 },
-    { "num": 4,  "name": "Juz 4",  "arabicStart": "لَنْ تَنَالُوا",         "page": 84 },
-    { "num": 5,  "name": "Juz 5",  "arabicStart": "وَالْمُحْصَنَاتُ",       "page": 112 },
-    { "num": 6,  "name": "Juz 6",  "arabicStart": "لَا يُحِبُّ اللَّهُ",      "page": 140 },
-    { "num": 7,  "name": "Juz 7",  "arabicStart": "وَإِذَا سَمِعُوا",       "page": 168 },
-    { "num": 8,  "name": "Juz 8",  "arabicStart": "وَلَوْ أَنَّنَا",         "page": 196 },
-    { "num": 9,  "name": "Juz 9",  "arabicStart": "قَالَ الْمَلَأُ",         "page": 224 },
-    { "num": 10, "name": "Juz 10", "arabicStart": "وَاعْلَمُوٓا",          "page": 252 },
-    { "num": 11, "name": "Juz 11", "arabicStart": "يَعْتَذِرُونَ",          "page": 280 },
-    { "num": 12, "name": "Juz 12", "arabicStart": "وَمَا مِنْ دَآبَّةٍ",      "page": 308 },
-    { "num": 13, "name": "Juz 13", "arabicStart": "وَمَآ أُبَرِّئُ",         "page": 336 },
-    { "num": 14, "name": "Juz 14", "arabicStart": "رُبَمَا",               "page": 364 },
-    { "num": 15, "name": "Juz 15", "arabicStart": "سُبْحَانَ الَّذِيٓ",       "page": 392 },
-    { "num": 16, "name": "Juz 16", "arabicStart": "قَالَ أَلَمْ",           "page": 420 },
-    { "num": 17, "name": "Juz 17", "arabicStart": "اقْتَرَبَ",             "page": 448 },
-    { "num": 18, "name": "Juz 18", "arabicStart": "قَدْ أَفْلَحَ",          "page": 476 },
-    { "num": 19, "name": "Juz 19", "arabicStart": "وَقَالَ الَّذِينَ",        "page": 504 },
-    { "num": 20, "name": "Juz 20", "arabicStart": "أَمَّنْ خَلَقَ",          "page": 532 },
-    { "num": 21, "name": "Juz 21", "arabicStart": "اتْلُ مَآ أُوحِيَ",       "page": 558 },
-    { "num": 22, "name": "Juz 22", "arabicStart": "وَمَنْ يَقْنُتْ",         "page": 586 },
-    { "num": 23, "name": "Juz 23", "arabicStart": "وَمَا لِيَ",            "page": 612 },
-    { "num": 24, "name": "Juz 24", "arabicStart": "فَمَنْ أَظْلَمُ",         "page": 640 },
-    { "num": 25, "name": "Juz 25", "arabicStart": "إِلَيْهِ يُرَدُّ",         "page": 666 },
-    { "num": 26, "name": "Juz 26", "arabicStart": "حمٓ",                 "page": 696 },
-    { "num": 27, "name": "Juz 27", "arabicStart": "قَالَ فَمَا خَطْبُكُمْ",    "page": 726 },
-    { "num": 28, "name": "Juz 28", "arabicStart": "قَدْ سَمِعَ اللَّهُ",      "page": 756 },
-    { "num": 29, "name": "Juz 29", "arabicStart": "تَبَارَكَ الَّذِي",        "page": 786 },
-    { "num": 30, "name": "Juz 30", "arabicStart": "عَمَّ",                "page": 818 }
+    {
+      "num": 1,
+      "name": "Juz 1",
+      "arabicStart": "الٓمٓ",
+      "page": 1,
+      "sections": [
+        {
+          "num": 1.5,
+          "name": "Nisf",
+          "arabicStart": "وَإِذْ أَخَذْنَا مِيثَاقَ بَنِي إِسْرَائِيلَ",
+          "page": 15,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 2,
+      "name": "Juz 2",
+      "arabicStart": "سَيَقُولُ",
+      "page": 28,
+      "sections": [
+        {
+          "num": 2.5,
+          "name": "Nisf",
+          "arabicStart": "سَلْ بَنِىٓ إِسْرَٰٓءِيلَ",
+          "page": 43,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 3,
+      "name": "Juz 3",
+      "arabicStart": "تِلْكَ الرُّسُلُ",
+      "page": 56,
+      "sections": [
+        {
+          "num": 3.5,
+          "name": "Nisf",
+          "arabicStart": "إِنَّ ٱلَّذِينَ يَكْفُرُونَ",
+          "page": 70,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 4,
+      "name": "Juz 4",
+      "arabicStart": "لَنْ تَنَالُوا",
+      "page": 84,
+      "sections": [
+        {
+          "num": 4.5,
+          "name": "Nisf",
+          "arabicStart": "ٱلَّذِينَ ٱسْتَجَابُوا۟ لِلَّهِ وَٱلرَّسُولِ",
+          "page": 99,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 5,
+      "name": "Juz 5",
+      "arabicStart": "وَالْمُحْصَنَاتُ",
+      "page": 112,
+      "sections": [
+        {
+          "num": 5.5,
+          "name": "Nisf",
+          "arabicStart": "فَمَا لَكُمْ فِى ٱلْمُنَـٰفِقِينَ",
+          "page": 126,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 6,
+      "name": "Juz 6",
+      "arabicStart": "لَا يُحِبُّ اللَّهُ",
+      "page": 140,
+      "sections": [
+        {
+          "num": 6.5,
+          "name": "Nisf",
+          "arabicStart": "وَٱتْلُ عَلَيْهِمْ نَبَأَ ٱبْنَىْ ءَادَمَ بِٱلْحَقِّ",
+          "page": 153,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 7,
+      "name": "Juz 7",
+      "arabicStart": "وَإِذَا سَمِعُوا",
+      "page": 168,
+      "sections": [
+        {
+          "num": 7.5,
+          "name": "Nisf",
+          "arabicStart": "إِنَّمَا يَسْتَجِيبُ ٱلَّذِينَ يَسْمَعُونَ",
+          "page": 182,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 8,
+      "name": "Juz 8",
+      "arabicStart": "وَلَوْ أَنَّنَا",
+      "page": 196,
+      "sections": [
+        {
+          "num": 8.5,
+          "name": "Nisf",
+          "arabicStart": "الٓمٓصٓ",
+          "page": 208,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 9,
+      "name": "Juz 9",
+      "arabicStart": "قَالَ الْمَلَأُ",
+      "page": 224,
+      "sections": [
+        {
+          "num": 9.5,
+          "name": "Nisf",
+          "arabicStart": "وَسْـَٔلْهُمْ عَنِ ٱلْقَرْيَةِ ٱلَّتِى",
+          "page": 237,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 10,
+      "name": "Juz 10",
+      "arabicStart": "وَاعْلَمُوٓا",
+      "page": 252,
+      "sections": [
+        {
+          "num": 10.5,
+          "name": "Nisf",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِنَّ كَثِيرًۭا",
+          "page": 266,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 11,
+      "name": "Juz 11",
+      "arabicStart": "يَعْتَذِرُونَ",
+      "page": 280,
+      "sections": [
+        {
+          "num": 11.5,
+          "name": "Nisf",
+          "arabicStart": "قُلْ مَن يَرْزُقُكُم",
+          "page": 294,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 12,
+      "name": "Juz 12",
+      "arabicStart": "وَمَا مِنْ دَآبَّةٍ",
+      "page": 308,
+      "sections": [
+        {
+          "num": 12.5,
+          "name": "Nisf",
+          "arabicStart": "وَإِلَىٰ مَدْيَنَ أَخَاهُمْ شُعَيْبًۭا",
+          "page": 321,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 13,
+      "name": "Juz 13",
+      "arabicStart": "وَمَآ أُبَرِّئُ",
+      "page": 336,
+      "sections": [
+        {
+          "num": 13.5,
+          "name": "Nisf",
+          "arabicStart": "أَفَمَن يَعْلَمُ أَنَّمَآ أُنزِلَ إِلَيْكَ",
+          "page": 350,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 14,
+      "name": "Juz 14",
+      "arabicStart": "رُبَمَا",
+      "page": 364,
+      "sections": [
+        {
+          "num": 14.5,
+          "name": "Nisf",
+          "arabicStart": "وَقَالَ ٱللَّهُ لَا تَتَّخِذُوٓا۟ إِلَـٰهَيْنِ ٱثْنَيْنِ",
+          "page": 377,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 15,
+      "name": "Juz 15",
+      "arabicStart": "سُبْحَانَ الَّذِيٓ",
+      "page": 392,
+      "sections": [
+        {
+          "num": 15.5,
+          "name": "Nisf",
+          "arabicStart": "وَلَقَدْ ءَاتَيْنَا مُوسَىٰ تِسْعَ ءَايَـٰتٍۭ",
+          "page": 405,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 16,
+      "name": "Juz 16",
+      "arabicStart": "قَالَ أَلَمْ",
+      "page": 420,
+      "sections": [
+        {
+          "num": 16.5,
+          "name": "Nisf",
+          "arabicStart": "طه",
+          "page": 434,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 17,
+      "name": "Juz 17",
+      "arabicStart": "اقْتَرَبَ",
+      "page": 448,
+      "sections": [
+        {
+          "num": 17.5,
+          "name": "Nisf",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلنَّاسُ ٱتَّقُوا۟ رَبَّكُمْ",
+          "page": 461,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 18,
+      "name": "Juz 18",
+      "arabicStart": "قَدْ أَفْلَحَ",
+      "page": 476,
+      "sections": [
+        {
+          "num": 18.5,
+          "name": "Nisf",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ لَا تَتَّبِعُوا۟",
+          "page": 489,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 19,
+      "name": "Juz 19",
+      "arabicStart": "وَقَالَ الَّذِينَ",
+      "page": 504,
+      "sections": [
+        {
+          "num": 19.5,
+          "name": "Nisf",
+          "arabicStart": "كَذَّبَتْ عَادٌ ٱلْمُرْسَلِينَ",
+          "page": 517,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 20,
+      "name": "Juz 20",
+      "arabicStart": "أَمَّنْ خَلَقَ",
+      "page": 532,
+      "sections": [
+        {
+          "num": 20.5,
+          "name": "Nisf",
+          "arabicStart": "وَلَقَدْ وَصَّلْنَا لَهُمُ ٱلْقَوْلَ",
+          "page": 544,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 21,
+      "name": "Juz 21",
+      "arabicStart": "اتْلُ مَآ أُوحِيَ",
+      "page": 558,
+      "sections": [
+        {
+          "num": 21.5,
+          "name": "Nisf",
+          "arabicStart": "أَلَمْ تَرَوْا۟ أَنَّ ٱللَّهَ سَخَّرَ لَكُم",
+          "page": 573,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 22,
+      "name": "Juz 22",
+      "arabicStart": "وَمَنْ يَقْنُتْ",
+      "page": 586,
+      "sections": [
+        {
+          "num": 22.5,
+          "name": "Nisf",
+          "arabicStart": "وَقَالَ ٱلَّذِينَ كَفَرُوا۟ لَن",
+          "page": 598,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 23,
+      "name": "Juz 23",
+      "arabicStart": "وَمَا لِيَ",
+      "page": 612,
+      "sections": [
+        {
+          "num": 23.5,
+          "name": "Nisf",
+          "arabicStart": "وَإِنَّ يُونُسَ لَمِنَ ٱلْمُرْسَلِينَ",
+          "page": 625,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 24,
+      "name": "Juz 24",
+      "arabicStart": "فَمَنْ أَظْلَمُ",
+      "page": 640,
+      "sections": [
+        {
+          "num": 24.5,
+          "name": "Nisf",
+          "arabicStart": "إِنَّا لَنَنصُرُ رُسُلَنَا",
+          "page": 653,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 25,
+      "name": "Juz 25",
+      "arabicStart": "إِلَيْهِ يُرَدُّ",
+      "page": 666,
+      "sections": [
+        {
+          "num": 25.5,
+          "name": "Nisf",
+          "arabicStart": "وَإِذْ قَالَ إِبْرَٰهِيمُ لِأَبِيهِ",
+          "page": 679,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 26,
+      "name": "Juz 26",
+      "arabicStart": "حمٓ",
+      "page": 696,
+      "sections": [
+        {
+          "num": 26.5,
+          "name": "Nisf",
+          "arabicStart": "لَّقَدْ رَضِىَ ٱللَّهُ عَنِ ٱلْمُؤْمِنِينَ",
+          "page": 712,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 27,
+      "name": "Juz 27",
+      "arabicStart": "قَالَ فَمَا خَطْبُكُمْ",
+      "page": 726,
+      "sections": [
+        {
+          "num": 27.5,
+          "name": "Nisf",
+          "arabicStart": "كُلُّ مَنْ عَلَيْهَا فَانٍۢ",
+          "page": 740,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 28,
+      "name": "Juz 28",
+      "arabicStart": "قَدْ سَمِعَ اللَّهُ",
+      "page": 756,
+      "sections": [
+        {
+          "num": 28.5,
+          "name": "Nisf",
+          "arabicStart": "سَبَّحَ لِلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ",
+          "page": 769,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 29,
+      "name": "Juz 29",
+      "arabicStart": "تَبَارَكَ الَّذِي",
+      "page": 786,
+      "sections": [
+        {
+          "num": 29.5,
+          "name": "Nisf",
+          "arabicStart": "قُلْ أُوحِىَ إِلَىَّ أَنَّهُ ٱسْتَمَعَ",
+          "page": 802,
+          "isNisf": true
+        }
+      ]
+    },
+    {
+      "num": 30,
+      "name": "Juz 30",
+      "arabicStart": "عَمَّ",
+      "page": 818,
+      "sections": [
+        {
+          "num": 30.5,
+          "name": "Nisf",
+          "arabicStart": "وَٱلْفَجْرِ",
+          "page": 832,
+          "isNisf": true
+        }
+      ]
+    }
   ]
 }

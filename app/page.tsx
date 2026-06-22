@@ -38,6 +38,8 @@ type Juz = {
   name: string;
   arabicStart: string;
   page: number;
+  isNisf?: boolean;
+  sections?: Juz[];
 };
 
 const FIRST_PAGE = 1;
@@ -67,6 +69,7 @@ export default function Home() {
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
   const [navVisible, setNavVisible] = useState(true);
+  const [showSections, setShowSections] = useState(false);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -229,8 +232,8 @@ export default function Home() {
           <div className="min-w-0">
             <div className="truncate text-[15px] font-semibold">Sūrah {surahsOnPage.map(s => s.name).join(", ")}</div>
             <div className="mt-px text-xs text-(--fg2)">
-              Juz {currentJuz.num} · Page {page + 1}
-              <span className="ml-1.5 opacity-50">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
+              Juz {Math.floor(currentJuz.num)} · Page {page + 1}
+              <span className="ml-1.5 opacity-70">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -412,23 +415,50 @@ export default function Home() {
               <div className="mx-auto mt-2 h-1.25 w-9.5 rounded-full bg-border" />
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                 <span className="text-[13px] font-semibold tracking-[2px] uppercase">JUZ INDEX</span>
-                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                  <X className="size-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSections((v) => !v)}
+                    className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${showSections ? "border-transparent bg-(--fg) text-(--bg)" : "border-border bg-(--bg2) text-(--fg2)"}`}
+                  >
+                    Sections
+                  </button>
+                  <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                    <X className="size-4" />
+                  </Button>
+                </div>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto">
                 {juz.map((item) => (
-                  <button
-                    key={item.num}
-                    type="button"
-                    onClick={() => goToPage(item.page)}
-                    className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
-                  >
-                    <span className="w-7.5 text-right text-sm tabular-nums text-(--fg3)">{item.num}</span>
-                    <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{item.name}</span>
-                    <span className="text-xs text-(--fg3)">p.{item.page + 1}</span>
-                    <span className="font-amiri text-[22px]" dir="rtl">{item.arabicStart}</span>
-                  </button>
+                  <div key={item.num}>
+                    <button
+                      key={item.num}
+                      type="button"
+                      onClick={() => goToPage(item.page)}
+                      className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
+                    >
+                      <span className="w-7.5 text-right text-sm tabular-nums text-(--fg3)">{item.isNisf ? "½" : item.num}</span>
+                      <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{item.name}</span>
+                      <span className="text-xs text-(--fg3)">p.{item.page + 1}</span>
+                      <span className="font-amiri text-[22px]" dir="rtl">{item.arabicStart}</span>
+                    </button>
+                    {showSections && item.sections?.length && item.sections.map((section, idx) => {
+                     return (
+                      <button
+                        key={section.num}
+                        type="button"
+                        onClick={() => goToPage(section.page)}
+                        className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) opacity-60}`}
+                      >
+                        <span className="w-7.5 text-right text-sm tabular-nums text-(--fg3)">½</span>
+                        <span className="min-w-0 flex-1 truncate text-base text-sm text-(--fg) opacity-50">{section.name}</span>
+                        <span className="text-xs text-(--fg3)">p.{section.page + 1}</span>
+                        <span className="font-arial text-[20px] opacity-60" dir="rtl">{section.arabicStart}</span>
+                      </button>
+
+                      )
+                    })}
+                  </div>
                 ))}
               </div>
             </div>
