@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import {
+  Ban,
   BookOpen,
   Bookmark,
   Delete,
@@ -105,6 +106,14 @@ function lineAtFraction(frac: number, bands: LineBand[]) {
 const LONG_PRESS_MS = 600;
 const LONG_PRESS_MOVE_TOLERANCE = 10;
 
+const HIGHLIGHT_COLORS = [
+  { key: "yellow", hex: "#ffe600" },
+  { key: "green",  hex: "#4ade80" },
+  { key: "red",    hex: "#f87171" },
+  { key: "blue",   hex: "#60a5fa" },
+] as const;
+type HighlightColorKey = typeof HIGHLIGHT_COLORS[number]["key"];
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
@@ -116,8 +125,9 @@ export default function Home() {
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
   const [navVisible, setNavVisible] = useState(true);
   const [showSections, setShowSections] = useState(false);
-  // Record<internalPage, lineIndex[]> — yellow line highlights
-  const [highlights, setHighlights] = useState<Record<number, number[]>>({});
+  // Record<internalPage, Record<lineIndex, colorKey>>
+  const [highlights, setHighlights] = useState<Record<number, Record<number, HighlightColorKey>>>({});
+  const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
 
   const pressTimer = useRef<number | null>(null);
   const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
@@ -187,7 +197,17 @@ export default function Home() {
     const rawHighlights = localStorage.getItem("quran13-highlights");
     if (rawHighlights) {
       try {
-        setHighlights(JSON.parse(rawHighlights) as Record<number, number[]>);
+        const parsed = JSON.parse(rawHighlights);
+        // Migrate old format Record<page, number[]> → Record<page, Record<line, color>>
+        const migrated: Record<number, Record<number, HighlightColorKey>> = {};
+        for (const [p, val] of Object.entries(parsed)) {
+          if (Array.isArray(val)) {
+            migrated[Number(p)] = Object.fromEntries((val as number[]).map((l) => [l, "yellow"]));
+          } else {
+            migrated[Number(p)] = val as Record<number, HighlightColorKey>;
+          }
+        }
+        setHighlights(migrated);
       } catch {
         setHighlights({});
       }
@@ -221,14 +241,13 @@ export default function Home() {
     setPageInput("");
   }, []);
 
-  const toggleHighlight = useCallback((targetPage: number, line: number) => {
+  const setHighlightColor = useCallback((targetPage: number, line: number, color: HighlightColorKey | null) => {
     setHighlights((prev) => {
-      const current = prev[targetPage] ?? [];
-      const nextLines = current.includes(line)
-        ? current.filter((l) => l !== line)
-        : [...current, line].sort((a, b) => a - b);
+      const pageMap = { ...(prev[targetPage] ?? {}) };
+      if (color === null) delete pageMap[line];
+      else pageMap[line] = color;
       const next = { ...prev };
-      if (nextLines.length) next[targetPage] = nextLines;
+      if (Object.keys(pageMap).length) next[targetPage] = pageMap;
       else delete next[targetPage];
       return next;
     });
@@ -258,10 +277,10 @@ export default function Home() {
         if (!info) return;
         suppressClick.current = true;
         navigator.vibrate?.(15);
-        toggleHighlight(info.page, info.line);
+        setHighlightPicker({ page: info.page, line: info.line });
       }, LONG_PRESS_MS);
     },
-    [activeSheet, toggleHighlight]
+    [activeSheet]
   );
 
   const handlePressMove = useCallback(
@@ -323,7 +342,9 @@ export default function Home() {
     if (!canRenderPage(candidate)) return null;
     const missing = missingImages[candidate];
     const bands = bandsForPage(candidate);
-    const pageHighlights = (highlights[candidate] ?? []).filter((line) => bands[line]);
+    const pageHighlights = Object.entries(highlights[candidate] ?? {})
+      .map(([lineStr, color]) => ({ line: Number(lineStr), color }))
+      .filter(({ line }) => bands[line]);
 
     return (
       <div
@@ -358,11 +379,12 @@ export default function Home() {
               onPointerCancel={cancelPress}
               onPointerLeave={cancelPress}
             >
-              {pageHighlights.map((line) => (
+              {pageHighlights.map(({ line, color }) => (
                 <div
                   key={line}
-                  className="pointer-events-none absolute bg-[#ffe600] opacity-35 mix-blend-multiply"
+                  className="pointer-events-none absolute opacity-35 mix-blend-multiply"
                   style={{
+                    backgroundColor: HIGHLIGHT_COLORS.find((c) => c.key === color)?.hex ?? "#ffe600",
                     top: `${bands[line].top * 100}%`,
                     height: `${(bands[line].bottom - bands[line].top) * 100}%`,
                     left: `${bands[line].left * 100}%`,
@@ -531,6 +553,48 @@ export default function Home() {
           </button>
         </nav>
       </div>
+
+      {highlightPicker && (
+        <div className="fixed inset-0 z-50">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/20"
+            aria-label="Close"
+            onClick={() => setHighlightPicker(null)}
+          />
+          <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Highlight</span>
+            <div className="flex items-center gap-3">
+              {HIGHLIGHT_COLORS.map(({ key, hex }) => (
+                <button
+                  key={key}
+                  type="button"
+                  aria-label={key}
+                  className="size-11 rounded-full shadow-sm transition-transform active:scale-90"
+                  style={{ backgroundColor: hex }}
+                  onClick={() => {
+                    setHighlightColor(highlightPicker.page, highlightPicker.line, key);
+                    setHighlightPicker(null);
+                  }}
+                />
+              ))}
+              {highlights[highlightPicker.page]?.[highlightPicker.line] && (
+                <button
+                  type="button"
+                  aria-label="Remove highlight"
+                  className="flex size-11 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
+                  onClick={() => {
+                    setHighlightColor(highlightPicker.page, highlightPicker.line, null);
+                    setHighlightPicker(null);
+                  }}
+                >
+                  <Ban className="size-5 text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeSheet && (
         <div className="fixed inset-0 z-40">
