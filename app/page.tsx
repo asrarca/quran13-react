@@ -108,8 +108,8 @@ const LONG_PRESS_MOVE_TOLERANCE = 10;
 
 const HIGHLIGHT_COLORS = [
   { key: "yellow", hex: "#ffe600" },
-  { key: "green",  hex: "#4ade80" },
-  { key: "red",    hex: "#f87171" },
+  { key: "green",  hex: "#4ade60" },
+  { key: "red",    hex: "#f82020" },
   { key: "blue",   hex: "#60a5fa" },
 ] as const;
 type HighlightColorKey = typeof HIGHLIGHT_COLORS[number]["key"];
@@ -610,15 +610,15 @@ export default function Home() {
             aria-label="Close"
             onClick={() => setHighlightPicker(null)}
           />
-          <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)] max-w-[calc(100vw-2rem)]">
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Highlight</span>
+          <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)] min-w-64 max-w-[calc(100vw-2rem)]">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Line Highlight</span>
             <div className="flex items-center gap-3">
               {HIGHLIGHT_COLORS.map(({ key, hex }) => (
                 <button
                   key={key}
                   type="button"
                   aria-label={key}
-                  className="size-11 rounded-full shadow-sm transition-transform active:scale-90"
+                  className="size-8 rounded-full shadow-sm transition-transform active:scale-90"
                   style={{ backgroundColor: hex }}
                   onClick={() => {
                     setHighlightColor(highlightPicker.page, highlightPicker.line, key);
@@ -630,7 +630,7 @@ export default function Home() {
                 <button
                   type="button"
                   aria-label="Remove highlight"
-                  className="flex size-11 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
+                  className="flex size-8 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
                   onClick={() => {
                     setHighlightColor(highlightPicker.page, highlightPicker.line, null);
                     setHighlightPicker(null);
@@ -641,14 +641,14 @@ export default function Home() {
               )}
             </div>
             <div className="w-full h-px bg-border" />
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Taraweh Rakat</span>
-            <div className="grid grid-cols-8 gap-1">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Number In Margin</span>
+            <div className="grid grid-cols-7 gap-1">
               {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
                 <button
                   key={n}
                   type="button"
                   aria-label={`Rakat ${n}`}
-                  className={`flex size-6 items-center justify-center rounded-full text-[10px] font-semibold transition-transform active:scale-90 ${
+                  className={`flex size-7 items-center justify-center rounded-full text-[12px] font-semibold transition-transform active:scale-90 ${
                     rakatMarkers[highlightPicker.page]?.[highlightPicker.line] === n
                       ? "bg-teal-500 text-white"
                       : "bg-(--bg2) text-(--fg)"
@@ -665,13 +665,13 @@ export default function Home() {
                 <button
                   type="button"
                   aria-label="Remove rakat marker"
-                  className="flex size-6 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
+                  className="flex size-7 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
                   onClick={() => {
                     setRakatMarker(highlightPicker.page, highlightPicker.line, null);
                     setHighlightPicker(null);
                   }}
                 >
-                  <Ban className="size-3.5 text-red-500" />
+                  <Ban className="size-4 text-gray-500" />
                 </button>
               )}
             </div>
