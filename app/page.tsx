@@ -128,6 +128,8 @@ export default function Home() {
   // Record<internalPage, Record<lineIndex, colorKey>>
   const [highlights, setHighlights] = useState<Record<number, Record<number, HighlightColorKey>>>({});
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
+  // Record<internalPage, Record<lineIndex, rakatNumber (1-20)>>
+  const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
 
   const pressTimer = useRef<number | null>(null);
   const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
@@ -212,6 +214,15 @@ export default function Home() {
         setHighlights({});
       }
     }
+
+    const rawRakat = localStorage.getItem("quran13-rakat");
+    if (rawRakat) {
+      try {
+        setRakatMarkers(JSON.parse(rawRakat));
+      } catch {
+        setRakatMarkers({});
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -235,10 +246,27 @@ export default function Home() {
     localStorage.setItem("quran13-highlights", JSON.stringify(highlights));
   }, [highlights, mounted]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("quran13-rakat", JSON.stringify(rakatMarkers));
+  }, [rakatMarkers, mounted]);
+
   const goToPage = useCallback((targetPage: number) => {
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
+  }, []);
+
+  const setRakatMarker = useCallback((targetPage: number, line: number, rakat: number | null) => {
+    setRakatMarkers((prev) => {
+      const pageMap = { ...(prev[targetPage] ?? {}) };
+      if (rakat === null) delete pageMap[line];
+      else pageMap[line] = rakat;
+      const next = { ...prev };
+      if (Object.keys(pageMap).length) next[targetPage] = pageMap;
+      else delete next[targetPage];
+      return next;
+    });
   }, []);
 
   const setHighlightColor = useCallback((targetPage: number, line: number, color: HighlightColorKey | null) => {
@@ -392,6 +420,26 @@ export default function Home() {
                   }}
                 />
               ))}
+              {Object.entries(rakatMarkers[candidate] ?? {}).map(([lineStr, rakat]) => {
+                const line = Number(lineStr);
+                const band = bands[line];
+                if (!band) return null;
+                const midY = (band.top + band.bottom) / 2;
+                return (
+                  <div
+                    key={`rakat-${line}`}
+                    className="pointer-events-none absolute flex aspect-square w-[6%] items-center justify-center rounded-full bg-gray-500 font-bold text-white"
+                    style={{
+                      top: `${midY * 100}%`,
+                      [(candidate + 1) % 2 === 0 ? "left" : "right"]: "1%",
+                      transform: "translateY(-50%)",
+                      fontSize: "3vw",
+                    }}
+                  >
+                    {rakat}
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
@@ -562,7 +610,7 @@ export default function Home() {
             aria-label="Close"
             onClick={() => setHighlightPicker(null)}
           />
-          <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
+          <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)] max-w-[calc(100vw-2rem)]">
             <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Highlight</span>
             <div className="flex items-center gap-3">
               {HIGHLIGHT_COLORS.map(({ key, hex }) => (
@@ -589,6 +637,41 @@ export default function Home() {
                   }}
                 >
                   <Ban className="size-5 text-gray-500" />
+                </button>
+              )}
+            </div>
+            <div className="w-full h-px bg-border" />
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Taraweh Rakat</span>
+            <div className="grid grid-cols-8 gap-1">
+              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  aria-label={`Rakat ${n}`}
+                  className={`flex size-6 items-center justify-center rounded-full text-[10px] font-semibold transition-transform active:scale-90 ${
+                    rakatMarkers[highlightPicker.page]?.[highlightPicker.line] === n
+                      ? "bg-teal-500 text-white"
+                      : "bg-(--bg2) text-(--fg)"
+                  }`}
+                  onClick={() => {
+                    setRakatMarker(highlightPicker.page, highlightPicker.line, n);
+                    setHighlightPicker(null);
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+              {rakatMarkers[highlightPicker.page]?.[highlightPicker.line] && (
+                <button
+                  type="button"
+                  aria-label="Remove rakat marker"
+                  className="flex size-6 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
+                  onClick={() => {
+                    setRakatMarker(highlightPicker.page, highlightPicker.line, null);
+                    setHighlightPicker(null);
+                  }}
+                >
+                  <Ban className="size-3.5 text-red-500" />
                 </button>
               )}
             </div>
