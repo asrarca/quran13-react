@@ -558,10 +558,10 @@ export default function Home() {
                     onClick={() => goToPage(surah.page)}
                     className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
                   >
-                    <span className="w-7.5 text-right text-sm tabular-nums text-(--fg3)">{surah.num}</span>
+                    <span className="w-6 text-right text-sm tabular-nums text-(--fg3)">{surah.num}</span>
                     <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{surah.name}</span>
                     <span className="text-xs text-(--fg3)">p.{surah.page + 1}</span>
-                    <span className="font-amiri text-[22px]" dir="rtl">{surah.arabic}</span>
+                    <span className="font-amiri font-bold text-[22px]" dir="rtl">{surah.arabic}</span>
                   </button>
                 ))}
               </div>
@@ -579,7 +579,7 @@ export default function Home() {
                     onClick={() => setShowSections((v) => !v)}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${showSections ? "border-transparent bg-(--fg) text-(--bg)" : "border-border bg-(--bg2) text-(--fg2)"}`}
                   >
-                    Sections
+                    Halves
                   </button>
                   <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                     <X className="size-4" />
@@ -595,10 +595,9 @@ export default function Home() {
                       onClick={() => goToPage(item.page)}
                       className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
                     >
-                      <span className="w-7.5 text-right text-sm tabular-nums text-(--fg3)">{item.isNisf ? "½" : item.num}</span>
                       <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{item.name}</span>
                       <span className="text-xs text-(--fg3)">p.{item.page + 1}</span>
-                      <span className="font-amiri text-[22px]" dir="rtl">{item.arabicStart}</span>
+                      <span className="font-amiri font-bold text-[22px]" dir="rtl">{item.arabicStart}</span>
                     </button>
                     {showSections && item.sections?.length && item.sections.map((section, idx) => {
                      return (
@@ -608,10 +607,10 @@ export default function Home() {
                         onClick={() => goToPage(section.page)}
                         className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) opacity-60}`}
                       >
-                        <span className="w-7.5 text-right text-sm tabular-nums text-(--fg3)">½</span>
+                        <span className="w-6 text-right text-sm tabular-nums text-(--fg3)">½</span>
                         <span className="min-w-0 flex-1 truncate text-base text-sm text-(--fg) opacity-50">{section.name}</span>
                         <span className="text-xs text-(--fg3)">p.{section.page + 1}</span>
-                        <span className="font-arial text-[20px] opacity-60" dir="rtl">{section.arabicStart}</span>
+                        <span className="font-amiri text-[18px] opacity-60" dir="rtl">{section.arabicStart}</span>
                       </button>
 
                       )
