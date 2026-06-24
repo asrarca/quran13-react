@@ -24,6 +24,7 @@ import "swiper/css";
 
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/components/ui/button";
+import { t, type Lang, langDateLocale, SUPPORTED_LANGS } from "./i18n";
 
 type Theme = "light" | "dark" | "dark-invert";
 type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "settings";
@@ -118,8 +119,9 @@ export default function Home() {
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
-  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | "language" | null>(null);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
+  const [lang, setLang] = useState<Lang>('en');
   // Record<internalPage, ISO date string>
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
@@ -242,6 +244,9 @@ export default function Home() {
     if (storedMushaf && storedMushaf in quranData.mushafs) {
       setActiveMushafKey(storedMushaf as MushafKey);
     }
+
+    const storedLang = localStorage.getItem("quran13-lang");
+    if (storedLang === 'en' || storedLang === 'fr') setLang(storedLang as Lang);
   }, []);
 
   useEffect(() => {
@@ -274,6 +279,11 @@ export default function Home() {
     if (!mounted) return;
     localStorage.setItem("quran13-mushaf", activeMushafKey);
   }, [activeMushafKey, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("quran13-lang", lang);
+  }, [lang, mounted]);
 
   const goToPage = useCallback((targetPage: number) => {
     setPage(clampPage(targetPage));
@@ -400,7 +410,7 @@ export default function Home() {
   const formatBookmarkDate = (iso: string) => {
     if (!iso) return "";
     const d = new Date(iso);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return d.toLocaleDateString(langDateLocale[lang], { month: "short", day: "numeric", year: "numeric" });
   };
 
   const canRenderPage = (candidate: number) => candidate >= FIRST_PAGE && candidate <= LAST_PAGE;
@@ -421,7 +431,7 @@ export default function Home() {
       >
         {missing ? (
           <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-(--fg2)">
-            Page {candidate} image is unavailable
+            {t(lang, 'misc.imageUnavailable', { page: candidate })}
           </div>
         ) : (
           <>
@@ -494,9 +504,9 @@ export default function Home() {
     <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
       <header className="relative flex items-center justify-between gap-3 px-4 pb-3 pt-1">
           <div className="min-w-0">
-            <div className="truncate text-[15px] font-semibold">Sūrah {surahsOnPage.map(s => s.name).join(", ")}</div>
+            <div className="truncate text-[15px] font-semibold">{t(lang, 'header.surahPrefix')} {surahsOnPage.map(s => s.name).join(", ")}</div>
             <div className="mt-px text-xs text-(--fg2)">
-              Juz {Math.floor(currentJuz.num)} · Page {page + 1}
+              {t(lang, 'header.juzPage', { juz: Math.floor(currentJuz.num), page: page + 1 })}
               <span className="ml-1.5 opacity-70">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
             </div>
           </div>
@@ -613,7 +623,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <BookOpen className="size-5.5" />
-            <span className="text-[11px] font-medium">Surah</span>
+            <span className="text-[11px] font-medium">{t(lang, 'nav.surah')}</span>
           </button>
           <button
             type="button"
@@ -621,7 +631,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Layers className="size-5.5" />
-            <span className="text-[11px] font-medium">Juz</span>
+            <span className="text-[11px] font-medium">{t(lang, 'nav.juz')}</span>
           </button>
           <button
             type="button"
@@ -632,7 +642,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Hash className="size-5.5" />
-            <span className="text-[11px] font-medium">Page</span>
+            <span className="text-[11px] font-medium">{t(lang, 'nav.page')}</span>
           </button>
           <button
             type="button"
@@ -640,7 +650,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Bookmark className="size-5.5" fill={activeSheet === "bookmarks" ? "currentColor" : "none"} />
-            <span className="text-[11px] font-medium">Saved</span>
+            <span className="text-[11px] font-medium">{t(lang, 'nav.saved')}</span>
           </button>
           <button
             type="button"
@@ -648,7 +658,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Settings className="size-5.5" />
-            <span className="text-[11px] font-medium">Settings</span>
+            <span className="text-[11px] font-medium">{t(lang, 'nav.settings')}</span>
           </button>
         </nav>
       </div>
@@ -662,7 +672,7 @@ export default function Home() {
             onClick={() => setHighlightPicker(null)}
           />
           <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)] min-w-64 max-w-[calc(100vw-2rem)]">
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Line Highlight</span>
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">{t(lang, 'highlightPicker.lineHighlight')}</span>
             <div className="flex items-center gap-3">
               {HIGHLIGHT_COLORS.map(({ key, hex }) => (
                 <button
@@ -692,7 +702,7 @@ export default function Home() {
               )}
             </div>
             <div className="w-full h-px bg-border" />
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Number Annotation</span>
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">{t(lang, 'highlightPicker.numberAnnotation')}</span>
             <div className="grid grid-cols-7 gap-1">
               {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
                 <button
@@ -752,7 +762,7 @@ export default function Home() {
                 <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
               </div>
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">SURAH INDEX</span>
+                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'surahIndex.title')}</span>
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                   <X className="size-4" />
                 </Button>
@@ -788,14 +798,14 @@ export default function Home() {
                 <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
               </div>
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">JUZ INDEX</span>
+                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'juzIndex.title')}</span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setShowSections((v) => !v)}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${showSections ? "border-transparent bg-(--fg) text-(--bg)" : "border-border bg-(--bg2) text-(--fg2)"}`}
                   >
-                    Halves
+                    {t(lang, 'juzIndex.halves')}
                   </button>
                   <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                     <X className="size-4" />
@@ -840,12 +850,12 @@ export default function Home() {
           {activeSheet === "page" && (
             <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 flex w-75 -translate-x-1/2 -translate-y-1/2 flex-col rounded-3xl bg-(--bg) p-5.5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
               <div className="flex items-center justify-between">
-                <span className="text-lg font-semibold">Go to Page</span>
+                <span className="text-lg font-semibold">{t(lang, 'goToPage.title')}</span>
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                   <X className="size-4" />
                 </Button>
               </div>
-              <span className="mt-1 text-[13px] text-(--fg2)">Enter a number from {FIRST_PAGE + 1} to {LAST_PAGE + 1}</span>
+              <span className="mt-1 text-[13px] text-(--fg2)">{t(lang, 'goToPage.hint', { min: FIRST_PAGE + 1, max: LAST_PAGE + 1 })}</span>
               <div className="my-4 flex h-16 items-center justify-center rounded-[14px] bg-(--bg2) text-[34px] font-semibold tracking-[3px] tabular-nums">{pageDisplay}</div>
               <div className="grid grid-cols-3 gap-2.5">
                 {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
@@ -882,7 +892,7 @@ export default function Home() {
                     }
                   }}
                 >
-                  Go
+                  {t(lang, 'goToPage.go')}
                 </button>
               </div>
             </div>
@@ -901,7 +911,7 @@ export default function Home() {
                 <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
               </div>
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">SAVED PAGES</span>
+                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'bookmarks.title')}</span>
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                   <X className="size-4" />
                 </Button>
@@ -910,8 +920,8 @@ export default function Home() {
                 {sortedBookmarks.length === 0 ? (
                   <div className="flex h-full flex-col items-center justify-center gap-2 text-(--fg3)">
                     <Bookmark className="size-8 opacity-30" />
-                    <span className="text-sm">No saved pages yet</span>
-                    <span className="text-xs text-(--fg3)">Tap the bookmark icon while reading</span>
+                    <span className="text-sm">{t(lang, 'bookmarks.empty')}</span>
+                    <span className="text-xs text-(--fg3)">{t(lang, 'bookmarks.emptyHint')}</span>
                   </div>
                 ) : (
                   sortedBookmarks.map(({ page: p, date }) => {
@@ -952,18 +962,20 @@ export default function Home() {
                 <div
                   className="flex h-full transition-transform duration-300 ease-in-out"
                   style={{
-                    width: "300%",
+                    width: "400%",
                     transform: settingsSubView === "mushaf"
-                      ? "translateX(-33.333%)"
+                      ? "translateX(-25%)"
                       : settingsSubView === "about"
-                        ? "translateX(-66.667%)"
-                        : "translateX(0)",
+                        ? "translateX(-50%)"
+                        : settingsSubView === "language"
+                          ? "translateX(-75%)"
+                          : "translateX(0)",
                   }}
                 >
                   {/* Panel 1: main settings */}
-                  <div className="flex h-full w-1/3 flex-col">
+                  <div className="flex h-full w-1/4 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">Settings</span>
+                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.title')}</span>
                       <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                         <X className="size-4" />
                       </Button>
@@ -974,7 +986,7 @@ export default function Home() {
                         className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
                         onClick={() => setSettingsSubView("mushaf")}
                       >
-                        <span className="text-base text-(--fg)">Mushaf Style</span>
+                        <span className="text-base text-(--fg)">{t(lang, 'settings.mushafStyle')}</span>
                         <div className="flex items-center gap-1.5 text-(--fg2)">
                           <span className="text-sm">{activeMushaf.name}</span>
                           <ChevronRight className="size-4" />
@@ -986,16 +998,27 @@ export default function Home() {
                           className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
                           onClick={() => setShowTajweedRules(true)}
                         >
-                          <span className="text-base text-(--fg)">Tajweed Rules</span>
+                          <span className="text-base text-(--fg)">{t(lang, 'settings.tajweedRules')}</span>
                           <ChevronRight className="size-4 text-(--fg2)" />
                         </button>
                       )}
                       <button
                         type="button"
                         className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                        onClick={() => setSettingsSubView("language")}
+                      >
+                        <span className="text-base text-(--fg)">{t(lang, 'settings.language')}</span>
+                        <div className="flex items-center gap-1.5 text-(--fg2)">
+                          <span className="text-sm">{t(lang, 'misc.langName')}</span>
+                          <ChevronRight className="size-4" />
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
                         onClick={() => setSettingsSubView("about")}
                       >
-                        <span className="text-base text-(--fg)">About</span>
+                        <span className="text-base text-(--fg)">{t(lang, 'settings.about')}</span>
                         <div className="flex items-center gap-1.5 text-(--fg2)">
                           <span className="text-sm">v{APP_VERSION}</span>
                           <ChevronRight className="size-4" />
@@ -1003,18 +1026,18 @@ export default function Home() {
                       </button>
                     </div>
                     <div className="shrink-0 border-t border-border px-5 py-4 text-center text-sm text-(--fg3)">
-                      Developed by Asrar Abbasi
+                      {t(lang, 'settings.footer')}
                     </div>
                   </div>
 
                   {/* Panel 2: mushaf picker */}
-                  <div className="flex h-full w-1/3 flex-col">
+                  <div className="flex h-full w-1/4 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <div className="flex items-center gap-2">
                         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
                           <ChevronLeft className="size-4" />
                         </Button>
-                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">Mushaf Style</span>
+                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.mushafStyle')}</span>
                       </div>
                       <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                         <X className="size-4" />
@@ -1048,77 +1071,112 @@ export default function Home() {
                   </div>
 
                   {/* Panel 3: about / how-to */}
-                  <div className="flex h-full w-1/3 flex-col">
+                  <div className="flex h-full w-1/4 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <div className="flex items-center gap-2">
                         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
                           <ChevronLeft className="size-4" />
                         </Button>
-                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">About</span>
+                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.about')}</span>
                       </div>
                       <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
                         <X className="size-4" />
                       </Button>
                     </div>
                     <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-                      <p className="mb-6 text-[15px] text-(--fg2)">Quran 13 · v{APP_VERSION}</p>
+                      <p className="mb-6 text-[15px] text-(--fg2)">{t(lang, 'about.versionLine', { version: APP_VERSION })}</p>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Reading</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.readingSection')}</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Navigate pages</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Swipe left or right to move between pages.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.navigatePages')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.navigatePagesDesc')}</p>
                           </div>
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Landscape mode</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Rotate your device to landscape orientation and immediately get a larger view of the Quran text.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.landscapeMode')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.landscapeModeDesc')}</p>
                           </div>
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Toggle menu</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tap anywhere on the page to show or hide the navigation bar.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.toggleMenu')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.toggleMenuDesc')}</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Highlighting & Annotations</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.highlightSection')}</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Highlight a line</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Press and hold any line to open the highlight picker. Choose a colour to mark it, or clear an existing highlight.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.highlightLine')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.highlightLineDesc')}</p>
                           </div>
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Add an annotation</p>
-                            <p className="mt-0.5 mb-2 text-[15px] text-(--fg2)">After long-pressing, pick a number (1–20) to add a numbered marker to that line.</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tip for Huffaz: use number annotations to mark the line where each Taraweh rakat ends — making it easy to resume from the right place.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.addAnnotation')}</p>
+                            <p className="mt-0.5 mb-2 text-[15px] text-(--fg2)">{t(lang, 'about.addAnnotationDesc')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.addAnnotationTip')}</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Bookmarks</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.bookmarksSection')}</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Save a page</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tap the bookmark icon in the top-right corner to save the current page. Tap it again to remove the bookmark.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.savePage')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.savePageDesc')}</p>
                           </div>
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">View saved pages</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.viewSavedPages')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.viewSavedPagesDesc')}</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Display</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.displaySection')}</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-[17px] font-medium text-(--fg)">Theme</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image).</p>
+                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.theme')}</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.themeDesc')}</p>
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Panel 4: language picker */}
+                  <div className="flex h-full w-1/4 flex-col">
+                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.language')}</span>
+                      </div>
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                      {SUPPORTED_LANGS.map(({ code, label }) => {
+                        const selected = lang === code;
+                        return (
+                          <button
+                            key={code}
+                            type="button"
+                            className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                            onClick={() => { setLang(code); setSettingsSubView(null); }}
+                          >
+                            <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
+                              {selected && <div className="size-2 rounded-full bg-(--bg)" />}
+                            </div>
+                            <span className={`text-base ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>
+                              {label}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -1141,7 +1199,7 @@ export default function Home() {
           </button>
           <Image
             src="/quran-pages/original_tajweed/page-002.jpg"
-            alt="Tajweed Rules"
+            alt={t(lang, 'misc.tajweedRulesAlt')}
             width={800}
             height={1100}
             className="max-h-[90dvh] max-w-[90dvw] rounded-lg object-contain"

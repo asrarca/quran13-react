@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "surah": "Sourate",
+    "juz": "Jouz",
+    "page": "Page",
+    "saved": "Sauvegardé",
+    "settings": "Paramètres"
+  },
+  "header": {
+    "surahPrefix": "Sourate",
+    "juzPage": "Jouz {juz} · Page {page}"
+  },
+  "surahIndex": {
+    "title": "SOURATES"
+  },
+  "juzIndex": {
+    "title": "JOUZES",
+    "halves": "Moitiés"
+  },
+  "goToPage": {
+    "title": "Aller à la page",
+    "hint": "Entrez un numéro de {min} à {max}",
+    "go": "OK"
+  },
+  "bookmarks": {
+    "title": "PAGES SAUVEGARDÉES",
+    "empty": "Aucune page sauvegardée",
+    "emptyHint": "Appuyez sur l'icône de signet en lisant"
+  },
+  "highlightPicker": {
+    "lineHighlight": "Surligner la ligne",
+    "numberAnnotation": "Annotation numérique"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "mushafStyle": "Mushaf",
+    "tajweedRules": "Règles du Tajweed",
+    "language": "Langue",
+    "about": "À propos",
+    "footer": "Développé par Asrar Abbasi"
+  },
+  "about": {
+    "versionLine": "Quran 13 · v{version}",
+    "readingSection": "Lecture",
+    "navigatePages": "Naviguer entre les pages",
+    "navigatePagesDesc": "Glissez à gauche ou à droite pour changer de page.",
+    "landscapeMode": "Mode paysage",
+    "landscapeModeDesc": "Faites pivoter votre appareil en mode paysage pour obtenir immédiatement une vue agrandie du texte coranique.",
+    "toggleMenu": "Afficher/Masquer le menu",
+    "toggleMenuDesc": "Appuyez n'importe où sur la page pour afficher ou masquer la barre de navigation.",
+    "highlightSection": "Surlignage & Annotations",
+    "highlightLine": "Surligner une ligne",
+    "highlightLineDesc": "Appuyez longuement sur une ligne pour ouvrir le sélecteur de surlignage. Choisissez une couleur pour la marquer ou effacez un surlignage existant.",
+    "addAnnotation": "Ajouter une annotation",
+    "addAnnotationDesc": "Après un appui prolongé, choisissez un numéro (1–20) pour ajouter un marqueur numéroté à cette ligne.",
+    "addAnnotationTip": "Conseil pour les Huffaz : utilisez les annotations numériques pour marquer la ligne où chaque rakat du Taraweh se termine — pour reprendre facilement au bon endroit.",
+    "bookmarksSection": "Signets",
+    "savePage": "Sauvegarder une page",
+    "savePageDesc": "Appuyez sur l'icône de signet dans le coin supérieur droit pour sauvegarder la page actuelle. Appuyez à nouveau pour supprimer le signet.",
+    "viewSavedPages": "Voir les pages sauvegardées",
+    "viewSavedPagesDesc": "Ouvrez l'onglet Sauvegardé dans la barre de navigation pour voir toutes vos pages avec signet, triées par ajout le plus récent.",
+    "displaySection": "Affichage",
+    "theme": "Thème",
+    "themeDesc": "Appuyez sur l'icône soleil/lune en haut à droite pour faire défiler trois modes d'affichage : Clair, Sombre et Sombre Inversé (texte blanc sur image de page noire)."
+  },
+  "misc": {
+    "imageUnavailable": "Image de la page {page} indisponible",
+    "langName": "Français",
+    "tajweedRulesAlt": "Règles du Tajweed"
+  }
+}

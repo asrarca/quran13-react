@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "surah": "Surah",
+    "juz": "Juz",
+    "page": "Page",
+    "saved": "Saved",
+    "settings": "Settings"
+  },
+  "header": {
+    "surahPrefix": "Sūrah",
+    "juzPage": "Juz {juz} · Page {page}"
+  },
+  "surahIndex": {
+    "title": "SURAHS"
+  },
+  "juzIndex": {
+    "title": "JUZ",
+    "halves": "Halves"
+  },
+  "goToPage": {
+    "title": "Go to Page",
+    "hint": "Enter a number from {min} to {max}",
+    "go": "Go"
+  },
+  "bookmarks": {
+    "title": "SAVED PAGES",
+    "empty": "No saved pages yet",
+    "emptyHint": "Tap the bookmark icon while reading"
+  },
+  "highlightPicker": {
+    "lineHighlight": "Line Highlight",
+    "numberAnnotation": "Number Annotation"
+  },
+  "settings": {
+    "title": "Settings",
+    "mushafStyle": "Mushaf",
+    "tajweedRules": "Tajweed Rules",
+    "language": "Language",
+    "about": "About",
+    "footer": "Developed by Asrar Abbasi"
+  },
+  "about": {
+    "versionLine": "Quran 13 · v{version}",
+    "readingSection": "Reading",
+    "navigatePages": "Navigate pages",
+    "navigatePagesDesc": "Swipe left or right to move between pages.",
+    "landscapeMode": "Landscape mode",
+    "landscapeModeDesc": "Rotate your device to landscape orientation and immediately get a larger view of the Quran text.",
+    "toggleMenu": "Toggle menu",
+    "toggleMenuDesc": "Tap anywhere on the page to show or hide the navigation bar.",
+    "highlightSection": "Highlighting & Annotations",
+    "highlightLine": "Highlight a line",
+    "highlightLineDesc": "Press and hold any line to open the highlight picker. Choose a colour to mark it, or clear an existing highlight.",
+    "addAnnotation": "Add an annotation",
+    "addAnnotationDesc": "After long-pressing, pick a number (1–20) to add a numbered marker to that line.",
+    "addAnnotationTip": "Tip for Huffaz: use number annotations to mark the line where each Taraweh rakat ends — making it easy to resume from the right place.",
+    "bookmarksSection": "Bookmarks",
+    "savePage": "Save a page",
+    "savePageDesc": "Tap the bookmark icon in the top-right corner to save the current page. Tap it again to remove the bookmark.",
+    "viewSavedPages": "View saved pages",
+    "viewSavedPagesDesc": "Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.",
+    "displaySection": "Display",
+    "theme": "Theme",
+    "themeDesc": "Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image)."
+  },
+  "misc": {
+    "imageUnavailable": "Page {page} image is unavailable",
+    "langName": "English",
+    "tajweedRulesAlt": "Tajweed Rules"
+  }
+}
