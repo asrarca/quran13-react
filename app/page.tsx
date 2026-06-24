@@ -56,37 +56,49 @@ function toArabicNumber(value: number) {
   return String(value).replace(/[0-9]/g, (digit) => "٠١٢٣٤٥٦٧٨٩"[Number(digit)]);
 }
 
+type MushafKey = keyof typeof quranData.mushafs;
+
+const ACTIVE_MUSHAF_KEY: MushafKey = "original_tajweed";
+const ACTIVE_MUSHAF = quranData.mushafs[ACTIVE_MUSHAF_KEY];
+
 function imagePath(page: number) {
-  return `/quran-pages/P-${String(page + 1).padStart(3, "0")}.gif`;
+  const { dir, filePrefix, fileExtension, pageOffset } = ACTIVE_MUSHAF;
+  return `${dir}/${filePrefix}${String(page + pageOffset).padStart(3, "0")}.${fileExtension}`;
 }
 
 type LineCoord = { x: number; y: number; w: number };
 // left/right are the normalized horizontal edges of the highlight (x ± w/2).
 type LineBand = { top: number; bottom: number; left: number; right: number };
 
-// Per-page line coordinates, keyed by the padded page number (matching the
-// image filename, e.g. "002"). Pages without a specific key use "default".
-const LINE_COORDS_MAP = quranData.meta.lineCoordinates as Record<string, LineCoord[]>;
+// Per-page line coordinates, keyed by the internal page number (1-based, 3-digit
+// padded, e.g. "001" for Fatihah). Pages without their own key use "default".
+const LINE_COORDS_MAP = ACTIVE_MUSHAF.lineCoordinates as Record<string, LineCoord[]>;
 
 // Vertical band [top, bottom] and horizontal extent [left, right] (normalized
-// 0-1) for each line. Vertical boundaries sit midway between consecutive line
-// centers; horizontal extent comes from each line's x (center) and w (width).
-function computeBands(coords: LineCoord[]): LineBand[] {
+// 0-1) for each line. When lineHeight is provided it is used as a fixed band
+// height centered on y; otherwise boundaries sit midway between adjacent centers.
+function computeBands(coords: LineCoord[], lineHeight?: number): LineBand[] {
   return coords.map((coord, i, arr) => {
-    const prev = arr[i - 1]?.y;
-    const next = arr[i + 1]?.y;
-    const top = prev === undefined ? Math.max(0, coord.y - (next - coord.y) / 2) : (prev + coord.y) / 2;
-    const bottom = next === undefined ? Math.min(1, coord.y + (coord.y - prev) / 2) : (coord.y + next) / 2;
+    let top: number, bottom: number;
+    if (lineHeight !== undefined) {
+      top = coord.y - lineHeight / 2;
+      bottom = coord.y + lineHeight / 2;
+    } else {
+      const prev = arr[i - 1]?.y;
+      const next = arr[i + 1]?.y;
+      top = prev === undefined ? Math.max(0, coord.y - (next - coord.y) / 2) : (prev + coord.y) / 2;
+      bottom = next === undefined ? Math.min(1, coord.y + (coord.y - prev) / 2) : (coord.y + next) / 2;
+    }
     return { top, bottom, left: coord.x - coord.w / 2, right: coord.x + coord.w / 2 };
   });
 }
 
 const LINE_BANDS_MAP: Record<string, LineBand[]> = Object.fromEntries(
-  Object.entries(LINE_COORDS_MAP).map(([key, coords]) => [key, computeBands(coords)])
+  Object.entries(LINE_COORDS_MAP).map(([key, coords]) => [key, computeBands(coords, ACTIVE_MUSHAF.lineHeight)])
 );
 
 function pageKey(p: number) {
-  return String(p + 1).padStart(3, "0");
+  return String(p).padStart(3, "0");
 }
 
 function bandsForPage(p: number): LineBand[] {
@@ -376,8 +388,8 @@ export default function Home() {
 
     return (
       <div
-        className="relative w-full aspect-568/750 select-none overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]"
-        style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+        className="relative w-full select-none overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]"
+        style={{ aspectRatio: ACTIVE_MUSHAF.aspectRatio, WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
         onContextMenu={(e) => e.preventDefault()}
       >
         {missing ? (

@@ -1,42 +1,99 @@
 {
   "meta": {
-    "mushaf": "Standard Madani Mushaf",
-    "totalPages": 848,
-    "note": "Page numbers are internal (1-based). Add 1 to get the Mushaf page shown on the image.",
+    "totalPages": 847,
     "linesPerPage": 13,
-    "lineCoordinatesNote": "Normalized (0-1) coordinates. x = horizontal center of the text column. y = vertical center of each line. w = horizontal width of the line (highlight spans x ± w/2). Keyed by padded page number (matching the image filename, e.g. '002'); pages without their own key use 'default'. 'default' (13 lines) was measured from pages 31-34; '002' (Fatihah) and '003' (Baqarah pg 1) have 6 lines, excluding the bismillah line.",
-    "lineCoordinates": {
-      "default": [
-        { "x": 0.499, "y": 0.0947, "w": 0.845 },
-        { "x": 0.499, "y": 0.1582, "w": 0.845 },
-        { "x": 0.499, "y": 0.2285, "w": 0.845 },
-        { "x": 0.499, "y": 0.295, "w": 0.845 },
-        { "x": 0.499, "y": 0.3615, "w": 0.845 },
-        { "x": 0.499, "y": 0.4315, "w": 0.845 },
-        { "x": 0.499, "y": 0.5032, "w": 0.845 },
-        { "x": 0.499, "y": 0.5712, "w": 0.845 },
-        { "x": 0.499, "y": 0.6357, "w": 0.845 },
-        { "x": 0.499, "y": 0.704, "w": 0.845 },
-        { "x": 0.499, "y": 0.7748, "w": 0.845 },
-        { "x": 0.499, "y": 0.8437, "w": 0.845 },
-        { "x": 0.499, "y": 0.9158, "w": 0.845 }
+    "note": "Page numbers are internal (1-based). Surah Fatihah is internal page 1, shared across all mushafs.",
+    "lineCoordinatesNote": "Normalized (0-1) coordinates per mushaf. x = horizontal center of text column. y = vertical center of each line. w = line width (highlight spans x ± w/2). Keyed by internal page number, 3-digit padded (e.g. '001' for Fatihah, '002' for Baqarah pg 1). 'default' applies to all pages without a specific key. 'default' (13 lines) was measured from pages 31-34; '001' and '002' have 6 lines excluding the bismillah line."
+  },
+  "mushafs": {
+    "original": {
+      "name": "Original",
+      "dir": "/quran-pages/original",
+      "filePrefix": "P-",
+      "fileExtension": "gif",
+      "pageOffset": 1,
+      "aspectRatio": "568/750",
+      "lineHeight": 0.068,
+      "lineCoordinates": {
+        "default": [
+          { "x": 0.499, "y": 0.0947, "w": 0.845 },
+          { "x": 0.499, "y": 0.1582, "w": 0.845 },
+          { "x": 0.499, "y": 0.2285, "w": 0.845 },
+          { "x": 0.499, "y": 0.295, "w": 0.845 },
+          { "x": 0.499, "y": 0.3615, "w": 0.845 },
+          { "x": 0.499, "y": 0.4315, "w": 0.845 },
+          { "x": 0.499, "y": 0.5032, "w": 0.845 },
+          { "x": 0.499, "y": 0.5712, "w": 0.845 },
+          { "x": 0.499, "y": 0.6357, "w": 0.845 },
+          { "x": 0.499, "y": 0.704, "w": 0.845 },
+          { "x": 0.499, "y": 0.7748, "w": 0.845 },
+          { "x": 0.499, "y": 0.8437, "w": 0.845 },
+          { "x": 0.499, "y": 0.9158, "w": 0.845 }
+        ],
+        "001": [
+          { "x": 0.499, "y": 0.427, "w": 0.6 },
+          { "x": 0.499, "y": 0.488, "w": 0.6 },
+          { "x": 0.499, "y": 0.548, "w": 0.6 },
+          { "x": 0.499, "y": 0.609, "w": 0.6 },
+          { "x": 0.499, "y": 0.669, "w": 0.6 },
+          { "x": 0.499, "y": 0.731, "w": 0.6 }
+        ],
+        "002": [
+          { "x": 0.499, "y": 0.415, "w": 0.6 },
+          { "x": 0.499, "y": 0.475, "w": 0.6 },
+          { "x": 0.499, "y": 0.539, "w": 0.6 },
+          { "x": 0.499, "y": 0.600, "w": 0.6 },
+          { "x": 0.499, "y": 0.661, "w": 0.6 },
+          { "x": 0.499, "y": 0.727, "w": 0.6 }
+        ]
+      }
+    },
+    "original_tajweed": {
+      "name": "Original (Tajweed)",
+      "dir": "/quran-pages/original_tajweed",
+      "filePrefix": "page-",
+      "fileExtension": "jpg",
+      "pageOffset": 3,
+      "aspectRatio": "730/1040",
+      "lineHeight": 0.072,
+      "extraPages": [
+        { "fileNumber": 2, "label": "Tajweed Rules" }
       ],
-      "002": [
-        { "x": 0.499, "y": 0.427, "w": 0.6 },
-        { "x": 0.499, "y": 0.488, "w": 0.6 },
-        { "x": 0.499, "y": 0.548, "w": 0.6 },
-        { "x": 0.499, "y": 0.609, "w": 0.6 },
-        { "x": 0.499, "y": 0.669, "w": 0.6 },
-        { "x": 0.499, "y": 0.731, "w": 0.6 }
-      ],
-      "003": [
-        { "x": 0.499, "y": 0.415, "w": 0.6 },
-        { "x": 0.499, "y": 0.475, "w": 0.6 },
-        { "x": 0.499, "y": 0.539, "w": 0.6 },
-        { "x": 0.499, "y": 0.600, "w": 0.6 },
-        { "x": 0.499, "y": 0.661, "w": 0.6 },
-        { "x": 0.499, "y": 0.727, "w": 0.6 }
-      ]
+      "lineCoordinates": {
+        "default": [
+          { "x": 0.499, "y": 0.070, "w": 0.9 },
+          { "x": 0.499, "y": 0.145, "w": 0.9 },
+          { "x": 0.499, "y": 0.215, "w": 0.9 },
+          { "x": 0.499, "y": 0.290, "w": 0.9 },
+          { "x": 0.499, "y": 0.361, "w": 0.9 },
+          { "x": 0.499, "y": 0.435, "w": 0.9 },
+          { "x": 0.499, "y": 0.505, "w": 0.9 },
+          { "x": 0.499, "y": 0.578, "w": 0.9 },
+          { "x": 0.499, "y": 0.650, "w": 0.9 },
+          { "x": 0.499, "y": 0.725, "w": 0.9 },
+          { "x": 0.499, "y": 0.797, "w": 0.9 },
+          { "x": 0.499, "y": 0.870, "w": 0.9 },
+          { "x": 0.499, "y": 0.941, "w": 0.9 }
+        ],
+        "001": [
+          { "x": 0.499, "y": 0.435, "w": 0.75 },
+          { "x": 0.499, "y": 0.505, "w": 0.75 },
+          { "x": 0.499, "y": 0.578, "w": 0.75 },
+          { "x": 0.499, "y": 0.650, "w": 0.75 },
+          { "x": 0.499, "y": 0.725, "w": 0.75 },
+          { "x": 0.499, "y": 0.797, "w": 0.75 },
+          { "x": 0.499, "y": 0.870, "w": 0.75 }
+        ],
+        "002": [
+          { "x": 0.499, "y": 0.435, "w": 0.75 },
+          { "x": 0.499, "y": 0.505, "w": 0.75 },
+          { "x": 0.499, "y": 0.578, "w": 0.75 },
+          { "x": 0.499, "y": 0.650, "w": 0.75 },
+          { "x": 0.499, "y": 0.725, "w": 0.75 },
+          { "x": 0.499, "y": 0.797, "w": 0.75 },
+          { "x": 0.499, "y": 0.870, "w": 0.75 }
+        ]
+      }
     }
   },
   "surahs": [
