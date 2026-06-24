@@ -75,5 +75,10 @@
     "imageUnavailable": "पृष्ठ {page} की छवि अनुपलब्ध है",
     "langName": "हिन्दी",
     "tajweedRulesAlt": "तजवीद नियम"
+  },
+  "voice": {
+    "listening": "सुन रहा हूँ…",
+    "noMatch": "समझ नहीं आया",
+    "notSupported": "आवाज़ उपलब्ध नहीं"
   }
 }

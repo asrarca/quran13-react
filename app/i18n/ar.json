@@ -75,5 +75,10 @@
     "imageUnavailable": "صورة الصفحة {page} غير متوفرة",
     "langName": "العربية",
     "tajweedRulesAlt": "أحكام التجويد"
+  },
+  "voice": {
+    "listening": "جارٍ الاستماع…",
+    "noMatch": "لم أفهم",
+    "notSupported": "الصوت غير متاح"
   }
 }

@@ -75,5 +75,10 @@
     "imageUnavailable": "Page {page} image is unavailable",
     "langName": "English",
     "tajweedRulesAlt": "Tajweed Rules"
+  },
+  "voice": {
+    "listening": "Listening…",
+    "noMatch": "Not understood",
+    "notSupported": "Voice not available"
   }
 }

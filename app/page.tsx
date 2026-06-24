@@ -11,6 +11,7 @@ import {
   Delete,
   Hash,
   Layers,
+  Mic,
   Moon,
   Settings,
   Sun,
@@ -91,6 +92,57 @@ function pageKey(p: number) {
   return String(p).padStart(3, "0");
 }
 
+function parseVoiceCommand(
+  transcripts: string[],
+  lang: Lang,
+  surahs: Surah[],
+  juz: Juz[]
+): number | null {
+  const surahKw = t(lang, 'nav.surah').toLowerCase();
+  const juzKw = t(lang, 'nav.juz').toLowerCase();
+  const pageKw = t(lang, 'nav.page').toLowerCase();
+  const surahPrefixes = [...new Set([surahKw, 'surah', 'sura'])];
+  const juzPrefixes = [...new Set([juzKw, 'juz'])];
+  const pagePrefixes = [...new Set([pageKw, 'page'])];
+
+  for (const transcript of transcripts) {
+    const raw = transcript.trim().toLowerCase();
+
+    for (const pfx of surahPrefixes) {
+      if (raw === pfx || raw.startsWith(pfx + ' ')) {
+        const rest = raw.slice(pfx.length).trim();
+        if (!rest) continue;
+        const n = parseInt(rest, 10);
+        if (!isNaN(n) && n >= 1 && n <= surahs.length) return surahs[n - 1].page;
+        const byName = surahs.find(s => s.name.toLowerCase().includes(rest));
+        if (byName) return byName.page;
+        const byArabic = surahs.find(s => s.arabic.includes(transcript.trim().slice(pfx.length).trim()));
+        if (byArabic) return byArabic.page;
+      }
+    }
+
+    for (const pfx of juzPrefixes) {
+      if (raw === pfx || raw.startsWith(pfx + ' ')) {
+        const rest = raw.slice(pfx.length).trim();
+        const n = parseInt(rest, 10);
+        if (!isNaN(n) && n >= 1 && n <= 30) {
+          const entry = juz.find(j => j.num === n && !j.isNisf);
+          if (entry) return entry.page;
+        }
+      }
+    }
+
+    for (const pfx of pagePrefixes) {
+      if (raw === pfx || raw.startsWith(pfx + ' ')) {
+        const rest = raw.slice(pfx.length).trim();
+        const n = parseInt(rest, 10);
+        if (!isNaN(n)) return clampPage(n);
+      }
+    }
+  }
+  return null;
+}
+
 // Map a normalized vertical position (0 = top, 1 = bottom of the page) to a line
 // index, or -1 if it falls outside the text lines (e.g. the surah header or margins).
 function lineAtFraction(frac: number, bands: LineBand[]) {
@@ -133,6 +185,7 @@ export default function Home() {
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
   // Record<internalPage, Record<lineIndex, rakatNumber (1-20)>>
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
+  const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'error' | 'nomatch'>('idle');
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
 
@@ -151,6 +204,8 @@ export default function Home() {
   const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
   const suppressClick = useRef(false);
   const sheetDragY = useRef<number | null>(null);
+  const navPressTimer = useRef<number | null>(null);
+  const suppressNavClick = useRef(false);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -291,11 +346,58 @@ export default function Home() {
     localStorage.setItem("quran13-lang", lang);
   }, [lang, mounted]);
 
+  useEffect(() => {
+    if (voiceState !== 'error' && voiceState !== 'nomatch') return;
+    const timer = window.setTimeout(() => setVoiceState('idle'), 2000);
+    return () => window.clearTimeout(timer);
+  }, [voiceState]);
+
   const goToPage = useCallback((targetPage: number) => {
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
   }, []);
+
+  const startVoiceCommand = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      setVoiceState('error');
+      return;
+    }
+    navigator.vibrate?.(15);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rec: any = new SpeechRecognitionAPI();
+    rec.lang = langDateLocale[lang];
+    rec.interimResults = false;
+    rec.maxAlternatives = 3;
+    setVoiceState('listening');
+    rec.onresult = (e: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      const transcripts: string[] = Array.from(e.results[0]).map((r: any) => r.transcript); // eslint-disable-line @typescript-eslint/no-explicit-any
+      const matched = parseVoiceCommand(transcripts, lang, surahs, juz);
+      if (matched !== null) { goToPage(matched); setVoiceState('idle'); }
+      else setVoiceState('nomatch');
+    };
+    rec.onerror = () => setVoiceState('error');
+    rec.onend = () => setVoiceState((prev) => prev === 'listening' ? 'idle' : prev);
+    rec.start();
+  }, [lang, goToPage, surahs, juz]);
+
+  const cancelNavPress = useCallback(() => {
+    if (navPressTimer.current !== null) {
+      window.clearTimeout(navPressTimer.current);
+      navPressTimer.current = null;
+    }
+  }, []);
+
+  const handleNavPointerDown = useCallback(() => {
+    if (navPressTimer.current !== null) window.clearTimeout(navPressTimer.current);
+    navPressTimer.current = window.setTimeout(() => {
+      navPressTimer.current = null;
+      suppressNavClick.current = true;
+      startVoiceCommand();
+    }, LONG_PRESS_MS);
+  }, [startVoiceCommand]);
 
   const setRakatMarker = useCallback((targetPage: number, line: number, rakat: number | null) => {
     setRakatMarkers((prev) => {
@@ -625,7 +727,11 @@ export default function Home() {
         <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
           <button
             type="button"
-            onClick={() => setActiveSheet("surah")}
+            onClick={() => { if (suppressNavClick.current) { suppressNavClick.current = false; return; } setActiveSheet("surah"); }}
+            onPointerDown={handleNavPointerDown}
+            onPointerUp={cancelNavPress}
+            onPointerLeave={cancelNavPress}
+            onPointerCancel={cancelNavPress}
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <BookOpen className="size-5.5" />
@@ -633,7 +739,11 @@ export default function Home() {
           </button>
           <button
             type="button"
-            onClick={() => setActiveSheet("juz")}
+            onClick={() => { if (suppressNavClick.current) { suppressNavClick.current = false; return; } setActiveSheet("juz"); }}
+            onPointerDown={handleNavPointerDown}
+            onPointerUp={cancelNavPress}
+            onPointerLeave={cancelNavPress}
+            onPointerCancel={cancelNavPress}
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Layers className="size-5.5" />
@@ -641,10 +751,11 @@ export default function Home() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setPageInput("");
-              setActiveSheet("page");
-            }}
+            onClick={() => { if (suppressNavClick.current) { suppressNavClick.current = false; return; } setPageInput(""); setActiveSheet("page"); }}
+            onPointerDown={handleNavPointerDown}
+            onPointerUp={cancelNavPress}
+            onPointerLeave={cancelNavPress}
+            onPointerCancel={cancelNavPress}
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Hash className="size-5.5" />
@@ -1240,6 +1351,19 @@ export default function Home() {
           )}
         </div>
       )}
+      {voiceState !== 'idle' && (
+        <div className="fixed top-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2.5 rounded-full bg-(--bg) px-4 py-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
+          {voiceState === 'listening' && <Mic className="size-4 animate-pulse text-(--fg)" />}
+          <span className="whitespace-nowrap text-sm font-medium text-(--fg)">
+            {voiceState === 'listening'
+              ? t(lang, 'voice.listening')
+              : voiceState === 'nomatch'
+                ? t(lang, 'voice.noMatch')
+                : t(lang, 'voice.notSupported')}
+          </span>
+        </div>
+      )}
+
       {showTajweedRules && (
         <div
           className="fixed inset-0 z-200 flex items-center justify-center bg-black/80"

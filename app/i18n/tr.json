@@ -75,5 +75,10 @@
     "imageUnavailable": "{page}. sayfa görseli mevcut değil",
     "langName": "Türkçe",
     "tajweedRulesAlt": "Tecvid Kuralları"
+  },
+  "voice": {
+    "listening": "Dinleniyor…",
+    "noMatch": "Anlaşılamadı",
+    "notSupported": "Ses kullanılamıyor"
   }
 }

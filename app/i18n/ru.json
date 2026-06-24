@@ -75,5 +75,10 @@
     "imageUnavailable": "Изображение страницы {page} недоступно",
     "langName": "Русский",
     "tajweedRulesAlt": "Правила таджвида"
+  },
+  "voice": {
+    "listening": "Слушаю…",
+    "noMatch": "Не понял",
+    "notSupported": "Голос недоступен"
   }
 }

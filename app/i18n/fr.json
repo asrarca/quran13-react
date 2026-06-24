@@ -75,5 +75,10 @@
     "imageUnavailable": "Image de la page {page} indisponible",
     "langName": "Français",
     "tajweedRulesAlt": "Règles du Tajweed"
+  },
+  "voice": {
+    "listening": "À l'écoute…",
+    "noMatch": "Non compris",
+    "notSupported": "Voix non disponible"
   }
 }
