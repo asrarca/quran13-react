@@ -6,11 +6,13 @@ import {
   Ban,
   BookOpen,
   Bookmark,
+  ChevronLeft,
+  ChevronRight,
   Delete,
   Hash,
-  Info,
   Layers,
   Moon,
+  Settings,
   Sun,
   SunMoon,
   X,
@@ -24,7 +26,7 @@ import quranData from "@/data/quran-data.json";
 import { Button } from "@/components/ui/button";
 
 type Theme = "light" | "dark" | "dark-invert";
-type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "about";
+type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "settings";
 
 type Surah = {
   num: number;
@@ -58,25 +60,14 @@ function toArabicNumber(value: number) {
 
 type MushafKey = keyof typeof quranData.mushafs;
 
-const ACTIVE_MUSHAF_KEY: MushafKey = "original_tajweed";
-const ACTIVE_MUSHAF = quranData.mushafs[ACTIVE_MUSHAF_KEY];
-
-function imagePath(page: number) {
-  const { dir, filePrefix, fileExtension, pageOffset } = ACTIVE_MUSHAF;
+function imagePath(page: number, mushaf: { dir: string; filePrefix: string; fileExtension: string; pageOffset: number }) {
+  const { dir, filePrefix, fileExtension, pageOffset } = mushaf;
   return `${dir}/${filePrefix}${String(page + pageOffset).padStart(3, "0")}.${fileExtension}`;
 }
 
 type LineCoord = { x: number; y: number; w: number };
-// left/right are the normalized horizontal edges of the highlight (x ± w/2).
 type LineBand = { top: number; bottom: number; left: number; right: number };
 
-// Per-page line coordinates, keyed by the internal page number (1-based, 3-digit
-// padded, e.g. "001" for Fatihah). Pages without their own key use "default".
-const LINE_COORDS_MAP = ACTIVE_MUSHAF.lineCoordinates as Record<string, LineCoord[]>;
-
-// Vertical band [top, bottom] and horizontal extent [left, right] (normalized
-// 0-1) for each line. When lineHeight is provided it is used as a fixed band
-// height centered on y; otherwise boundaries sit midway between adjacent centers.
 function computeBands(coords: LineCoord[], lineHeight?: number): LineBand[] {
   return coords.map((coord, i, arr) => {
     let top: number, bottom: number;
@@ -93,16 +84,8 @@ function computeBands(coords: LineCoord[], lineHeight?: number): LineBand[] {
   });
 }
 
-const LINE_BANDS_MAP: Record<string, LineBand[]> = Object.fromEntries(
-  Object.entries(LINE_COORDS_MAP).map(([key, coords]) => [key, computeBands(coords, ACTIVE_MUSHAF.lineHeight)])
-);
-
 function pageKey(p: number) {
   return String(p).padStart(3, "0");
-}
-
-function bandsForPage(p: number): LineBand[] {
-  return LINE_BANDS_MAP[pageKey(p)] ?? LINE_BANDS_MAP.default;
 }
 
 // Map a normalized vertical position (0 = top, 1 = bottom of the page) to a line
@@ -132,6 +115,8 @@ export default function Home() {
   const [page, setPage] = useState(DEFAULT_START_PAGE);
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
+  const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
+  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | null>(null);
   // Record<internalPage, ISO date string>
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
@@ -142,6 +127,19 @@ export default function Home() {
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
   // Record<internalPage, Record<lineIndex, rakatNumber (1-20)>>
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
+
+  const activeMushaf = quranData.mushafs[activeMushafKey];
+
+  const lineBandsMap = useMemo<Record<string, LineBand[]>>(() => {
+    const coordsMap = activeMushaf.lineCoordinates as Record<string, LineCoord[]>;
+    return Object.fromEntries(
+      Object.entries(coordsMap).map(([key, coords]) => [key, computeBands(coords, activeMushaf.lineHeight)])
+    );
+  }, [activeMushafKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function bandsForPage(p: number): LineBand[] {
+    return lineBandsMap[pageKey(p)] ?? lineBandsMap.default;
+  }
 
   const pressTimer = useRef<number | null>(null);
   const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
@@ -235,6 +233,11 @@ export default function Home() {
         setRakatMarkers({});
       }
     }
+
+    const storedMushaf = localStorage.getItem("quran13-mushaf");
+    if (storedMushaf && storedMushaf in quranData.mushafs) {
+      setActiveMushafKey(storedMushaf as MushafKey);
+    }
   }, []);
 
   useEffect(() => {
@@ -262,6 +265,11 @@ export default function Home() {
     if (!mounted) return;
     localStorage.setItem("quran13-rakat", JSON.stringify(rakatMarkers));
   }, [rakatMarkers, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("quran13-mushaf", activeMushafKey);
+  }, [activeMushafKey, mounted]);
 
   const goToPage = useCallback((targetPage: number) => {
     setPage(clampPage(targetPage));
@@ -320,7 +328,7 @@ export default function Home() {
         setHighlightPicker({ page: info.page, line: info.line });
       }, LONG_PRESS_MS);
     },
-    [activeSheet]
+    [activeSheet, lineBandsMap] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const handlePressMove = useCallback(
@@ -389,7 +397,7 @@ export default function Home() {
     return (
       <div
         className="relative w-full select-none overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]"
-        style={{ aspectRatio: ACTIVE_MUSHAF.aspectRatio, WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+        style={{ aspectRatio: activeMushaf.aspectRatio, WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
         onContextMenu={(e) => e.preventDefault()}
       >
         {missing ? (
@@ -399,7 +407,7 @@ export default function Home() {
         ) : (
           <>
             <Image
-              src={imagePath(candidate)}
+              src={imagePath(candidate, activeMushaf)}
               alt={`Quran page ${candidate}`}
               fill
               className="object-cover object-top"
@@ -605,11 +613,11 @@ export default function Home() {
           </button>
           <button
             type="button"
-            onClick={() => setActiveSheet("about")}
+            onClick={() => { setSettingsSubView(null); setActiveSheet("settings"); }}
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
-            <Info className="size-5.5" />
-            <span className="text-[11px] font-medium">About</span>
+            <Settings className="size-5.5" />
+            <span className="text-[11px] font-medium">Settings</span>
           </button>
         </nav>
       </div>
@@ -870,30 +878,72 @@ export default function Home() {
             </div>
           )}
 
-          {activeSheet === "about" && (
-            <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 flex w-75 -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-3xl bg-(--bg) px-6 pb-6 pt-7 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
-              <div className="flex size-15.5 items-center justify-center rounded-2xl bg-(--fg) text-(--bg)">
-                <BookOpen className="size-8" />
+          {activeSheet === "settings" && (
+            <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
+              <div className="mx-auto mt-2 h-1.25 w-9.5 shrink-0 rounded-full bg-border" />
+              <div className="flex-1 overflow-hidden">
+                <div
+                  className="flex h-full transition-transform duration-300 ease-in-out"
+                  style={{ width: "200%", transform: settingsSubView ? "translateX(-50%)" : "translateX(0)" }}
+                >
+                  {/* Main settings panel */}
+                  <div className="flex h-full w-1/2 flex-col">
+                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">Settings</span>
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                        onClick={() => setSettingsSubView("mushaf")}
+                      >
+                        <span className="text-base text-(--fg)">Mushaf Style</span>
+                        <div className="flex items-center gap-1.5 text-(--fg2)">
+                          <span className="text-sm">{activeMushaf.name}</span>
+                          <ChevronRight className="size-4" />
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  {/* Mushaf picker panel */}
+                  <div className="flex h-full w-1/2 flex-col">
+                    <div className="flex items-center gap-2 border-b border-border px-5 pb-3 pt-2">
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                        <ChevronLeft className="size-4" />
+                      </Button>
+                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">Mushaf Style</span>
+                    </div>
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                      {(Object.keys(quranData.mushafs) as MushafKey[]).map((key) => {
+                        const mushaf = quranData.mushafs[key];
+                        const selected = activeMushafKey === key;
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                            onClick={() => {
+                              setActiveMushafKey(key);
+                              setMissingImages({});
+                              setSettingsSubView(null);
+                            }}
+                          >
+                            <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
+                              {selected && <div className="size-2 rounded-full bg-(--bg)" />}
+                            </div>
+                            <span className={`text-base ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>
+                              {mushaf.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="mt-3 text-xl font-semibold">Quran13</div>
-              <div className="mt-1 text-[13px] text-(--fg2)">Quran Reader · v2.0</div>
-              <div className="my-4 h-px w-full bg-border" />
-              <p className="m-0 text-center text-[13px] leading-[1.65] text-(--fg2)">
-                13-line Mushaf reader.
-                <br />
-                Swipe to turn pages and use Surah, Juz, or Page to jump.
-                <br />
-                Tap anywhere on the page to show/hide navigation.
-                <br />
-                Developed by Asrar Abbasi.
-              </p>
-              <button
-                type="button"
-                onClick={() => setActiveSheet(null)}
-                className="mt-5 h-11 w-full rounded-xl bg-(--fg) text-[15px] font-semibold text-(--bg)"
-              >
-                Done
-              </button>
             </div>
           )}
         </div>

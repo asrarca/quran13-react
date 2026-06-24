@@ -7,7 +7,7 @@
   },
   "mushafs": {
     "original": {
-      "name": "Original",
+      "name": "Original (Monochrome)",
       "dir": "/quran-pages/original",
       "filePrefix": "P-",
       "fileExtension": "gif",
@@ -49,7 +49,7 @@
       }
     },
     "original_tajweed": {
-      "name": "Original (Tajweed)",
+      "name": "Original (Color Coded Tajweed)",
       "dir": "/quran-pages/original_tajweed",
       "filePrefix": "page-",
       "fileExtension": "jpg",
