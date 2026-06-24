@@ -821,7 +821,7 @@ export default function Home() {
                       onClick={() => goToPage(item.page)}
                       className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
                     >
-                      <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{item.name}</span>
+                      <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{t(lang, 'nav.juz')} {item.num}</span>
                       <span className="text-xs text-(--fg3)">p.{item.page + 1}</span>
                       <span className="font-amiri font-bold text-[22px]" dir="rtl">{item.arabicStart}</span>
                     </button>
