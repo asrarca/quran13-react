@@ -2,56 +2,33 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import {
-  Ban,
-  BookOpen,
-  Bookmark,
-  ChevronLeft,
-  ChevronRight,
-  Delete,
-  Hash,
-  Layers,
-  Moon,
-  Settings,
-  Sun,
-  SunMoon,
-  X,
-} from "lucide-react";
-
+import { Bookmark, BookOpen, Hash, Layers, Moon, Settings, Sun, SunMoon, X } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
 import quranData from "@/data/quran-data.json";
-import { Button } from "@/components/ui/button";
-import { t, type Lang, langDateLocale, SUPPORTED_LANGS } from "./i18n";
-
-type Theme = "light" | "dark" | "dark-invert";
-type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "settings";
-
-type Surah = {
-  num: number;
-  name: string;
-  arabic: string;
-  page: number;
-  ayah: number;
-};
-
-type Juz = {
-  num: number;
-  name: string;
-  arabicStart: string;
-  page: number;
-  isNisf?: boolean;
-  sections?: Juz[];
-};
-
-const APP_VERSION = "2.0.2";
-
-const FIRST_PAGE = 1;
-const TOTAL_PAGES = Number(process.env.NEXT_PUBLIC_TOTAL_PAGES ?? 847);
-const LAST_PAGE = FIRST_PAGE + TOTAL_PAGES - 1;
-const DEFAULT_START_PAGE = 1;
+import { Button } from "@/app/components/ui/button";
+import { t, type Lang, SUPPORTED_LANGS } from "./i18n";
+import { APP_VERSION, DEFAULT_START_PAGE, FIRST_PAGE, LAST_PAGE } from "./constants";
+import {
+  type ActiveSheet,
+  type DragHandlers,
+  type HighlightColorKey,
+  type Juz,
+  type LineBand,
+  type LineCoord,
+  type MushafKey,
+  type Surah,
+  type Theme,
+} from "./types";
+import { PageCard } from "./components/PageCard";
+import { HighlightPicker } from "./components/HighlightPicker";
+import { SurahSheet } from "./components/SurahSheet";
+import { JuzSheet } from "./components/JuzSheet";
+import { PageSheet } from "./components/PageSheet";
+import { BookmarksSheet } from "./components/BookmarksSheet";
+import { SettingsSheet } from "./components/SettingsSheet";
 
 function clampPage(value: number) {
   return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, value));
@@ -60,16 +37,6 @@ function clampPage(value: number) {
 function toArabicNumber(value: number) {
   return String(value).replace(/[0-9]/g, (digit) => "٠١٢٣٤٥٦٧٨٩"[Number(digit)]);
 }
-
-type MushafKey = keyof typeof quranData.mushafs;
-
-function imagePath(page: number, mushaf: { dir: string; filePrefix: string; fileExtension: string; pageOffset: number }) {
-  const { dir, filePrefix, fileExtension, pageOffset } = mushaf;
-  return `${dir}/${filePrefix}${String(page + pageOffset).padStart(3, "0")}.${fileExtension}`;
-}
-
-type LineCoord = { x: number; y: number; w: number };
-type LineBand = { top: number; bottom: number; left: number; right: number };
 
 function computeBands(coords: LineCoord[], lineHeight?: number): LineBand[] {
   return coords.map((coord, i, arr) => {
@@ -91,8 +58,7 @@ function pageKey(p: number) {
   return String(p).padStart(3, "0");
 }
 
-// Map a normalized vertical position (0 = top, 1 = bottom of the page) to a line
-// index, or -1 if it falls outside the text lines (e.g. the surah header or margins).
+// Map a normalized vertical position to a line index, or -1 if outside text lines.
 function lineAtFraction(frac: number, bands: LineBand[]) {
   if (frac < bands[0].top || frac >= bands[bands.length - 1].bottom) return -1;
   for (let i = 0; i < bands.length; i++) {
@@ -104,14 +70,6 @@ function lineAtFraction(frac: number, bands: LineBand[]) {
 const LONG_PRESS_MS = 600;
 const LONG_PRESS_MOVE_TOLERANCE = 10;
 
-const HIGHLIGHT_COLORS = [
-  { key: "yellow", hex: "#ffe600" },
-  { key: "green",  hex: "#4ade60" },
-  { key: "red",    hex: "#f82020" },
-  { key: "blue",   hex: "#60a5fa" },
-] as const;
-type HighlightColorKey = typeof HIGHLIGHT_COLORS[number]["key"];
-
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
@@ -122,16 +80,13 @@ export default function Home() {
   const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | "language" | "install" | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
-  const [lang, setLang] = useState<Lang>('en');
-  // Record<internalPage, ISO date string>
+  const [lang, setLang] = useState<Lang>("en");
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
   const [navVisible, setNavVisible] = useState(true);
   const [showSections, setShowSections] = useState(false);
-  // Record<internalPage, Record<lineIndex, colorKey>>
   const [highlights, setHighlights] = useState<Record<number, Record<number, HighlightColorKey>>>({});
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
-  // Record<internalPage, Record<lineIndex, rakatNumber (1-20)>>
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
@@ -201,7 +156,6 @@ export default function Home() {
       try {
         const parsed = JSON.parse(rawBookmarks);
         if (Array.isArray(parsed)) {
-          // Migrate from old Set<number> format — assign today's date
           const migrated: Record<number, string> = {};
           for (const p of parsed as number[]) migrated[p] = new Date().toISOString();
           setBookmarks(migrated);
@@ -217,7 +171,6 @@ export default function Home() {
     if (rawHighlights) {
       try {
         const parsed = JSON.parse(rawHighlights);
-        // Migrate old format Record<page, number[]> → Record<page, Record<line, color>>
         const migrated: Record<number, Record<number, HighlightColorKey>> = {};
         for (const [p, val] of Object.entries(parsed)) {
           if (Array.isArray(val)) {
@@ -234,11 +187,7 @@ export default function Home() {
 
     const rawRakat = localStorage.getItem("quran13-rakat");
     if (rawRakat) {
-      try {
-        setRakatMarkers(JSON.parse(rawRakat));
-      } catch {
-        setRakatMarkers({});
-      }
+      try { setRakatMarkers(JSON.parse(rawRakat)); } catch { setRakatMarkers({}); }
     }
 
     const storedMushaf = localStorage.getItem("quran13-mushaf");
@@ -247,10 +196,10 @@ export default function Home() {
     }
 
     const storedLang = localStorage.getItem("quran13-lang");
-    if (storedLang && SUPPORTED_LANGS.some(l => l.code === storedLang)) setLang(storedLang as Lang);
+    if (storedLang && SUPPORTED_LANGS.some((l) => l.code === storedLang)) setLang(storedLang as Lang);
 
     setIsStandalone(
-      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true
     );
   }, []);
@@ -351,7 +300,7 @@ export default function Home() {
       const rect = event.currentTarget.getBoundingClientRect();
       const frac = (event.clientY - rect.top) / rect.height;
       const line = lineAtFraction(frac, bandsForPage(candidate));
-      if (line < 0) return; // pressed outside the text lines (header/margins) — ignore
+      if (line < 0) return;
       pressInfo.current = { page: candidate, line, x: event.clientX, y: event.clientY };
       if (pressTimer.current !== null) window.clearTimeout(pressTimer.current);
       pressTimer.current = window.setTimeout(() => {
@@ -400,106 +349,30 @@ export default function Home() {
   const pageDisplay = pageInput === "" ? "—" : pageInput;
   const isBookmarked = page in bookmarks;
 
-  const getSurahForPage = (p: number) => {
-    let result = surahs[0];
-    for (const surah of surahs) {
-      if (surah.page <= p) result = surah;
-      else break;
-    }
-    return result;
-  };
-
   const sortedBookmarks = Object.entries(bookmarks)
     .map(([p, date]) => ({ page: Number(p), date }))
     .sort((a, b) => b.date.localeCompare(a.date));
 
-  const formatBookmarkDate = (iso: string) => {
-    if (!iso) return "";
-    const d = new Date(iso);
-    return d.toLocaleDateString(langDateLocale[lang], { month: "short", day: "numeric", year: "numeric" });
-  };
-
   const canRenderPage = (candidate: number) => candidate >= FIRST_PAGE && candidate <= LAST_PAGE;
 
-  const renderPageCard = (candidate: number) => {
-    if (!canRenderPage(candidate)) return null;
-    const missing = missingImages[candidate];
-    const bands = bandsForPage(candidate);
-    const pageHighlights = Object.entries(highlights[candidate] ?? {})
-      .map(([lineStr, color]) => ({ line: Number(lineStr), color }))
-      .filter(({ line }) => bands[line]);
+  const dragHandlers: DragHandlers = {
+    onPointerDown: handleSheetDragDown,
+    onPointerMove: handleSheetDragMove,
+    onPointerUp: handleSheetDragEnd,
+    onPointerCancel: handleSheetDragEnd,
+  };
 
-    return (
-      <div
-        className="relative w-full select-none overflow-hidden border border-border bg-(--paper) shadow-[0_6px_30px_rgba(0,0,0,0.14),0_0_0_1px_var(--border)]"
-        style={{ aspectRatio: activeMushaf.aspectRatio, WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
-        onContextMenu={(e) => e.preventDefault()}
-      >
-        {missing ? (
-          <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-(--fg2)">
-            {t(lang, 'misc.imageUnavailable', { page: candidate })}
-          </div>
-        ) : (
-          <>
-            <Image
-              src={imagePath(candidate, activeMushaf)}
-              alt={`Quran page ${candidate}`}
-              fill
-              className="object-cover object-top"
-              style={theme === "dark-invert" ? { filter: "invert(1)" } : undefined}
-              draggable={false}
-              priority
-              onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
-            />
-            {/* Long-press a line to toggle a yellow highlight on it. */}
-            <div
-              className="absolute inset-0"
-              style={{ touchAction: "pan-y", WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
-              onContextMenu={(e) => e.preventDefault()}
-              onPointerDown={(e) => handlePressStart(e, candidate)}
-              onPointerMove={handlePressMove}
-              onPointerUp={cancelPress}
-              onPointerCancel={cancelPress}
-              onPointerLeave={cancelPress}
-            >
-              {pageHighlights.map(({ line, color }) => (
-                <div
-                  key={line}
-                  className="pointer-events-none absolute opacity-35 mix-blend-multiply"
-                  style={{
-                    backgroundColor: HIGHLIGHT_COLORS.find((c) => c.key === color)?.hex ?? "#ffe600",
-                    top: `${bands[line].top * 100}%`,
-                    height: `${(bands[line].bottom - bands[line].top) * 100}%`,
-                    left: `${bands[line].left * 100}%`,
-                    width: `${(bands[line].right - bands[line].left) * 100}%`,
-                  }}
-                />
-              ))}
-              {Object.entries(rakatMarkers[candidate] ?? {}).map(([lineStr, rakat]) => {
-                const line = Number(lineStr);
-                const band = bands[line];
-                if (!band) return null;
-                const midY = (band.top + band.bottom) / 2;
-                return (
-                  <div
-                    key={`rakat-${line}`}
-                    className="pointer-events-none absolute flex aspect-square w-[6%] items-center justify-center rounded-full bg-gray-500 font-bold text-white"
-                    style={{
-                      top: `${midY * 100}%`,
-                      [(candidate + 1) % 2 === 0 ? "left" : "right"]: "1%",
-                      transform: "translateY(-50%)",
-                      fontSize: "3vw",
-                    }}
-                  >
-                    {rakat}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
-    );
+  const pageCardProps = {
+    activeMushaf,
+    theme,
+    highlights,
+    rakatMarkers,
+    missingImages,
+    lang,
+    onPressStart: handlePressStart,
+    onPressMove: handlePressMove,
+    onPressEnd: cancelPress,
+    onMissingImage: (p: number) => setMissingImages((prev) => ({ ...prev, [p]: true })),
   };
 
   if (!mounted) {
@@ -509,51 +382,48 @@ export default function Home() {
   return (
     <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
       <header className="relative flex items-center justify-between gap-3 px-4 pb-3 pt-1">
-          <div className="min-w-0">
-            <div className="truncate text-[15px] font-semibold">{t(lang, 'header.surahPrefix')} {surahsOnPage.map(s => s.name).join(", ")}</div>
-            <div className="mt-px text-xs text-(--fg2)">
-              {t(lang, 'header.juzPage', { juz: Math.floor(currentJuz.num), page: page + 1 })}
-              <span className="ml-1.5 opacity-70">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
-            </div>
+        <div className="min-w-0">
+          <div className="truncate text-[15px] font-semibold">{t(lang, "header.surahPrefix")} {surahsOnPage.map((s) => s.name).join(", ")}</div>
+          <div className="mt-px text-xs text-(--fg2)">
+            {t(lang, "header.juzPage", { juz: Math.floor(currentJuz.num), page: page + 1 })}
+            <span className="ml-1.5 opacity-70">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
-              onClick={toggleBookmark}
-              aria-label="Toggle bookmark"
-            >
-              <Bookmark
-                className="size-4.5"
-                fill={isBookmarked ? "currentColor" : "none"}
-              />
-            </Button>
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
-              onClick={() => setTheme((prev) => prev === "light" ? "dark" : prev === "dark" ? "dark-invert" : "light")}
-              aria-label="Toggle theme"
-            >
-              {theme === "light" ? <Sun className="size-4.5" /> : theme === "dark" ? <SunMoon className="size-4.5" /> : <Moon className="size-4.5" />}
-            </Button>
-          </div>
-          <div className="absolute inset-x-0 bottom-0 h-[2px] bg-black/[0.07] dark:bg-white/[0.07]">
-            <div
-              className="h-full bg-gray-500"
-              style={{ width: `${((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE)) * 100}%` }}
-            />
-          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
+            onClick={toggleBookmark}
+            aria-label="Toggle bookmark"
+          >
+            <Bookmark className="size-4.5" fill={isBookmarked ? "currentColor" : "none"} />
+          </Button>
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
+            onClick={() => setTheme((prev) => prev === "light" ? "dark" : prev === "dark" ? "dark-invert" : "light")}
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <Sun className="size-4.5" /> : theme === "dark" ? <SunMoon className="size-4.5" /> : <Moon className="size-4.5" />}
+          </Button>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-0.5 bg-black/[0.07] dark:bg-white/[0.07]">
+          <div
+            className="h-full bg-gray-500"
+            style={{ width: `${((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE)) * 100}%` }}
+          />
+        </div>
       </header>
 
       <section
         className="relative min-h-0 flex-1 overflow-hidden bg-(--bg) landscape:flex-none landscape:h-[132vw]"
         onClick={() => {
           if (suppressClick.current) { suppressClick.current = false; return; }
-          if (!activeSheet) setNavVisible(v => !v);
+          if (!activeSheet) setNavVisible((v) => !v);
         }}
       >
         <div className="absolute inset-0">
@@ -571,7 +441,6 @@ export default function Home() {
             onSlideChangeTransitionEnd={(swiper) => {
               const idx = swiper.activeIndex;
               if (idx === 2) return;
-              // RTL: swipe right → idx 3 (next page); swipe left → idx 1 (prev page)
               const delta = idx < 2 ? -1 : 1;
               flushSync(() => setPage((prev) => clampPage(prev + delta)));
               swiper.slideTo(2, 0, false);
@@ -584,31 +453,31 @@ export default function Home() {
             {/* RTL: index 0 = page − 2 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {renderPageCard(page - 2)}
+                {canRenderPage(page - 2) && <PageCard {...pageCardProps} candidate={page - 2} bands={bandsForPage(page - 2)} />}
               </div>
             </SwiperSlide>
             {/* index 1 = page − 1 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {renderPageCard(page - 1)}
+                {canRenderPage(page - 1) && <PageCard {...pageCardProps} candidate={page - 1} bands={bandsForPage(page - 1)} />}
               </div>
             </SwiperSlide>
             {/* index 2 = current page */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {renderPageCard(page)}
+                {canRenderPage(page) && <PageCard {...pageCardProps} candidate={page} bands={bandsForPage(page)} />}
               </div>
             </SwiperSlide>
             {/* index 3 = page + 1 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {renderPageCard(page + 1)}
+                {canRenderPage(page + 1) && <PageCard {...pageCardProps} candidate={page + 1} bands={bandsForPage(page + 1)} />}
               </div>
             </SwiperSlide>
             {/* index 4 = page + 2 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {renderPageCard(page + 2)}
+                {canRenderPage(page + 2) && <PageCard {...pageCardProps} candidate={page + 2} bands={bandsForPage(page + 2)} />}
               </div>
             </SwiperSlide>
           </Swiper>
@@ -623,40 +492,25 @@ export default function Home() {
 
       <div className={`fixed inset-x-0 bottom-0 z-30 transition-opacity duration-300 ${navVisible ? "opacity-99" : "opacity-0 pointer-events-none"}`}>
         <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
-          <button
-            type="button"
-            onClick={() => setActiveSheet("surah")}
-            className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
-          >
+          <button type="button" onClick={() => setActiveSheet("surah")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <BookOpen className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, 'nav.surah')}</span>
+            <span className="text-[11px] font-medium">{t(lang, "nav.surah")}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveSheet("juz")}
-            className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
-          >
+          <button type="button" onClick={() => setActiveSheet("juz")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Layers className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, 'nav.juz')}</span>
+            <span className="text-[11px] font-medium">{t(lang, "nav.juz")}</span>
           </button>
           <button
             type="button"
-            onClick={() => {
-              setPageInput("");
-              setActiveSheet("page");
-            }}
+            onClick={() => { setPageInput(""); setActiveSheet("page"); }}
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Hash className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, 'nav.page')}</span>
+            <span className="text-[11px] font-medium">{t(lang, "nav.page")}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveSheet("bookmarks")}
-            className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
-          >
+          <button type="button" onClick={() => setActiveSheet("bookmarks")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Bookmark className="size-5.5" fill={activeSheet === "bookmarks" ? "currentColor" : "none"} />
-            <span className="text-[11px] font-medium">{t(lang, 'nav.saved')}</span>
+            <span className="text-[11px] font-medium">{t(lang, "nav.saved")}</span>
           </button>
           <button
             type="button"
@@ -664,86 +518,22 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Settings className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, 'nav.settings')}</span>
+            <span className="text-[11px] font-medium">{t(lang, "nav.settings")}</span>
           </button>
         </nav>
       </div>
 
       {highlightPicker && (
-        <div className="fixed inset-0 z-50">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/20"
-            aria-label="Close"
-            onClick={() => setHighlightPicker(null)}
-          />
-          <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)] min-w-64 max-w-[calc(100vw-2rem)]">
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">{t(lang, 'highlightPicker.lineHighlight')}</span>
-            <div className="flex items-center gap-3">
-              {HIGHLIGHT_COLORS.map(({ key, hex }) => (
-                <button
-                  key={key}
-                  type="button"
-                  aria-label={key}
-                  className="size-8 rounded-full shadow-sm transition-transform active:scale-90"
-                  style={{ backgroundColor: hex }}
-                  onClick={() => {
-                    setHighlightColor(highlightPicker.page, highlightPicker.line, key);
-                    setHighlightPicker(null);
-                  }}
-                />
-              ))}
-              {highlights[highlightPicker.page]?.[highlightPicker.line] && (
-                <button
-                  type="button"
-                  aria-label="Remove highlight"
-                  className="flex size-8 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
-                  onClick={() => {
-                    setHighlightColor(highlightPicker.page, highlightPicker.line, null);
-                    setHighlightPicker(null);
-                  }}
-                >
-                  <Ban className="size-5 text-gray-500" />
-                </button>
-              )}
-            </div>
-            <div className="w-full h-px bg-border" />
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">{t(lang, 'highlightPicker.numberAnnotation')}</span>
-            <div className="grid grid-cols-7 gap-1">
-              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  aria-label={`Rakat ${n}`}
-                  className={`flex size-7 items-center justify-center rounded-full text-[12px] font-semibold transition-transform active:scale-90 ${
-                    rakatMarkers[highlightPicker.page]?.[highlightPicker.line] === n
-                      ? "bg-teal-500 text-white"
-                      : "bg-(--bg2) text-(--fg)"
-                  }`}
-                  onClick={() => {
-                    setRakatMarker(highlightPicker.page, highlightPicker.line, n);
-                    setHighlightPicker(null);
-                  }}
-                >
-                  {n}
-                </button>
-              ))}
-              {rakatMarkers[highlightPicker.page]?.[highlightPicker.line] && (
-                <button
-                  type="button"
-                  aria-label="Remove rakat marker"
-                  className="flex size-7 items-center justify-center rounded-full border-2 border-border bg-(--bg2) transition-transform active:scale-90"
-                  onClick={() => {
-                    setRakatMarker(highlightPicker.page, highlightPicker.line, null);
-                    setHighlightPicker(null);
-                  }}
-                >
-                  <Ban className="size-4 text-gray-500" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        <HighlightPicker
+          page={highlightPicker.page}
+          line={highlightPicker.line}
+          lang={lang}
+          highlights={highlights}
+          rakatMarkers={rakatMarkers}
+          onClose={() => setHighlightPicker(null)}
+          onSetHighlight={setHighlightColor}
+          onSetRakat={setRakatMarker}
+        />
       )}
 
       {activeSheet && (
@@ -754,492 +544,61 @@ export default function Home() {
             aria-label="Close overlay"
             onClick={() => setActiveSheet(null)}
           />
-
           {activeSheet === "surah" && (
-            <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div
-                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
-                style={{ touchAction: "none" }}
-                onPointerDown={handleSheetDragDown}
-                onPointerMove={handleSheetDragMove}
-                onPointerUp={handleSheetDragEnd}
-                onPointerCancel={handleSheetDragEnd}
-              >
-                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
-              </div>
-              <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'surahIndex.title')}</span>
-                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                  <X className="size-4" />
-                </Button>
-              </div>
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                {surahs.map((surah) => (
-                  <button
-                    key={surah.num}
-                    type="button"
-                    onClick={() => goToPage(surah.page)}
-                    className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
-                  >
-                    <span className="w-6 text-right text-sm tabular-nums text-(--fg3)">{surah.num}</span>
-                    <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{surah.name}</span>
-                    <span className="text-xs text-(--fg3)">p.{surah.page + 1}</span>
-                    <span className="font-amiri font-bold text-[22px]" dir="rtl">{surah.arabic}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <SurahSheet lang={lang} surahs={surahs} onClose={() => setActiveSheet(null)} onNavigate={goToPage} dragHandlers={dragHandlers} />
           )}
-
           {activeSheet === "juz" && (
-            <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div
-                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
-                style={{ touchAction: "none" }}
-                onPointerDown={handleSheetDragDown}
-                onPointerMove={handleSheetDragMove}
-                onPointerUp={handleSheetDragEnd}
-                onPointerCancel={handleSheetDragEnd}
-              >
-                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
-              </div>
-              <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'juzIndex.title')}</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowSections((v) => !v)}
-                    className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${showSections ? "border-transparent bg-(--fg) text-(--bg)" : "border-border bg-(--bg2) text-(--fg2)"}`}
-                  >
-                    {t(lang, 'juzIndex.halves')}
-                  </button>
-                  <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                    <X className="size-4" />
-                  </Button>
-                </div>
-              </div>
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                {juz.map((item) => (
-                  <div key={item.num}>
-                    <button
-                      key={item.num}
-                      type="button"
-                      onClick={() => goToPage(item.page)}
-                      className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
-                    >
-                      <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{t(lang, 'nav.juz')} {item.num}</span>
-                      <span className="text-xs text-(--fg3)">p.{item.page + 1}</span>
-                      <span className="font-amiri font-bold text-[22px]" dir="rtl">{item.arabicStart}</span>
-                    </button>
-                    {showSections && item.sections?.length && item.sections.map((section, idx) => {
-                     return (
-                      <button
-                        key={section.num}
-                        type="button"
-                        onClick={() => goToPage(section.page)}
-                        className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) opacity-60}`}
-                      >
-                        <span className="w-6 text-right text-sm tabular-nums text-(--fg3)">½</span>
-                        <span className="min-w-0 flex-1 truncate text-base text-sm text-(--fg) opacity-50">{section.name}</span>
-                        <span className="text-xs text-(--fg3)">p.{section.page + 1}</span>
-                        <span className="font-amiri text-[18px] opacity-60" dir="rtl">{section.arabicStart}</span>
-                      </button>
-
-                      )
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <JuzSheet
+              lang={lang}
+              juz={juz}
+              showSections={showSections}
+              onToggleSections={() => setShowSections((v) => !v)}
+              onClose={() => setActiveSheet(null)}
+              onNavigate={goToPage}
+              dragHandlers={dragHandlers}
+            />
           )}
-
           {activeSheet === "page" && (
-            <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 flex w-75 -translate-x-1/2 -translate-y-1/2 flex-col rounded-3xl bg-(--bg) p-5.5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-semibold">{t(lang, 'goToPage.title')}</span>
-                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                  <X className="size-4" />
-                </Button>
-              </div>
-              <span className="mt-1 text-[13px] text-(--fg2)">{t(lang, 'goToPage.hint', { min: FIRST_PAGE + 1, max: LAST_PAGE + 1 })}</span>
-              <div className="my-4 flex h-16 items-center justify-center rounded-[14px] bg-(--bg2) text-[34px] font-semibold tracking-[3px] tabular-nums">{pageDisplay}</div>
-              <div className="grid grid-cols-3 gap-2.5">
-                {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
-                  <button
-                    key={digit}
-                    type="button"
-                    className="h-13 rounded-[14px] bg-(--bg2) text-[22px] font-medium text-(--fg) active:bg-border"
-                    onClick={() => pressDigit(digit)}
-                  >
-                    {digit}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  className="flex h-13 items-center justify-center rounded-[14px] bg-(--bg2) text-(--fg) active:bg-border"
-                  onClick={() => setPageInput((prev) => prev.slice(0, -1))}
-                >
-                  <Delete className="size-5.5" />
-                </button>
-                <button
-                  type="button"
-                  className="h-13 rounded-[14px] bg-(--bg2) text-[22px] font-medium text-(--fg) active:bg-border"
-                  onClick={() => pressDigit("0")}
-                >
-                  0
-                </button>
-                <button
-                  type="button"
-                  className="h-13 rounded-[14px] bg-(--fg) text-base font-semibold text-(--bg)"
-                  onClick={() => {
-                    if (pageInput !== "") {
-                      const next = Number(pageInput);
-                      goToPage(Math.max(FIRST_PAGE + 1, Math.min(LAST_PAGE + 1, next)) - 1);
-                    }
-                  }}
-                >
-                  {t(lang, 'goToPage.go')}
-                </button>
-              </div>
-            </div>
+            <PageSheet
+              lang={lang}
+              pageInput={pageInput}
+              pageDisplay={pageDisplay}
+              firstPage={FIRST_PAGE}
+              lastPage={LAST_PAGE}
+              onClose={() => setActiveSheet(null)}
+              onNavigate={goToPage}
+              onPressDigit={pressDigit}
+              onDeleteDigit={() => setPageInput((prev) => prev.slice(0, -1))}
+            />
           )}
-
           {activeSheet === "bookmarks" && (
-            <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div
-                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
-                style={{ touchAction: "none" }}
-                onPointerDown={handleSheetDragDown}
-                onPointerMove={handleSheetDragMove}
-                onPointerUp={handleSheetDragEnd}
-                onPointerCancel={handleSheetDragEnd}
-              >
-                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
-              </div>
-              <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'bookmarks.title')}</span>
-                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                  <X className="size-4" />
-                </Button>
-              </div>
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                {sortedBookmarks.length === 0 ? (
-                  <div className="flex h-full flex-col items-center justify-center gap-2 text-(--fg3)">
-                    <Bookmark className="size-8 opacity-30" />
-                    <span className="text-sm">{t(lang, 'bookmarks.empty')}</span>
-                    <span className="text-xs text-(--fg3)">{t(lang, 'bookmarks.emptyHint')}</span>
-                  </div>
-                ) : (
-                  sortedBookmarks.map(({ page: p, date }) => {
-                    const surah = getSurahForPage(p);
-                    return (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => goToPage(p)}
-                        className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
-                      >
-                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                          <span className="truncate text-base font-medium text-(--fg)">{surah.name}</span>
-                          <span className="text-xs text-(--fg3)">{formatBookmarkDate(date)}</span>
-                        </div>
-                        <span className="text-sm tabular-nums text-(--fg3)">p.{p + 1}</span>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-            </div>
+            <BookmarksSheet
+              lang={lang}
+              sortedBookmarks={sortedBookmarks}
+              surahs={surahs}
+              onClose={() => setActiveSheet(null)}
+              onNavigate={goToPage}
+              dragHandlers={dragHandlers}
+            />
           )}
-
           {activeSheet === "settings" && (
-            <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div
-                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
-                style={{ touchAction: "none" }}
-                onPointerDown={handleSheetDragDown}
-                onPointerMove={handleSheetDragMove}
-                onPointerUp={handleSheetDragEnd}
-                onPointerCancel={handleSheetDragEnd}
-              >
-                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <div
-                  className="flex h-full transition-transform duration-300 ease-in-out"
-                  style={{
-                    width: "500%",
-                    transform: settingsSubView === "mushaf"
-                      ? "translateX(-20%)"
-                      : settingsSubView === "about"
-                        ? "translateX(-40%)"
-                        : settingsSubView === "language"
-                          ? "translateX(-60%)"
-                          : settingsSubView === "install"
-                            ? "translateX(-80%)"
-                            : "translateX(0)",
-                  }}
-                >
-                  {/* Panel 1: main settings */}
-                  <div className="flex h-full w-1/5 flex-col">
-                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.title')}</span>
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto">
-                      {!isStandalone && (
-                        <button
-                          type="button"
-                          className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                          onClick={() => setSettingsSubView("install")}
-                        >
-                          <span className="text-base font-bold text-(--fg)">{t(lang, 'settings.installApp')}</span>
-                          <ChevronRight className="size-4 text-(--fg2)" />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                        onClick={() => setSettingsSubView("mushaf")}
-                      >
-                        <span className="text-base text-(--fg)">{t(lang, 'settings.mushafStyle')}</span>
-                        <div className="flex items-center gap-1.5 text-(--fg2)">
-                          <span className="text-sm">{activeMushaf.name}</span>
-                          <ChevronRight className="size-4" />
-                        </div>
-                      </button>
-                      {activeMushafKey === "original_tajweed" && (
-                        <button
-                          type="button"
-                          className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                          onClick={() => setShowTajweedRules(true)}
-                        >
-                          <span className="text-base text-(--fg)">{t(lang, 'settings.tajweedRules')}</span>
-                          <ChevronRight className="size-4 text-(--fg2)" />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                        onClick={() => setSettingsSubView("language")}
-                      >
-                        <span className="text-base text-(--fg)">{t(lang, 'settings.language')}</span>
-                        <div className="flex items-center gap-1.5 text-(--fg2)">
-                          <span className="text-sm">{t(lang, 'misc.langName')}</span>
-                          <ChevronRight className="size-4" />
-                        </div>
-                      </button>
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                        onClick={() => setSettingsSubView("about")}
-                      >
-                        <span className="text-base text-(--fg)">{t(lang, 'settings.about')}</span>
-                        <div className="flex items-center gap-1.5 text-(--fg2)">
-                          <span className="text-sm">v{APP_VERSION}</span>
-                          <ChevronRight className="size-4" />
-                        </div>
-                      </button>
-                    </div>
-                    <div className="shrink-0 border-t border-border px-5 py-4 text-center text-sm text-(--fg3)">
-                      {t(lang, 'settings.footer')}
-                    </div>
-                  </div>
-
-                  {/* Panel 2: mushaf picker */}
-                  <div className="flex h-full w-1/5 flex-col">
-                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                          <ChevronLeft className="size-4" />
-                        </Button>
-                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.mushafStyle')}</span>
-                      </div>
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto">
-                      {(Object.keys(quranData.mushafs) as MushafKey[]).map((key) => {
-                        const mushaf = quranData.mushafs[key];
-                        const selected = activeMushafKey === key;
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                            onClick={() => {
-                              setActiveMushafKey(key);
-                              setMissingImages({});
-                              setSettingsSubView(null);
-                            }}
-                          >
-                            <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
-                              {selected && <div className="size-2 rounded-full bg-(--bg)" />}
-                            </div>
-                            <span className={`text-base ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>
-                              {mushaf.name}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Panel 3: about / how-to */}
-                  <div className="flex h-full w-1/5 flex-col">
-                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                          <ChevronLeft className="size-4" />
-                        </Button>
-                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.about')}</span>
-                      </div>
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-                      <p className="mb-6 text-[15px] text-(--fg2)">{t(lang, 'about.versionLine', { version: APP_VERSION })}</p>
-
-                      <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.readingSection')}</p>
-                        <div className="flex flex-col gap-3">
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.navigatePages')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.navigatePagesDesc')}</p>
-                          </div>
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.landscapeMode')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.landscapeModeDesc')}</p>
-                          </div>
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.toggleMenu')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.toggleMenuDesc')}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.highlightSection')}</p>
-                        <div className="flex flex-col gap-3">
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.highlightLine')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.highlightLineDesc')}</p>
-                          </div>
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.addAnnotation')}</p>
-                            <p className="mt-0.5 mb-2 text-[15px] text-(--fg2)">{t(lang, 'about.addAnnotationDesc')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.addAnnotationTip')}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.bookmarksSection')}</p>
-                        <div className="flex flex-col gap-3">
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.savePage')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.savePageDesc')}</p>
-                          </div>
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.viewSavedPages')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.viewSavedPagesDesc')}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, 'about.displaySection')}</p>
-                        <div className="flex flex-col gap-3">
-                          <div>
-                            <p className="text-[17px] font-medium text-(--fg)">{t(lang, 'about.theme')}</p>
-                            <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, 'about.themeDesc')}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Panel 4: language picker */}
-                  <div className="flex h-full w-1/5 flex-col">
-                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                          <ChevronLeft className="size-4" />
-                        </Button>
-                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.language')}</span>
-                      </div>
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto">
-                      {SUPPORTED_LANGS.map(({ code, label }) => {
-                        const selected = lang === code;
-                        return (
-                          <button
-                            key={code}
-                            type="button"
-                            className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
-                            onClick={() => { setLang(code); setSettingsSubView(null); }}
-                          >
-                            <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
-                              {selected && <div className="size-2 rounded-full bg-(--bg)" />}
-                            </div>
-                            <span className={`text-base ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>
-                              {label}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Panel 5: install app instructions */}
-                  <div className="flex h-full w-1/5 flex-col">
-                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                          <ChevronLeft className="size-4" />
-                        </Button>
-                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.installApp')}</span>
-                      </div>
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-                      <div className="flex flex-col gap-8">
-                        {([1, 2, 3, 4] as const).map((step) => (
-                          <div key={step}>
-                            <div className="mb-3 flex items-start gap-3">
-                              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-(--fg) text-(--bg) text-sm font-bold">
-                                {step}
-                              </div>
-                              <p className="text-[15px] leading-snug text-(--fg)">{t(lang, `installApp.step${step}`)}</p>
-                            </div>
-                            <Image
-                              src={`/screenshots/install-app-0${step}.jpeg`}
-                              alt={`Step ${step}`}
-                              width={0}
-                              height={0}
-                              sizes="100vw"
-                              className="h-auto w-full rounded-2xl shadow-sm"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <SettingsSheet
+              lang={lang}
+              settingsSubView={settingsSubView}
+              setSettingsSubView={setSettingsSubView}
+              activeMushafKey={activeMushafKey}
+              isStandalone={isStandalone}
+              appVersion={APP_VERSION}
+              onClose={() => setActiveSheet(null)}
+              onMushafChange={(key) => { setActiveMushafKey(key); setMissingImages({}); }}
+              onShowTajweedRules={() => setShowTajweedRules(true)}
+              onLangChange={setLang}
+              dragHandlers={dragHandlers}
+            />
           )}
         </div>
       )}
+
       {showTajweedRules && (
         <div
           className="fixed inset-0 z-200 flex items-center justify-center bg-black/80"
@@ -1254,7 +613,7 @@ export default function Home() {
           </button>
           <Image
             src="/quran-pages/original_tajweed/page-002.jpg"
-            alt={t(lang, 'misc.tajweedRulesAlt')}
+            alt={t(lang, "misc.tajweedRulesAlt")}
             width={800}
             height={1100}
             className="max-h-[90dvh] max-w-[90dvw] rounded-lg object-contain"
