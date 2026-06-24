@@ -146,6 +146,7 @@ export default function Home() {
   const pressTimer = useRef<number | null>(null);
   const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
   const suppressClick = useRef(false);
+  const sheetDragY = useRef<number | null>(null);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -310,6 +311,21 @@ export default function Home() {
     }
     pressInfo.current = null;
   }, []);
+
+  const handleSheetDragDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    sheetDragY.current = e.clientY;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, []);
+
+  const handleSheetDragMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (sheetDragY.current === null) return;
+    if (e.clientY - sheetDragY.current > 72) {
+      sheetDragY.current = null;
+      setActiveSheet(null);
+    }
+  }, []);
+
+  const handleSheetDragEnd = useCallback(() => { sheetDragY.current = null; }, []);
 
   const handlePressStart = useCallback(
     (event: React.PointerEvent<HTMLDivElement>, candidate: number) => {
@@ -724,7 +740,16 @@ export default function Home() {
 
           {activeSheet === "surah" && (
             <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div className="mx-auto mt-2 h-1.25 w-9.5 rounded-full bg-border" />
+              <div
+                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
+                style={{ touchAction: "none" }}
+                onPointerDown={handleSheetDragDown}
+                onPointerMove={handleSheetDragMove}
+                onPointerUp={handleSheetDragEnd}
+                onPointerCancel={handleSheetDragEnd}
+              >
+                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
+              </div>
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                 <span className="text-[13px] font-semibold tracking-[2px] uppercase">SURAH INDEX</span>
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
@@ -751,7 +776,16 @@ export default function Home() {
 
           {activeSheet === "juz" && (
             <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div className="mx-auto mt-2 h-1.25 w-9.5 rounded-full bg-border" />
+              <div
+                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
+                style={{ touchAction: "none" }}
+                onPointerDown={handleSheetDragDown}
+                onPointerMove={handleSheetDragMove}
+                onPointerUp={handleSheetDragEnd}
+                onPointerCancel={handleSheetDragEnd}
+              >
+                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
+              </div>
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                 <span className="text-[13px] font-semibold tracking-[2px] uppercase">JUZ INDEX</span>
                 <div className="flex items-center gap-2">
@@ -855,7 +889,16 @@ export default function Home() {
 
           {activeSheet === "bookmarks" && (
             <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div className="mx-auto mt-2 h-1.25 w-9.5 rounded-full bg-border" />
+              <div
+                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
+                style={{ touchAction: "none" }}
+                onPointerDown={handleSheetDragDown}
+                onPointerMove={handleSheetDragMove}
+                onPointerUp={handleSheetDragEnd}
+                onPointerCancel={handleSheetDragEnd}
+              >
+                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
+              </div>
               <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                 <span className="text-[13px] font-semibold tracking-[2px] uppercase">SAVED PAGES</span>
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
@@ -894,7 +937,16 @@ export default function Home() {
 
           {activeSheet === "settings" && (
             <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
-              <div className="mx-auto mt-2 h-1.25 w-9.5 shrink-0 rounded-full bg-border" />
+              <div
+                className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-3"
+                style={{ touchAction: "none" }}
+                onPointerDown={handleSheetDragDown}
+                onPointerMove={handleSheetDragMove}
+                onPointerUp={handleSheetDragEnd}
+                onPointerCancel={handleSheetDragEnd}
+              >
+                <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
+              </div>
               <div className="flex-1 overflow-hidden">
                 <div
                   className="flex h-full transition-transform duration-300 ease-in-out"
@@ -946,11 +998,16 @@ export default function Home() {
 
                   {/* Panel 2: mushaf picker */}
                   <div className="flex h-full w-1/3 flex-col">
-                    <div className="flex items-center gap-2 border-b border-border px-5 pb-3 pt-2">
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                        <ChevronLeft className="size-4" />
+                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">Mushaf Style</span>
+                      </div>
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                        <X className="size-4" />
                       </Button>
-                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">Mushaf Style</span>
                     </div>
                     <div className="min-h-0 flex-1 overflow-y-auto">
                       {(Object.keys(quranData.mushafs) as MushafKey[]).map((key) => {
@@ -981,68 +1038,73 @@ export default function Home() {
 
                   {/* Panel 3: about / how-to */}
                   <div className="flex h-full w-1/3 flex-col">
-                    <div className="flex items-center gap-2 border-b border-border px-5 pb-3 pt-2">
-                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                        <ChevronLeft className="size-4" />
+                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">About</span>
+                      </div>
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                        <X className="size-4" />
                       </Button>
-                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">About</span>
                     </div>
                     <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-                      <p className="mb-6 text-sm text-(--fg2)">Quran 13 · v{APP_VERSION}</p>
+                      <p className="mb-6 text-[15px] text-(--fg2)">Quran 13 · v{APP_VERSION}</p>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Reading</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Reading</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Navigate pages</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Swipe left or right to move between pages.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Navigate pages</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Swipe left or right to move between pages.</p>
                           </div>
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Landscape mode</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Rotate your device to landscape orientation and immediately get a larger view of the Quran text.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Landscape mode</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Rotate your device to landscape orientation and immediately get a larger view of the Quran text.</p>
                           </div>
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Toggle menu</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Tap anywhere on the page to show or hide the navigation bar.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Toggle menu</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tap anywhere on the page to show or hide the navigation bar.</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Highlighting & Annotations</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Highlighting & Annotations</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Highlight a line</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Press and hold any line to open the highlight picker. Choose a colour to mark it, or clear an existing highlight.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Highlight a line</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Press and hold any line to open the highlight picker. Choose a colour to mark it, or clear an existing highlight.</p>
                           </div>
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Add an annotation</p>
-                            <p className="mt-0.5 mb-2 text-sm text-(--fg2)">After long-pressing, pick a number (1–20) to add a numbered marker to that line.</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Tip for Huffaz: use number annotations to mark the line where each Taraweh rakat ends — making it easy to resume from the right place.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Add an annotation</p>
+                            <p className="mt-0.5 mb-2 text-[15px] text-(--fg2)">After long-pressing, pick a number (1–20) to add a numbered marker to that line.</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tip for Huffaz: use number annotations to mark the line where each Taraweh rakat ends — making it easy to resume from the right place.</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Bookmarks</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Bookmarks</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Save a page</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Tap the bookmark icon in the top-right corner to save the current page. Tap it again to remove the bookmark.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Save a page</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tap the bookmark icon in the top-right corner to save the current page. Tap it again to remove the bookmark.</p>
                           </div>
                           <div>
-                            <p className="text-base font-medium text-(--fg)">View saved pages</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.</p>
+                            <p className="text-[17px] font-medium text-(--fg)">View saved pages</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-6">
-                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Display</p>
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">Display</p>
                         <div className="flex flex-col gap-3">
                           <div>
-                            <p className="text-base font-medium text-(--fg)">Theme</p>
-                            <p className="mt-0.5 text-sm text-(--fg2)">Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image).</p>
+                            <p className="text-[17px] font-medium text-(--fg)">Theme</p>
+                            <p className="mt-0.5 text-[15px] text-(--fg2)">Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image).</p>
                           </div>
                         </div>
                       </div>
