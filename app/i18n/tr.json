@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "surah": "Sure",
+    "juz": "Cüz",
+    "page": "Sayfa",
+    "saved": "Kaydedilen",
+    "settings": "Ayarlar"
+  },
+  "header": {
+    "surahPrefix": "Sure",
+    "juzPage": "Cüz {juz} · Sayfa {page}"
+  },
+  "surahIndex": {
+    "title": "SURELER"
+  },
+  "juzIndex": {
+    "title": "CÜZLER",
+    "halves": "Yarımlar"
+  },
+  "goToPage": {
+    "title": "Sayfaya Git",
+    "hint": "{min} ile {max} arasında bir sayı girin",
+    "go": "Git"
+  },
+  "bookmarks": {
+    "title": "KAYDEDİLEN SAYFALAR",
+    "empty": "Henüz kaydedilen sayfa yok",
+    "emptyHint": "Okurken yer imi simgesine dokunun"
+  },
+  "highlightPicker": {
+    "lineHighlight": "Satır Vurgusu",
+    "numberAnnotation": "Numaralı Not"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "mushafStyle": "Mushaf",
+    "tajweedRules": "Tecvid Kuralları",
+    "language": "Dil",
+    "about": "Hakkında",
+    "footer": "Asrar Abbasi tarafından geliştirildi"
+  },
+  "about": {
+    "versionLine": "Quran 13 · v{version}",
+    "readingSection": "Okuma",
+    "navigatePages": "Sayfa gezinme",
+    "navigatePagesDesc": "Sayfalar arasında geçiş yapmak için sola veya sağa kaydırın.",
+    "landscapeMode": "Yatay mod",
+    "landscapeModeDesc": "Kuran metninin daha büyük görünümü için cihazınızı yatay konuma çevirin.",
+    "toggleMenu": "Menüyü göster/gizle",
+    "toggleMenuDesc": "Gezinme çubuğunu göstermek veya gizlemek için sayfaya herhangi bir yere dokunun.",
+    "highlightSection": "Vurgulama & Notlar",
+    "highlightLine": "Satır vurgula",
+    "highlightLineDesc": "Vurgulama seçiciyi açmak için herhangi bir satıra uzun basın. İşaretlemek için bir renk seçin veya mevcut vurgulamayı kaldırın.",
+    "addAnnotation": "Not ekle",
+    "addAnnotationDesc": "Uzun bastıktan sonra o satıra numaralı işaret eklemek için bir sayı (1–20) seçin.",
+    "addAnnotationTip": "Huffaz için ipucu: Her Teravih rekatının bittiği satırı işaretlemek için numaralı notları kullanın — doğru yerden devam etmek kolaylaşır.",
+    "bookmarksSection": "Yer İmleri",
+    "savePage": "Sayfa kaydet",
+    "savePageDesc": "Mevcut sayfayı kaydetmek için sağ üst köşedeki yer imi simgesine dokunun. Kaldırmak için tekrar dokunun.",
+    "viewSavedPages": "Kaydedilen sayfaları gör",
+    "viewSavedPagesDesc": "Tüm yer imli sayfalarınızı en son eklenene göre sıralanmış görmek için gezinme çubuğundaki Kaydedilen sekmesini açın.",
+    "displaySection": "Görünüm",
+    "theme": "Tema",
+    "themeDesc": "Üç görüntüleme modu arasında geçiş yapmak için sağ üstteki güneş/ay simgesine dokunun: Açık, Koyu ve Koyu Ters (siyah sayfa görüntüsü üzerinde beyaz metin)."
+  },
+  "misc": {
+    "imageUnavailable": "{page}. sayfa görseli mevcut değil",
+    "langName": "Türkçe",
+    "tajweedRulesAlt": "Tecvid Kuralları"
+  }
+}

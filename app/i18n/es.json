@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "surah": "Sura",
+    "juz": "Yuz",
+    "page": "Página",
+    "saved": "Guardado",
+    "settings": "Ajustes"
+  },
+  "header": {
+    "surahPrefix": "Sura",
+    "juzPage": "Yuz {juz} · Página {page}"
+  },
+  "surahIndex": {
+    "title": "SURAS"
+  },
+  "juzIndex": {
+    "title": "YUZ",
+    "halves": "Mitades"
+  },
+  "goToPage": {
+    "title": "Ir a la página",
+    "hint": "Ingresa un número del {min} al {max}",
+    "go": "Ir"
+  },
+  "bookmarks": {
+    "title": "PÁGINAS GUARDADAS",
+    "empty": "No hay páginas guardadas",
+    "emptyHint": "Toca el ícono de marcador mientras lees"
+  },
+  "highlightPicker": {
+    "lineHighlight": "Resaltar línea",
+    "numberAnnotation": "Anotación numérica"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "mushafStyle": "Mushaf",
+    "tajweedRules": "Reglas de Tajweed",
+    "language": "Idioma",
+    "about": "Acerca de",
+    "footer": "Desarrollado por Asrar Abbasi"
+  },
+  "about": {
+    "versionLine": "Quran 13 · v{version}",
+    "readingSection": "Lectura",
+    "navigatePages": "Navegar páginas",
+    "navigatePagesDesc": "Desliza a la izquierda o a la derecha para cambiar de página.",
+    "landscapeMode": "Modo horizontal",
+    "landscapeModeDesc": "Rota tu dispositivo a orientación horizontal para obtener inmediatamente una vista más amplia del texto coránico.",
+    "toggleMenu": "Mostrar/Ocultar menú",
+    "toggleMenuDesc": "Toca en cualquier parte de la página para mostrar u ocultar la barra de navegación.",
+    "highlightSection": "Resaltados y Anotaciones",
+    "highlightLine": "Resaltar una línea",
+    "highlightLineDesc": "Mantén presionada cualquier línea para abrir el selector de resaltado. Elige un color para marcarla o elimina un resaltado existente.",
+    "addAnnotation": "Agregar una anotación",
+    "addAnnotationDesc": "Tras mantener presionado, elige un número (1–20) para añadir un marcador numerado a esa línea.",
+    "addAnnotationTip": "Consejo para Huffaz: usa anotaciones numéricas para marcar la línea donde termina cada rakat del Taraweh — así es fácil retomar desde el lugar correcto.",
+    "bookmarksSection": "Marcadores",
+    "savePage": "Guardar una página",
+    "savePageDesc": "Toca el ícono de marcador en la esquina superior derecha para guardar la página actual. Tócalo de nuevo para eliminar el marcador.",
+    "viewSavedPages": "Ver páginas guardadas",
+    "viewSavedPagesDesc": "Abre la pestaña Guardado en la barra de navegación para ver todas tus páginas marcadas, ordenadas por las más recientes.",
+    "displaySection": "Pantalla",
+    "theme": "Tema",
+    "themeDesc": "Toca el ícono de sol/luna en la esquina superior derecha para cambiar entre tres modos: Claro, Oscuro y Oscuro Invertido (texto blanco sobre imagen negra de página)."
+  },
+  "misc": {
+    "imageUnavailable": "Imagen de la página {page} no disponible",
+    "langName": "Español",
+    "tajweedRulesAlt": "Reglas de Tajweed"
+  }
+}

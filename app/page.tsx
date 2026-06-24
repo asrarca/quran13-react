@@ -246,7 +246,7 @@ export default function Home() {
     }
 
     const storedLang = localStorage.getItem("quran13-lang");
-    if (storedLang === 'en' || storedLang === 'fr') setLang(storedLang as Lang);
+    if (storedLang && SUPPORTED_LANGS.some(l => l.code === storedLang)) setLang(storedLang as Lang);
   }, []);
 
   useEffect(() => {

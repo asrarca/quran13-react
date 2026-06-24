@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "surah": "Sure",
+    "juz": "Dschuz",
+    "page": "Seite",
+    "saved": "Gespeichert",
+    "settings": "Einstellungen"
+  },
+  "header": {
+    "surahPrefix": "Sure",
+    "juzPage": "Dschuz {juz} · Seite {page}"
+  },
+  "surahIndex": {
+    "title": "SUREN"
+  },
+  "juzIndex": {
+    "title": "DSCHUZ",
+    "halves": "Hälften"
+  },
+  "goToPage": {
+    "title": "Zur Seite",
+    "hint": "Gib eine Zahl von {min} bis {max} ein",
+    "go": "Los"
+  },
+  "bookmarks": {
+    "title": "GESPEICHERTE SEITEN",
+    "empty": "Noch keine gespeicherten Seiten",
+    "emptyHint": "Tippe beim Lesen auf das Lesezeichen-Symbol"
+  },
+  "highlightPicker": {
+    "lineHighlight": "Zeile markieren",
+    "numberAnnotation": "Nummerierte Anmerkung"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "mushafStyle": "Mushaf",
+    "tajweedRules": "Tajweed-Regeln",
+    "language": "Sprache",
+    "about": "Über",
+    "footer": "Entwickelt von Asrar Abbasi"
+  },
+  "about": {
+    "versionLine": "Quran 13 · v{version}",
+    "readingSection": "Lesen",
+    "navigatePages": "Seiten wechseln",
+    "navigatePagesDesc": "Wische nach links oder rechts, um zwischen den Seiten zu wechseln.",
+    "landscapeMode": "Querformat",
+    "landscapeModeDesc": "Drehe dein Gerät ins Querformat, um sofort eine größere Ansicht des Korantextes zu erhalten.",
+    "toggleMenu": "Menü ein-/ausblenden",
+    "toggleMenuDesc": "Tippe irgendwo auf die Seite, um die Navigationsleiste ein- oder auszublenden.",
+    "highlightSection": "Markierungen & Anmerkungen",
+    "highlightLine": "Zeile markieren",
+    "highlightLineDesc": "Drücke und halte eine Zeile gedrückt, um die Farbauswahl zu öffnen. Wähle eine Farbe oder entferne eine bestehende Markierung.",
+    "addAnnotation": "Anmerkung hinzufügen",
+    "addAnnotationDesc": "Nach langem Drücken wähle eine Zahl (1–20), um einen nummerierten Marker zu dieser Zeile hinzuzufügen.",
+    "addAnnotationTip": "Tipp für Huffaz: Nutze nummerierte Anmerkungen, um die Zeile zu markieren, bei der jede Taraweh-Rakaah endet — so findest du leicht die richtige Stelle.",
+    "bookmarksSection": "Lesezeichen",
+    "savePage": "Seite speichern",
+    "savePageDesc": "Tippe auf das Lesezeichen-Symbol oben rechts, um die aktuelle Seite zu speichern. Tippe erneut, um das Lesezeichen zu entfernen.",
+    "viewSavedPages": "Gespeicherte Seiten anzeigen",
+    "viewSavedPagesDesc": "Öffne den Tab Gespeichert in der Navigationsleiste, um alle deine gespeicherten Seiten zu sehen, sortiert nach zuletzt hinzugefügt.",
+    "displaySection": "Anzeige",
+    "theme": "Design",
+    "themeDesc": "Tippe auf das Sonne/Mond-Symbol oben rechts, um zwischen drei Anzeigemodi zu wechseln: Hell, Dunkel und Dunkel Invertiert (weißer Text auf schwarzem Seitenbild)."
+  },
+  "misc": {
+    "imageUnavailable": "Bild für Seite {page} nicht verfügbar",
+    "langName": "Deutsch",
+    "tajweedRulesAlt": "Tajweed-Regeln"
+  }
+}
