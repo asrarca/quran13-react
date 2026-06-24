@@ -45,6 +45,8 @@ type Juz = {
   sections?: Juz[];
 };
 
+const APP_VERSION = "2.0.1";
+
 const FIRST_PAGE = 1;
 const TOTAL_PAGES = Number(process.env.NEXT_PUBLIC_TOTAL_PAGES ?? 847);
 const LAST_PAGE = FIRST_PAGE + TOTAL_PAGES - 1;
@@ -116,7 +118,7 @@ export default function Home() {
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
-  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | null>(null);
   // Record<internalPage, ISO date string>
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
@@ -413,7 +415,7 @@ export default function Home() {
               className="object-cover object-top"
               style={theme === "dark-invert" ? { filter: "invert(1)" } : undefined}
               draggable={false}
-              priority={candidate === page}
+              priority
               onError={() => setMissingImages((prev) => ({ ...prev, [candidate]: true }))}
             />
             {/* Long-press a line to toggle a yellow highlight on it. */}
@@ -524,7 +526,7 @@ export default function Home() {
         <div className="absolute inset-0">
           <Swiper
             dir="rtl"
-            initialSlide={1}
+            initialSlide={2}
             slidesPerView={1}
             speed={320}
             threshold={8}
@@ -535,33 +537,45 @@ export default function Home() {
             allowSlidePrev={page > FIRST_PAGE}
             onSlideChangeTransitionEnd={(swiper) => {
               const idx = swiper.activeIndex;
-              if (idx === 1) return;
-              // RTL: swipe right → idx 2 (next page); swipe left → idx 0 (prev page)
-              const delta = idx === 0 ? -1 : 1;
+              if (idx === 2) return;
+              // RTL: swipe right → idx 3 (next page); swipe left → idx 1 (prev page)
+              const delta = idx < 2 ? -1 : 1;
               flushSync(() => setPage((prev) => clampPage(prev + delta)));
-              swiper.slideTo(1, 0, false);
-              swiper.slides[1].scrollTop = 0;
+              swiper.slideTo(2, 0, false);
+              swiper.slides[2].scrollTop = 0;
               window.scrollTo(0, 0);
             }}
             className="h-full"
             style={{ touchAction: "pan-y" } as React.CSSProperties}
           >
-            {/* RTL: index 0 = prev page */}
+            {/* RTL: index 0 = page − 2 */}
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
+                {renderPageCard(page - 2)}
+              </div>
+            </SwiperSlide>
+            {/* index 1 = page − 1 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
                 {renderPageCard(page - 1)}
               </div>
             </SwiperSlide>
-            {/* index 1 = current page */}
+            {/* index 2 = current page */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
                 {renderPageCard(page)}
               </div>
             </SwiperSlide>
-            {/* index 2 = next page */}
+            {/* index 3 = page + 1 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
                 {renderPageCard(page + 1)}
+              </div>
+            </SwiperSlide>
+            {/* index 4 = page + 2 */}
+            <SwiperSlide style={{ overflowY: "auto" }}>
+              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
+                {renderPageCard(page + 2)}
               </div>
             </SwiperSlide>
           </Swiper>
@@ -661,7 +675,7 @@ export default function Home() {
               )}
             </div>
             <div className="w-full h-px bg-border" />
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Number In Margin</span>
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-(--fg2)">Number Annotation</span>
             <div className="grid grid-cols-7 gap-1">
               {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
                 <button
@@ -884,10 +898,17 @@ export default function Home() {
               <div className="flex-1 overflow-hidden">
                 <div
                   className="flex h-full transition-transform duration-300 ease-in-out"
-                  style={{ width: "200%", transform: settingsSubView ? "translateX(-50%)" : "translateX(0)" }}
+                  style={{
+                    width: "300%",
+                    transform: settingsSubView === "mushaf"
+                      ? "translateX(-33.333%)"
+                      : settingsSubView === "about"
+                        ? "translateX(-66.667%)"
+                        : "translateX(0)",
+                  }}
                 >
-                  {/* Main settings panel */}
-                  <div className="flex h-full w-1/2 flex-col">
+                  {/* Panel 1: main settings */}
+                  <div className="flex h-full w-1/3 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <span className="text-[13px] font-semibold tracking-[2px] uppercase">Settings</span>
                       <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
@@ -906,10 +927,25 @@ export default function Home() {
                           <ChevronRight className="size-4" />
                         </div>
                       </button>
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                        onClick={() => setSettingsSubView("about")}
+                      >
+                        <span className="text-base text-(--fg)">About</span>
+                        <div className="flex items-center gap-1.5 text-(--fg2)">
+                          <span className="text-sm">v{APP_VERSION}</span>
+                          <ChevronRight className="size-4" />
+                        </div>
+                      </button>
+                    </div>
+                    <div className="shrink-0 border-t border-border px-5 py-4 text-center text-sm text-(--fg3)">
+                      Developed by Asrar Abbasi
                     </div>
                   </div>
-                  {/* Mushaf picker panel */}
-                  <div className="flex h-full w-1/2 flex-col">
+
+                  {/* Panel 2: mushaf picker */}
+                  <div className="flex h-full w-1/3 flex-col">
                     <div className="flex items-center gap-2 border-b border-border px-5 pb-3 pt-2">
                       <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
                         <ChevronLeft className="size-4" />
@@ -940,6 +976,76 @@ export default function Home() {
                           </button>
                         );
                       })}
+                    </div>
+                  </div>
+
+                  {/* Panel 3: about / how-to */}
+                  <div className="flex h-full w-1/3 flex-col">
+                    <div className="flex items-center gap-2 border-b border-border px-5 pb-3 pt-2">
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                        <ChevronLeft className="size-4" />
+                      </Button>
+                      <span className="text-[13px] font-semibold tracking-[2px] uppercase">About</span>
+                    </div>
+                    <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                      <p className="mb-6 text-sm text-(--fg2)">Quran 13 · v{APP_VERSION}</p>
+
+                      <div className="mb-6">
+                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Reading</p>
+                        <div className="flex flex-col gap-3">
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Navigate pages</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Swipe left or right to move between pages.</p>
+                          </div>
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Landscape mode</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Rotate your device to landscape orientation and immediately get a larger view of the Quran text.</p>
+                          </div>
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Toggle menu</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Tap anywhere on the page to show or hide the navigation bar.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-6">
+                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Highlighting & Annotations</p>
+                        <div className="flex flex-col gap-3">
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Highlight a line</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Press and hold any line to open the highlight picker. Choose a colour to mark it, or clear an existing highlight.</p>
+                          </div>
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Add an annotation</p>
+                            <p className="mt-0.5 mb-2 text-sm text-(--fg2)">After long-pressing, pick a number (1–20) to add a numbered marker to that line.</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Tip for Huffaz: use number annotations to mark the line where each Taraweh rakat ends — making it easy to resume from the right place.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-6">
+                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Bookmarks</p>
+                        <div className="flex flex-col gap-3">
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Save a page</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Tap the bookmark icon in the top-right corner to save the current page. Tap it again to remove the bookmark.</p>
+                          </div>
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">View saved pages</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-6">
+                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-(--fg3)">Display</p>
+                        <div className="flex flex-col gap-3">
+                          <div>
+                            <p className="text-base font-medium text-(--fg)">Theme</p>
+                            <p className="mt-0.5 text-sm text-(--fg2)">Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image).</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
