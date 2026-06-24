@@ -45,7 +45,7 @@ type Juz = {
   sections?: Juz[];
 };
 
-const APP_VERSION = "2.0.1";
+const APP_VERSION = "2.0.2";
 
 const FIRST_PAGE = 1;
 const TOTAL_PAGES = Number(process.env.NEXT_PUBLIC_TOTAL_PAGES ?? 847);
@@ -119,6 +119,7 @@ export default function Home() {
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
   const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | null>(null);
+  const [showTajweedRules, setShowTajweedRules] = useState(false);
   // Record<internalPage, ISO date string>
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
@@ -979,6 +980,16 @@ export default function Home() {
                           <ChevronRight className="size-4" />
                         </div>
                       </button>
+                      {activeMushafKey === "original_tajweed" && (
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                          onClick={() => setShowTajweedRules(true)}
+                        >
+                          <span className="text-base text-(--fg)">Tajweed Rules</span>
+                          <ChevronRight className="size-4 text-(--fg2)" />
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
@@ -1114,6 +1125,28 @@ export default function Home() {
               </div>
             </div>
           )}
+        </div>
+      )}
+      {showTajweedRules && (
+        <div
+          className="fixed inset-0 z-200 flex items-center justify-center bg-black/80"
+          onClick={() => setShowTajweedRules(false)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-full bg-black/60 text-white"
+            onClick={() => setShowTajweedRules(false)}
+          >
+            <X className="size-5" />
+          </button>
+          <Image
+            src="/quran-pages/original_tajweed/page-002.jpg"
+            alt="Tajweed Rules"
+            width={800}
+            height={1100}
+            className="max-h-[90dvh] max-w-[90dvw] rounded-lg object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </main>
