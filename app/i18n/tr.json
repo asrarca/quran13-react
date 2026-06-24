@@ -33,11 +33,19 @@
   },
   "settings": {
     "title": "Ayarlar",
+    "installApp": "Uygulamayı Yükle",
     "mushafStyle": "Mushaf",
     "tajweedRules": "Tecvid Kuralları",
     "language": "Dil",
     "about": "Hakkında",
     "footer": "Asrar Abbasi tarafından geliştirildi"
+  },
+  "installApp": {
+    "title": "Uygulamayı Yükle",
+    "step1": "Tarayıcının adres çubuğundaki Paylaş düğmesine dokun",
+    "step2": "Aşağı kaydır ve \"Daha Fazla Gör\"e dokun",
+    "step3": "\"Ana Ekrana Ekle\"ye dokun",
+    "step4": "\"Web Uygulaması Olarak Aç\"ı etkinleştir, ardından Ekle'ye dokun"
   },
   "about": {
     "versionLine": "Quran 13 · v{version}",

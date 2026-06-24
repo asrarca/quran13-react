@@ -33,11 +33,19 @@
   },
   "settings": {
     "title": "Ajustes",
+    "installApp": "Instalar app",
     "mushafStyle": "Mushaf",
     "tajweedRules": "Reglas de Tajweed",
     "language": "Idioma",
     "about": "Acerca de",
     "footer": "Desarrollado por Asrar Abbasi"
+  },
+  "installApp": {
+    "title": "Instalar aplicación",
+    "step1": "Toca el botón Compartir en la barra de dirección de tu navegador",
+    "step2": "Desplázate hacia abajo y toca \"Ver más\"",
+    "step3": "Toca \"Agregar a la pantalla de inicio\"",
+    "step4": "Activa \"Abrir como app web\" y luego toca Agregar"
   },
   "about": {
     "versionLine": "Quran 13 · v{version}",

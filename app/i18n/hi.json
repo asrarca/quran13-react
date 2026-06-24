@@ -33,11 +33,19 @@
   },
   "settings": {
     "title": "सेटिंग्स",
+    "installApp": "ऐप इंस्टॉल करें",
     "mushafStyle": "मुसहफ़",
     "tajweedRules": "तजवीद नियम",
     "language": "भाषा",
     "about": "परिचय",
     "footer": "असरार अब्बासी द्वारा विकसित"
+  },
+  "installApp": {
+    "title": "ऐप इंस्टॉल करें",
+    "step1": "अपने ब्राउज़र के एड्रेस बार में Share बटन पर टैप करें",
+    "step2": "नीचे स्क्रॉल करें और \"View More\" पर टैप करें",
+    "step3": "\"Add to Home Screen\" पर टैप करें",
+    "step4": "\"Open as Web App\" चालू करें, फिर Add पर टैप करें"
   },
   "about": {
     "versionLine": "Quran 13 · v{version}",

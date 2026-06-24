@@ -119,7 +119,8 @@ export default function Home() {
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
-  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | "language" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | "language" | "install" | null>(null);
+  const [isStandalone, setIsStandalone] = useState(false);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
   const [lang, setLang] = useState<Lang>('en');
   // Record<internalPage, ISO date string>
@@ -247,6 +248,11 @@ export default function Home() {
 
     const storedLang = localStorage.getItem("quran13-lang");
     if (storedLang && SUPPORTED_LANGS.some(l => l.code === storedLang)) setLang(storedLang as Lang);
+
+    setIsStandalone(
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+    );
   }, []);
 
   useEffect(() => {
@@ -962,18 +968,20 @@ export default function Home() {
                 <div
                   className="flex h-full transition-transform duration-300 ease-in-out"
                   style={{
-                    width: "400%",
+                    width: "500%",
                     transform: settingsSubView === "mushaf"
-                      ? "translateX(-25%)"
+                      ? "translateX(-20%)"
                       : settingsSubView === "about"
-                        ? "translateX(-50%)"
+                        ? "translateX(-40%)"
                         : settingsSubView === "language"
-                          ? "translateX(-75%)"
-                          : "translateX(0)",
+                          ? "translateX(-60%)"
+                          : settingsSubView === "install"
+                            ? "translateX(-80%)"
+                            : "translateX(0)",
                   }}
                 >
                   {/* Panel 1: main settings */}
-                  <div className="flex h-full w-1/4 flex-col">
+                  <div className="flex h-full w-1/5 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.title')}</span>
                       <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
@@ -981,6 +989,16 @@ export default function Home() {
                       </Button>
                     </div>
                     <div className="min-h-0 flex-1 overflow-y-auto">
+                      {!isStandalone && (
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                          onClick={() => setSettingsSubView("install")}
+                        >
+                          <span className="text-base font-bold text-(--fg)">{t(lang, 'settings.installApp')}</span>
+                          <ChevronRight className="size-4 text-(--fg2)" />
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
@@ -1031,7 +1049,7 @@ export default function Home() {
                   </div>
 
                   {/* Panel 2: mushaf picker */}
-                  <div className="flex h-full w-1/4 flex-col">
+                  <div className="flex h-full w-1/5 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <div className="flex items-center gap-2">
                         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -1071,7 +1089,7 @@ export default function Home() {
                   </div>
 
                   {/* Panel 3: about / how-to */}
-                  <div className="flex h-full w-1/4 flex-col">
+                  <div className="flex h-full w-1/5 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <div className="flex items-center gap-2">
                         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -1146,7 +1164,7 @@ export default function Home() {
                   </div>
 
                   {/* Panel 4: language picker */}
-                  <div className="flex h-full w-1/4 flex-col">
+                  <div className="flex h-full w-1/5 flex-col">
                     <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
                       <div className="flex items-center gap-2">
                         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -1177,6 +1195,43 @@ export default function Home() {
                           </button>
                         );
                       })}
+                    </div>
+                  </div>
+
+                  {/* Panel 5: install app instructions */}
+                  <div className="flex h-full w-1/5 flex-col">
+                    <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, 'settings.installApp')}</span>
+                      </div>
+                      <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setActiveSheet(null)}>
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                    <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+                      <div className="flex flex-col gap-8">
+                        {([1, 2, 3, 4] as const).map((step) => (
+                          <div key={step}>
+                            <div className="mb-3 flex items-start gap-3">
+                              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-(--fg) text-(--bg) text-sm font-bold">
+                                {step}
+                              </div>
+                              <p className="text-[15px] leading-snug text-(--fg)">{t(lang, `installApp.step${step}`)}</p>
+                            </div>
+                            <Image
+                              src={`/screenshots/install-app-0${step}.jpeg`}
+                              alt={`Step ${step}`}
+                              width={0}
+                              height={0}
+                              sizes="100vw"
+                              className="h-auto w-full rounded-2xl shadow-sm"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
