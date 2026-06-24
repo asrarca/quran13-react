@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { type Lang, t } from "../i18n";
+import { type Lang, t, needsFontScale } from "../i18n";
 import { type Juz, type Surah, type DragHandlers } from "../types";
 
 type Props = {
@@ -51,7 +51,7 @@ export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, on
         <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
       </div>
       <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "juzIndex.title")}</span>
+        <span className={`${needsFontScale(lang) ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "juzIndex.title")}</span>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -73,7 +73,7 @@ export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, on
             <button
               type="button"
               onClick={() => onNavigate(item.page)}
-              className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
+              className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
             >
               <div className="min-w-0 flex-1 flex flex-col">
                 <span className="truncate text-base font-medium text-(--fg)">{t(lang, "nav.juz")} {item.num}</span>
@@ -87,7 +87,7 @@ export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, on
                 key={section.num}
                 type="button"
                 onClick={() => onNavigate(section.page)}
-                className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) opacity-60"
+                className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2) opacity-60"
               >
                 <span className="w-6 text-right text-sm tabular-nums text-(--fg3)">½</span>
                 <span className="min-w-0 flex-1 truncate text-sm text-(--fg) opacity-50">{section.name}</span>

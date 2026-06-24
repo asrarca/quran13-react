@@ -2,14 +2,13 @@ import en from './en.json';
 import fr from './fr.json';
 import es from './es.json';
 import de from './de.json';
-import tr from './tr.json';
-import ru from './ru.json';
 import ar from './ar.json';
 import hi from './hi.json';
+import ur from './ur.json';
 
-export type Lang = 'en' | 'fr' | 'es' | 'de' | 'tr' | 'ru' | 'ar' | 'hi';
+export type Lang = 'en' | 'fr' | 'es' | 'de' | 'ar' | 'hi' | 'ur';
 
-const dicts = { en, fr, es, de, tr, ru, ar, hi } as const;
+const dicts = { en, fr, es, de, ar, hi, ur } as const;
 
 function getByPath(obj: Record<string, unknown>, path: string): string {
   let cur: unknown = obj;
@@ -35,19 +34,25 @@ export const langDateLocale: Record<Lang, string> = {
   fr: 'fr-CA',
   es: 'es-ES',
   de: 'de-DE',
-  tr: 'tr-TR',
-  ru: 'ru-RU',
   ar: 'ar-SA',
   hi: 'hi-IN',
+  ur: 'ur-PK',
 };
 
-export const SUPPORTED_LANGS: { code: Lang; label: string }[] = [
-  { code: 'ar', label: 'العربية' },
+export const SUPPORTED_LANGS: { code: Lang; label: string; rtl?: boolean; scaleFont?: boolean }[] = [
+  { code: 'ar', label: 'العربية', rtl: true, scaleFont: true },
   { code: 'en', label: 'English' },
   { code: 'de', label: 'Deutsch' },
   { code: 'es', label: 'Español' },
   { code: 'fr', label: 'Français' },
   { code: 'hi', label: 'हिन्दी' },
-  { code: 'ru', label: 'Русский' },
-  { code: 'tr', label: 'Türkçe' },
+  { code: 'ur', label: 'اردو', rtl: true, scaleFont: true },
 ];
+
+export function isRtlLang(lang: Lang): boolean {
+  return SUPPORTED_LANGS.find((l) => l.code === lang)?.rtl ?? false;
+}
+
+export function needsFontScale(lang: Lang): boolean {
+  return SUPPORTED_LANGS.find((l) => l.code === lang)?.scaleFont ?? false;
+}

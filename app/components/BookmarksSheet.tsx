@@ -1,6 +1,6 @@
 import { Bookmark, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { type Lang, t, langDateLocale } from "../i18n";
+import { type Lang, t, langDateLocale, needsFontScale } from "../i18n";
 import { type Surah, type DragHandlers } from "../types";
 
 type BookmarkEntry = { page: number; date: string };
@@ -46,7 +46,7 @@ export function BookmarksSheet({ lang, sortedBookmarks, surahs, onClose, onNavig
         <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
       </div>
       <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "bookmarks.title")}</span>
+        <span className={`${needsFontScale(lang) ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "bookmarks.title")}</span>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />
         </Button>
@@ -66,7 +66,7 @@ export function BookmarksSheet({ lang, sortedBookmarks, surahs, onClose, onNavig
                 key={p}
                 type="button"
                 onClick={() => onNavigate(p)}
-                className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
+                className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2)"
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="truncate text-base font-medium text-(--fg)">{surah.name}</span>

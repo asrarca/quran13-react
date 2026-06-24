@@ -9,7 +9,7 @@ import "swiper/css";
 
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/app/components/ui/button";
-import { t, type Lang, SUPPORTED_LANGS } from "./i18n";
+import { t, type Lang, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "./i18n";
 import { APP_VERSION, DEFAULT_START_PAGE, FIRST_PAGE, LAST_PAGE } from "./constants";
 import {
   type ActiveSheet,
@@ -380,7 +380,7 @@ export default function Home() {
   }
 
   return (
-    <main data-theme={theme} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
+    <main data-theme={theme} dir={isRtlLang(lang) ? "rtl" : undefined} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
       <header className="relative flex items-center justify-between gap-3 px-4 pb-3 pt-1">
         <div className="min-w-0">
           <div className="truncate text-[15px] font-semibold">{t(lang, "header.surahPrefix")} {surahsOnPage.map((s) => s.name).join(", ")}</div>
@@ -494,11 +494,11 @@ export default function Home() {
         <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
           <button type="button" onClick={() => setActiveSheet("surah")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <BookOpen className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, "nav.surah")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.surah")}</span>
           </button>
           <button type="button" onClick={() => setActiveSheet("juz")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Layers className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, "nav.juz")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.juz")}</span>
           </button>
           <button
             type="button"
@@ -506,11 +506,11 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Hash className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, "nav.page")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.page")}</span>
           </button>
           <button type="button" onClick={() => setActiveSheet("bookmarks")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Bookmark className="size-5.5" fill={activeSheet === "bookmarks" ? "currentColor" : "none"} />
-            <span className="text-[11px] font-medium">{t(lang, "nav.saved")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.saved")}</span>
           </button>
           <button
             type="button"
@@ -518,7 +518,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Settings className="size-5.5" />
-            <span className="text-[11px] font-medium">{t(lang, "nav.settings")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.settings")}</span>
           </button>
         </nav>
       </div>

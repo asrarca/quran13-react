@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { type Lang, t } from "../i18n";
+import { type Lang, t, needsFontScale } from "../i18n";
 import { type Surah, type Juz, type DragHandlers } from "../types";
 
 type Props = {
@@ -53,7 +53,7 @@ export function SurahSheet({ lang, surahs, juz, onClose, onNavigate, dragHandler
         <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
       </div>
       <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-        <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "surahIndex.title")}</span>
+        <span className={`${needsFontScale(lang) ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "surahIndex.title")}</span>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />
         </Button>
@@ -64,7 +64,7 @@ export function SurahSheet({ lang, surahs, juz, onClose, onNavigate, dragHandler
             key={surah.num}
             type="button"
             onClick={() => onNavigate(surah.page)}
-            className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
+            className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2)"
           >
             <span className="w-6 text-right text-sm tabular-nums text-(--fg2) mb-3.5">{surah.num}</span>
             <div className="min-w-0 flex-1 flex flex-col">

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { type Lang, t, SUPPORTED_LANGS } from "../i18n";
+import { type Lang, t, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "../i18n";
 import { type MushafKey, type DragHandlers } from "../types";
 import quranData from "@/data/quran-data.json";
 
@@ -21,11 +21,11 @@ type Props = {
   dragHandlers: DragHandlers;
 };
 
-const TRANSLATE_X: Record<NonNullable<SettingsSubView>, string> = {
-  mushaf: "-20%",
-  about: "-40%",
-  language: "-60%",
-  install: "-80%",
+const SLIDE_AMOUNT: Record<NonNullable<SettingsSubView>, number> = {
+  mushaf: 20,
+  about: 40,
+  language: 60,
+  install: 80,
 };
 
 export function SettingsSheet({
@@ -42,6 +42,10 @@ export function SettingsSheet({
   dragHandlers,
 }: Props) {
   const activeMushaf = quranData.mushafs[activeMushafKey];
+  const isRtl = isRtlLang(lang);
+  const scaleFont = needsFontScale(lang);
+  const ForwardChevron = isRtl ? ChevronLeft : ChevronRight;
+  const BackChevron = isRtl ? ChevronRight : ChevronLeft;
 
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
@@ -60,13 +64,13 @@ export function SettingsSheet({
           className="flex h-full transition-transform duration-300 ease-in-out"
           style={{
             width: "500%",
-            transform: settingsSubView ? `translateX(${TRANSLATE_X[settingsSubView]})` : "translateX(0)",
+            transform: settingsSubView ? `translateX(${isRtl ? '' : '-'}${SLIDE_AMOUNT[settingsSubView]}%)` : "translateX(0)",
           }}
         >
           {/* Panel 1: main settings */}
           <div className="flex h-full w-1/5 flex-col">
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-              <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "settings.title")}</span>
+              <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.title")}</span>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
                 <X className="size-4" />
               </Button>
@@ -75,54 +79,54 @@ export function SettingsSheet({
               {!isStandalone && (
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                  className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                   onClick={() => setSettingsSubView("install")}
                 >
                   <span className="text-base font-bold text-(--fg)">{t(lang, "settings.installApp")}</span>
-                  <ChevronRight className="size-4 text-(--fg2)" />
+                  <ForwardChevron className="size-4 text-(--fg2)" />
                 </button>
               )}
               <button
                 type="button"
-                className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                 onClick={() => setSettingsSubView("mushaf")}
               >
                 <span className="text-base text-(--fg)">{t(lang, "settings.mushafStyle")}</span>
                 <div className="flex items-center gap-1.5 text-(--fg2)">
                   <span className="text-sm">{activeMushaf.name}</span>
-                  <ChevronRight className="size-4" />
+                  <ForwardChevron className="size-4" />
                 </div>
               </button>
               {activeMushafKey === "original_tajweed" && (
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                  className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                   onClick={onShowTajweedRules}
                 >
                   <span className="text-base text-(--fg)">{t(lang, "settings.tajweedRules")}</span>
-                  <ChevronRight className="size-4 text-(--fg2)" />
+                  <ForwardChevron className="size-4 text-(--fg2)" />
                 </button>
               )}
               <button
                 type="button"
-                className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                 onClick={() => setSettingsSubView("language")}
               >
                 <span className="text-base text-(--fg)">{t(lang, "settings.language")}</span>
                 <div className="flex items-center gap-1.5 text-(--fg2)">
                   <span className="text-sm">{t(lang, "misc.langName")}</span>
-                  <ChevronRight className="size-4" />
+                  <ForwardChevron className="size-4" />
                 </div>
               </button>
               <button
                 type="button"
-                className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                 onClick={() => setSettingsSubView("about")}
               >
                 <span className="text-base text-(--fg)">{t(lang, "settings.about")}</span>
                 <div className="flex items-center gap-1.5 text-(--fg2)">
                   <span className="text-sm">v{appVersion}</span>
-                  <ChevronRight className="size-4" />
+                  <ForwardChevron className="size-4" />
                 </div>
               </button>
             </div>
@@ -136,9 +140,9 @@ export function SettingsSheet({
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                  <ChevronLeft className="size-4" />
+                  <BackChevron className="size-4" />
                 </Button>
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "settings.mushafStyle")}</span>
+                <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.mushafStyle")}</span>
               </div>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
                 <X className="size-4" />
@@ -152,7 +156,7 @@ export function SettingsSheet({
                   <button
                     key={key}
                     type="button"
-                    className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                    className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                     onClick={() => { onMushafChange(key); setSettingsSubView(null); }}
                   >
                     <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
@@ -172,9 +176,9 @@ export function SettingsSheet({
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                  <ChevronLeft className="size-4" />
+                  <BackChevron className="size-4" />
                 </Button>
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "settings.about")}</span>
+                <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.about")}</span>
               </div>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
                 <X className="size-4" />
@@ -247,9 +251,9 @@ export function SettingsSheet({
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                  <ChevronLeft className="size-4" />
+                  <BackChevron className="size-4" />
                 </Button>
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "settings.language")}</span>
+                <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.language")}</span>
               </div>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
                 <X className="size-4" />
@@ -262,7 +266,7 @@ export function SettingsSheet({
                   <button
                     key={code}
                     type="button"
-                    className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-left active:bg-(--bg2)"
+                    className="flex w-full items-center gap-3.5 border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                     onClick={() => { onLangChange(code); setSettingsSubView(null); }}
                   >
                     <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
@@ -282,9 +286,9 @@ export function SettingsSheet({
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
-                  <ChevronLeft className="size-4" />
+                  <BackChevron className="size-4" />
                 </Button>
-                <span className="text-[13px] font-semibold tracking-[2px] uppercase">{t(lang, "settings.installApp")}</span>
+                <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.installApp")}</span>
               </div>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
                 <X className="size-4" />
