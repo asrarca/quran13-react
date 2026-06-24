@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Quran reader PWA. Single-page Next.js app (`app/page.tsx`, `"use client"`). Displays Quran page images with swipe navigation, highlights, bookmarks, and a settings panel. App version: `2.0.2`.
+A Quran reader PWA. Next.js app with a single page route (`app/page.tsx`, `"use client"`). Displays Quran page images with swipe navigation, highlights, bookmarks, and a settings panel. App version: `2.0.2` (defined in `app/constants.ts`).
 
 ## Tech Stack
 
@@ -11,14 +11,31 @@ A Quran reader PWA. Single-page Next.js app (`app/page.tsx`, `"use client"`). Di
 - **Tailwind CSS v4** (PostCSS plugin, no `tailwind.config.js`)
 - **Swiper 12** for page swiping
 - **Lucide React 1.21** for icons
-- **`@base-ui/react`**, **`shadcn`** (Button component at `@/components/ui/button`)
+- **`@base-ui/react`**, **`shadcn`** (Button component at `@/app/components/ui/button`)
 - **TypeScript 5**, strict
 
 ## File Structure (key files)
 
 ```
 app/
-  page.tsx          — entire app (single client component, ~1213 lines)
+  page.tsx                  — root component: state, effects, event handlers, layout (~400 lines)
+  constants.ts              — FIRST_PAGE, LAST_PAGE, TOTAL_PAGES, DEFAULT_START_PAGE, APP_VERSION
+  types.ts                  — shared types: Theme, ActiveSheet, Surah, Juz, MushafKey, LineBand,
+                              LineCoord, HighlightColorKey, HIGHLIGHT_COLORS, DragHandlers
+  components/
+    PageCard.tsx            — page image + highlight overlays + rakat markers; owns imagePath()
+    HighlightPicker.tsx     — long-press modal: color picker + rakat number grid
+    SurahSheet.tsx          — surah list bottom sheet
+    JuzSheet.tsx            — juz list bottom sheet with halves toggle
+    PageSheet.tsx           — numeric keypad overlay (go-to-page)
+    BookmarksSheet.tsx      — bookmarks list sheet; owns getSurahForPage() + formatDate()
+    SettingsSheet.tsx       — 5-panel slide settings sheet
+    ui/
+      button.tsx            — shadcn Button (imports from @/lib/utils)
+      dialog.tsx
+      drawer.tsx
+      scroll-area.tsx
+      separator.tsx
   i18n/
     index.ts        — translation engine + language registry
     en.json         — English strings (source of truth for keys)
@@ -31,6 +48,8 @@ app/
     hi.json         — Hindi
 data/
   quran-data.json   — surahs, juz, mushaf definitions (lineCoordinates, aspectRatio, etc.)
+lib/
+  utils.ts          — cn() helper (clsx + tailwind-merge)
 public/
   quran-pages/      — page image assets, organized by mushaf dir
 ```
@@ -78,17 +97,18 @@ juzIndex.{title,halves}
 goToPage.{title,hint,go}
 bookmarks.{title,empty,emptyHint}
 highlightPicker.{lineHighlight,numberAnnotation}
-settings.{title,mushafStyle,tajweedRules,language,about,footer}
+settings.{title,mushafStyle,tajweedRules,language,about,footer,installApp}
 about.{versionLine,readingSection,navigatePages,navigatePagesDesc,landscapeMode,landscapeModeDesc,
        toggleMenu,toggleMenuDesc,highlightSection,highlightLine,highlightLineDesc,
        addAnnotation,addAnnotationDesc,addAnnotationTip,bookmarksSection,savePage,savePageDesc,
        viewSavedPages,viewSavedPagesDesc,displaySection,theme,themeDesc}
+installApp.{step1,step2,step3,step4}
 misc.{imageUnavailable,langName,tajweedRulesAlt}
 ```
 
 ## Settings Sheet — 5-Panel Slide System
 
-The settings sheet uses a pure-CSS slide animation (no library). The container is `width: 500%` with 5 `w-1/5` panels side by side. `settingsSubView` drives `translateX`:
+The settings sheet (`SettingsSheet.tsx`) uses a pure-CSS slide animation (no library). The container is `width: 500%` with 5 `w-1/5` panels side by side. `settingsSubView` drives `translateX` via the `TRANSLATE_X` lookup object:
 
 | `settingsSubView` | `translateX` | Panel shown |
 |---|---|---|
@@ -101,24 +121,36 @@ The settings sheet uses a pure-CSS slide animation (no library). The container i
 Settings rows (Panel 1 order):
 1. **Install App** → install sub-panel (hidden when `isStandalone === true`)
 2. **Mushaf** → mushaf sub-panel
-3. **Tajweed Rules** → fullscreen image overlay (only visible when `activeMushafKey === "original_tajweed"`)
+3. **Tajweed Rules** → fullscreen image overlay in page.tsx (only visible when `activeMushafKey === "original_tajweed"`)
 4. **Language** → language sub-panel (shows current `misc.langName`)
 5. **About** → about sub-panel (shows `vAppVersion`)
 
 `isStandalone` is detected on mount: `window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true`. When true, the Install App row is hidden entirely.
 
+`settingsSubView` state lives in `page.tsx` and is explicitly reset to `null` when the settings nav button is clicked. `SettingsSheet` receives it as a prop and calls the setter directly.
+
 ## Sheets / Drawers
 
-`activeSheet: null | "surah" | "juz" | "page" | "bookmarks" | "settings"`
+`activeSheet: null | "surah" | "juz" | "page" | "bookmarks" | "settings"` — state in `page.tsx`.
 
-- **surah**: scrollable list of all 114 surahs with Arabic name, number, page
-- **juz**: scrollable list of 30 juz; "Halves" toggle (`showSections`) reveals half-juz sub-entries
+Each sheet is its own component in `app/components/`:
+- **SurahSheet**: scrollable list of all 114 surahs with Arabic name, number, page
+- **JuzSheet**: scrollable list of 30 juz; "Halves" toggle (`showSections`) reveals half-juz sub-entries
   - Juz label uses `t(lang, 'nav.juz') + ' ' + item.num` (translated, not the raw `item.name`)
-- **page**: numeric keypad modal (centered overlay, not bottom sheet)
-- **bookmarks**: sorted by most-recently-added ISO date; uses `langDateLocale[lang]` for date formatting
-- **settings**: 4-panel slide system (see above)
+- **PageSheet**: numeric keypad modal (centered overlay, not bottom sheet)
+- **BookmarksSheet**: sorted by most-recently-added ISO date; `getSurahForPage` and `formatDate` are local to this component
+- **SettingsSheet**: 5-panel slide system (see above)
 
-Sheet drag-to-dismiss: pointer events on the drag handle; dragging down > 72px closes the sheet.
+`DragHandlers` type (in `app/types.ts`) bundles the 4 pointer event props for drag-to-dismiss. Assembled in `page.tsx` and passed to each sheet:
+```ts
+const dragHandlers: DragHandlers = {
+  onPointerDown: handleSheetDragDown,
+  onPointerMove: handleSheetDragMove,
+  onPointerUp: handleSheetDragEnd,
+  onPointerCancel: handleSheetDragEnd,
+};
+```
+Sheet drag-to-dismiss: dragging down > 72px closes the sheet.
 
 ## Page Display & Navigation
 
@@ -131,16 +163,17 @@ Sheet drag-to-dismiss: pointer events on the drag handle; dragging down > 72px c
 
 - **Highlights**: colored overlays on text lines. 4 colors: yellow, green, red, blue. Stored per page/line. Rendered as `opacity-35 mix-blend-multiply` divs using normalized line band coordinates.
 - **Rakat markers**: numbered circles (1–20) placed at the end of a line. Useful for Huffaz to mark Taraweh rakat breaks. Stored per page/line.
-- Both use `lineCoordinates` from mushaf data → `computeBands()` → `lineBandsMap` (memoized on mushaf change).
+- Both use `lineCoordinates` from mushaf data → `computeBands()` → `lineBandsMap` (memoized on mushaf change, computed in `page.tsx`).
 - Line detection: `lineAtFraction(frac, bands)` maps a normalized pointer Y position to a line index; returns -1 if outside text area (header/margins).
+- `HIGHLIGHT_COLORS` and `HighlightColorKey` are defined in `app/types.ts`.
 
 ## Mushaf / Page Images
 
 - `activeMushafKey` selects from `quranData.mushafs` (keys defined in `quran-data.json`)
-- `imagePath(page, mushaf)` builds the src: `{dir}/{filePrefix}{paddedPage}.{fileExtension}`
+- `imagePath(page, mushaf)` lives in `PageCard.tsx`; builds: `{dir}/{filePrefix}{paddedPage}.{fileExtension}`
 - `pageOffset` in mushaf data adjusts the file numbering
 - `missingImages` tracks 404s; shows a localized fallback message
-- Switching mushaf resets `missingImages`
+- Switching mushaf calls `setActiveMushafKey` + `setMissingImages({})` via `onMushafChange` prop
 
 ## Theme
 
@@ -157,7 +190,7 @@ This project uses React Compiler. The compiler enforces stricter rules than stan
 
 ## Known Data Quirks
 
-- `quranData.juz` entries have a `name` field (English string like "Al-Fatihah") but the UI now uses `t(lang, 'nav.juz') + ' ' + item.num` instead, making `item.name` unused in the juz list
-- `item.isNisf` marks half-juz entries (shown at 60% opacity)
+- `quranData.juz` entries have a `name` field (English string like "Al-Fatihah") but the UI now uses `t(lang, 'nav.juz') + ' ' + item.num` instead, making `item.name` unused in the juz list (it is still displayed in the half-juz sub-rows)
+- `item.isNisf` marks half-juz entries (shown at 60% opacity in the main juz row)
 - `item.sections` contains the half-juz sub-entries (shown when `showSections` toggle is active)
 - Surah `page` and Juz `page` are clamped to `[FIRST_PAGE, LAST_PAGE]` via `clampPage` at load time

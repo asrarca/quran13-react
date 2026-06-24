@@ -545,12 +545,13 @@ export default function Home() {
             onClick={() => setActiveSheet(null)}
           />
           {activeSheet === "surah" && (
-            <SurahSheet lang={lang} surahs={surahs} onClose={() => setActiveSheet(null)} onNavigate={goToPage} dragHandlers={dragHandlers} />
+            <SurahSheet lang={lang} surahs={surahs} juz={juz} onClose={() => setActiveSheet(null)} onNavigate={goToPage} dragHandlers={dragHandlers} />
           )}
           {activeSheet === "juz" && (
             <JuzSheet
               lang={lang}
               juz={juz}
+              surahs={surahs}
               showSections={showSections}
               onToggleSections={() => setShowSections((v) => !v)}
               onClose={() => setActiveSheet(null)}

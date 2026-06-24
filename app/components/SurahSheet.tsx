@@ -1,17 +1,45 @@
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t } from "../i18n";
-import { type Surah, type DragHandlers } from "../types";
+import { type Surah, type Juz, type DragHandlers } from "../types";
 
 type Props = {
   lang: Lang;
   surahs: Surah[];
+  juz: Juz[];
   onClose: () => void;
   onNavigate: (page: number) => void;
   dragHandlers: DragHandlers;
 };
 
-export function SurahSheet({ lang, surahs, onClose, onNavigate, dragHandlers }: Props) {
+function getSurahJuzSubtitle(surah: Surah, surahList: Surah[], juzList: Juz[], lang: Lang): string {
+  const surahStart = surah.page;
+  const surahIdx = surahList.indexOf(surah);
+  const nextSurah = surahList[surahIdx + 1];
+  const surahEnd = nextSurah ? Math.max(surahStart, nextSurah.page - 1) : Infinity;
+
+  let startIdx = 0;
+  for (let i = 0; i < juzList.length; i++) {
+    if (juzList[i].page <= surahStart) startIdx = i;
+    else break;
+  }
+
+  let endIdx = startIdx;
+  for (let i = startIdx; i < juzList.length; i++) {
+    if (juzList[i].page <= surahEnd) endIdx = i;
+    else break;
+  }
+
+  const juzLabel = t(lang, "nav.juz");
+  const startNum = juzList[startIdx].num;
+  const endNum = juzList[endIdx].num;
+
+  const count = endIdx - startIdx + 1;
+  if (count <= 3) return Array.from({ length: count }, (_, i) => `${juzLabel} ${juzList[startIdx + i].num}`).join(", ");
+  return `${juzLabel} ${startNum} – ${juzLabel} ${endNum}`;
+}
+
+export function SurahSheet({ lang, surahs, juz, onClose, onNavigate, dragHandlers }: Props) {
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
       <div
@@ -38,8 +66,11 @@ export function SurahSheet({ lang, surahs, onClose, onNavigate, dragHandlers }: 
             onClick={() => onNavigate(surah.page)}
             className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2)"
           >
-            <span className="w-6 text-right text-sm tabular-nums text-(--fg3)">{surah.num}</span>
-            <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{surah.name}</span>
+            <span className="w-6 text-right text-sm tabular-nums text-(--fg2) mb-3.5">{surah.num}</span>
+            <div className="min-w-0 flex-1 flex flex-col">
+              <span className="truncate text-base font-medium text-(--fg)">{surah.name}</span>
+              <span className="truncate text-xs text-(--fg3)">{getSurahJuzSubtitle(surah, surahs, juz, lang)}</span>
+            </div>
             <span className="text-xs text-(--fg3)">p.{surah.page + 1}</span>
             <span className="font-amiri font-bold text-[22px]" dir="rtl">{surah.arabic}</span>
           </button>

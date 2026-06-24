@@ -1,11 +1,12 @@
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t } from "../i18n";
-import { type Juz, type DragHandlers } from "../types";
+import { type Juz, type Surah, type DragHandlers } from "../types";
 
 type Props = {
   lang: Lang;
   juz: Juz[];
+  surahs: Surah[];
   showSections: boolean;
   onToggleSections: () => void;
   onClose: () => void;
@@ -13,7 +14,30 @@ type Props = {
   dragHandlers: DragHandlers;
 };
 
-export function JuzSheet({ lang, juz, showSections, onToggleSections, onClose, onNavigate, dragHandlers }: Props) {
+function getJuzSurahSubtitle(item: Juz, juzList: Juz[], surahs: Surah[]): string {
+  const juzStart = item.page;
+  const juzIdx = juzList.indexOf(item);
+  const nextJuz = juzList[juzIdx + 1];
+  const juzEnd = nextJuz ? nextJuz.page - 1 : Infinity;
+
+  let startIdx = 0;
+  for (let i = 0; i < surahs.length; i++) {
+    if (surahs[i].page <= juzStart) startIdx = i;
+    else break;
+  }
+
+  let endIdx = startIdx;
+  for (let i = startIdx; i < surahs.length; i++) {
+    if (surahs[i].page <= juzEnd) endIdx = i;
+    else break;
+  }
+
+  const count = endIdx - startIdx + 1;
+  if (count <= 3) return Array.from({ length: count }, (_, i) => surahs[startIdx + i].name).join(", ");
+  return `${surahs[startIdx].name} – ${surahs[endIdx].name}`;
+}
+
+export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, onClose, onNavigate, dragHandlers }: Props) {
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
       <div
@@ -51,7 +75,10 @@ export function JuzSheet({ lang, juz, showSections, onToggleSections, onClose, o
               onClick={() => onNavigate(item.page)}
               className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-left hover:bg-(--bg2) ${item.isNisf ? "opacity-60" : ""}`}
             >
-              <span className="min-w-0 flex-1 truncate text-base font-medium text-(--fg)">{t(lang, "nav.juz")} {item.num}</span>
+              <div className="min-w-0 flex-1 flex flex-col">
+                <span className="truncate text-base font-medium text-(--fg)">{t(lang, "nav.juz")} {item.num}</span>
+                <span className="truncate text-xs text-(--fg3)">{getJuzSurahSubtitle(item, juz, surahs)}</span>
+              </div>
               <span className="text-xs text-(--fg3)">p.{item.page + 1}</span>
               <span className="font-amiri font-bold text-[22px]" dir="rtl">{item.arabicStart}</span>
             </button>
