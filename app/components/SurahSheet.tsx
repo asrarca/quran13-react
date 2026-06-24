@@ -69,9 +69,9 @@ export function SurahSheet({ lang, surahs, juz, onClose, onNavigate, dragHandler
             <span className="w-6 text-right text-sm tabular-nums text-(--fg2) mb-3.5">{surah.num}</span>
             <div className="min-w-0 flex-1 flex flex-col">
               <span className="truncate text-base font-medium text-(--fg)">{surah.name}</span>
-              <span className="truncate text-xs text-(--fg3)">{getSurahJuzSubtitle(surah, surahs, juz, lang)}</span>
+              <span className="truncate text-xs text-(--fg2)">{getSurahJuzSubtitle(surah, surahs, juz, lang)}</span>
             </div>
-            <span className="text-xs text-(--fg3)">p.{surah.page + 1}</span>
+            <span className="text-xs text-(--fg2)">p.{surah.page + 1}</span>
             <span className="font-amiri font-bold text-[22px]" dir="rtl">{surah.arabic}</span>
           </button>
         ))}

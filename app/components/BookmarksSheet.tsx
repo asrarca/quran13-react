@@ -53,10 +53,10 @@ export function BookmarksSheet({ lang, sortedBookmarks, surahs, onClose, onNavig
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {sortedBookmarks.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-(--fg3)">
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-(--fg2)">
             <Bookmark className="size-8 opacity-30" />
             <span className="text-sm">{t(lang, "bookmarks.empty")}</span>
-            <span className="text-xs text-(--fg3)">{t(lang, "bookmarks.emptyHint")}</span>
+            <span className="text-xs text-(--fg2)">{t(lang, "bookmarks.emptyHint")}</span>
           </div>
         ) : (
           sortedBookmarks.map(({ page: p, date }) => {
@@ -70,9 +70,9 @@ export function BookmarksSheet({ lang, sortedBookmarks, surahs, onClose, onNavig
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="truncate text-base font-medium text-(--fg)">{surah.name}</span>
-                  <span className="text-xs text-(--fg3)">{formatDate(date, lang)}</span>
+                  <span className="text-xs text-(--fg2)">{formatDate(date, lang)}</span>
                 </div>
-                <span className="text-sm tabular-nums text-(--fg3)">p.{p + 1}</span>
+                <span className="text-sm tabular-nums text-(--fg2)">p.{p + 1}</span>
               </button>
             );
           })
