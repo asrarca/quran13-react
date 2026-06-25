@@ -22,6 +22,7 @@ app/
   constants.ts              — FIRST_PAGE, LAST_PAGE, TOTAL_PAGES, DEFAULT_START_PAGE, APP_VERSION
   types.ts                  — shared types: Theme, ActiveSheet, Surah, Juz, MushafKey, LineBand,
                               LineCoord, HighlightColorKey, HIGHLIGHT_COLORS, DragHandlers
+                              Juz has optional: id?, line? (1-based), isNisf?, sections?
   components/
     PageCard.tsx            — page image + highlight overlays + rakat markers; owns imagePath()
     HighlightPicker.tsx     — long-press modal: color picker + rakat number grid
@@ -93,7 +94,7 @@ t(lang, 'header.juzPage', { juz: 5, page: 90 })  // with {var} interpolation
 nav.{surah,juz,page,saved,settings}
 header.{surahPrefix,juzPage}
 surahIndex.title
-juzIndex.{title,halves}
+juzIndex.{title,quarters}
 goToPage.{title,hint,go}
 bookmarks.{title,empty,emptyHint}
 highlightPicker.{lineHighlight,numberAnnotation}
@@ -134,8 +135,8 @@ Settings rows (Panel 1 order):
 `activeSheet: null | "surah" | "juz" | "page" | "bookmarks" | "settings"` — state in `page.tsx`.
 
 Each sheet is its own component in `app/components/`:
-- **SurahSheet**: scrollable list of all 114 surahs with Arabic name, number, page
-- **JuzSheet**: scrollable list of 30 juz; "Halves" toggle (`showSections`) reveals half-juz sub-entries
+- **SurahSheet**: scrollable list of all 114 surahs with Arabic name, number, page. On open, auto-scrolls to the active surah (last surah whose `page <= currentPage`) at the top of the drawer.
+- **JuzSheet**: scrollable list of 30 juz; "Quarters" toggle (`showSections`) reveals quarter/half/three-quarter sub-entries. On open, auto-scrolls to active juz at the top. Toggling Quarters preserves scroll position (saves `scrollTop` before toggle, restores via `useLayoutEffect`). Section rows call `onNavigateSection(page, line)` when `section.line != null`, otherwise `onNavigate(page)`.
   - Juz label uses `t(lang, 'nav.juz') + ' ' + item.num` (translated, not the raw `item.name`)
 - **PageSheet**: numeric keypad modal (centered overlay, not bottom sheet)
 - **BookmarksSheet**: sorted by most-recently-added ISO date; `getSurahForPage` and `formatDate` are local to this component
@@ -162,6 +163,7 @@ Sheet drag-to-dismiss: dragging down > 72px closes the sheet.
 ## Highlights & Rakat Markers
 
 - **Highlights**: colored overlays on text lines. 4 colors: yellow, green, red, blue. Stored per page/line. Rendered as `opacity-35 mix-blend-multiply` divs using normalized line band coordinates.
+- **Line flash**: transient navigation highlight. When a juz section with a `line` field is tapped, `goToSection(page, line)` sets `navFlash: { page, line, stamp }` state in `page.tsx`. `PageCard` renders a yellow (`#dade60`) overlay using `bands[flashLine - 1]` (line is 1-based, bands are 0-based) with CSS class `animate-line-flash` (fades from opacity 0.55 → 0 over 1.5s, defined in `globals.css`). `flashKey={stamp}` forces re-mount to restart animation if same page/line is tapped twice. `navFlash` clears after 2s via `setTimeout`. Completely independent of user highlights — not stored in localStorage.
 - **Rakat markers**: numbered circles (1–20) placed at the end of a line. Useful for Huffaz to mark Taraweh rakat breaks. Stored per page/line.
 - Both use `lineCoordinates` from mushaf data → `computeBands()` → `lineBandsMap` (memoized on mushaf change, computed in `page.tsx`).
 - Line detection: `lineAtFraction(frac, bands)` maps a normalized pointer Y position to a line index; returns -1 if outside text area (header/margins).
@@ -191,6 +193,6 @@ This project uses React Compiler. The compiler enforces stricter rules than stan
 ## Known Data Quirks
 
 - `quranData.juz` entries have a `name` field (English string like "Al-Fatihah") but the UI now uses `t(lang, 'nav.juz') + ' ' + item.num` instead, making `item.name` unused in the juz list (it is still displayed in the half-juz sub-rows)
-- `item.isNisf` marks half-juz entries (shown at 60% opacity in the main juz row)
-- `item.sections` contains the half-juz sub-entries (shown when `showSections` toggle is active)
+- `item.isNisf` marks half-juz entries (shown at reduced opacity in the main juz row)
+- `item.sections` contains quarter/half/three-quarter sub-entries (shown when `showSections` toggle is active); each section has `id` (`"quarter"` | `"half"` | `"three-quarter"`), `page`, `arabicStart`, and `line` (1-based line number on that page)
 - Surah `page` and Juz `page` are clamped to `[FIRST_PAGE, LAST_PAGE]` via `clampPage` at load time

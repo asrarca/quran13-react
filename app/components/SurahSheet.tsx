@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t, needsFontScale } from "../i18n";
@@ -7,6 +8,7 @@ type Props = {
   lang: Lang;
   surahs: Surah[];
   juz: Juz[];
+  currentPage: number;
   onClose: () => void;
   onNavigate: (page: number) => void;
   dragHandlers: DragHandlers;
@@ -39,7 +41,19 @@ function getSurahJuzSubtitle(surah: Surah, surahList: Surah[], juzList: Juz[], l
   return `${juzLabel} ${startNum} – ${juzLabel} ${endNum}`;
 }
 
-export function SurahSheet({ lang, surahs, juz, onClose, onNavigate, dragHandlers }: Props) {
+export function SurahSheet({ lang, surahs, juz, currentPage, onClose, onNavigate, dragHandlers }: Props) {
+  const activeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "start" });
+  }, []);
+
+  let activeSurahNum = surahs[0].num;
+  for (const surah of surahs) {
+    if (surah.page <= currentPage) activeSurahNum = surah.num;
+    else break;
+  }
+
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
       <div
@@ -61,6 +75,7 @@ export function SurahSheet({ lang, surahs, juz, onClose, onNavigate, dragHandler
       <div className="min-h-0 flex-1 overflow-y-auto">
         {surahs.map((surah) => (
           <button
+            ref={surah.num === activeSurahNum ? activeRef : undefined}
             key={surah.num}
             type="button"
             onClick={() => onNavigate(surah.page)}

@@ -46,7 +46,7 @@ export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggl
   const preservedOffsetRef = useRef<number | null>(null);
 
   useEffect(() => {
-    activeRef.current?.scrollIntoView({ block: "center" });
+    activeRef.current?.scrollIntoView({ block: "start" });
   }, []);
 
   useLayoutEffect(() => {
