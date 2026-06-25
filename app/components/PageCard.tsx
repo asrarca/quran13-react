@@ -20,6 +20,8 @@ type Props = {
   missingImages: Record<number, true>;
   bands: LineBand[];
   lang: Lang;
+  flashLine?: number;
+  flashKey?: number;
   onPressStart: (e: React.PointerEvent<HTMLDivElement>, candidate: number) => void;
   onPressMove: (e: React.PointerEvent<HTMLDivElement>) => void;
   onPressEnd: () => void;
@@ -35,6 +37,8 @@ export function PageCard({
   missingImages,
   bands,
   lang,
+  flashLine,
+  flashKey,
   onPressStart,
   onPressMove,
   onPressEnd,
@@ -90,6 +94,19 @@ export function PageCard({
                 }}
               />
             ))}
+            {flashLine !== undefined && bands[flashLine - 1] && (
+              <div
+                key={flashKey}
+                className="pointer-events-none absolute animate-line-flash"
+                style={{
+                  backgroundColor: "#dade60",
+                  top: `${bands[flashLine - 1].top * 100}%`,
+                  height: `${(bands[flashLine - 1].bottom - bands[flashLine - 1].top) * 100}%`,
+                  left: `${bands[flashLine - 1].left * 100}%`,
+                  width: `${(bands[flashLine - 1].right - bands[flashLine - 1].left) * 100}%`,
+                }}
+              />
+            )}
             {Object.entries(rakatMarkers[candidate] ?? {}).map(([lineStr, rakat]) => {
               const line = Number(lineStr);
               const band = bands[line];

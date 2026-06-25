@@ -16,35 +16,135 @@
       "lineHeight": 0.068,
       "lineCoordinates": {
         "default": [
-          { "x": 0.499, "y": 0.0947, "w": 0.845 },
-          { "x": 0.499, "y": 0.1582, "w": 0.845 },
-          { "x": 0.499, "y": 0.2285, "w": 0.845 },
-          { "x": 0.499, "y": 0.295, "w": 0.845 },
-          { "x": 0.499, "y": 0.3615, "w": 0.845 },
-          { "x": 0.499, "y": 0.4315, "w": 0.845 },
-          { "x": 0.499, "y": 0.5032, "w": 0.845 },
-          { "x": 0.499, "y": 0.5712, "w": 0.845 },
-          { "x": 0.499, "y": 0.6357, "w": 0.845 },
-          { "x": 0.499, "y": 0.704, "w": 0.845 },
-          { "x": 0.499, "y": 0.7748, "w": 0.845 },
-          { "x": 0.499, "y": 0.8437, "w": 0.845 },
-          { "x": 0.499, "y": 0.9158, "w": 0.845 }
+          {
+            "x": 0.499,
+            "y": 0.0947,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.1582,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.2285,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.295,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.3615,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.4315,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.5032,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.5712,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.6357,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.704,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.7748,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.8437,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.9158,
+            "w": 0.845
+          }
         ],
         "001": [
-          { "x": 0.499, "y": 0.427, "w": 0.6 },
-          { "x": 0.499, "y": 0.488, "w": 0.6 },
-          { "x": 0.499, "y": 0.548, "w": 0.6 },
-          { "x": 0.499, "y": 0.609, "w": 0.6 },
-          { "x": 0.499, "y": 0.669, "w": 0.6 },
-          { "x": 0.499, "y": 0.731, "w": 0.6 }
+          {
+            "x": 0.499,
+            "y": 0.427,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.488,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.548,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.609,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.669,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.731,
+            "w": 0.6
+          }
         ],
         "002": [
-          { "x": 0.499, "y": 0.415, "w": 0.6 },
-          { "x": 0.499, "y": 0.475, "w": 0.6 },
-          { "x": 0.499, "y": 0.539, "w": 0.6 },
-          { "x": 0.499, "y": 0.600, "w": 0.6 },
-          { "x": 0.499, "y": 0.661, "w": 0.6 },
-          { "x": 0.499, "y": 0.727, "w": 0.6 }
+          {
+            "x": 0.499,
+            "y": 0.415,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.475,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.539,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.6,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.661,
+            "w": 0.6
+          },
+          {
+            "x": 0.499,
+            "y": 0.727,
+            "w": 0.6
+          }
         ]
       }
     },
@@ -57,41 +157,152 @@
       "aspectRatio": "730/1040",
       "lineHeight": 0.072,
       "extraPages": [
-        { "fileNumber": 2, "label": "Tajweed Rules" }
+        {
+          "fileNumber": 2,
+          "label": "Tajweed Rules"
+        }
       ],
       "lineCoordinates": {
         "default": [
-          { "x": 0.499, "y": 0.070, "w": 0.9 },
-          { "x": 0.499, "y": 0.145, "w": 0.9 },
-          { "x": 0.499, "y": 0.215, "w": 0.9 },
-          { "x": 0.499, "y": 0.290, "w": 0.9 },
-          { "x": 0.499, "y": 0.361, "w": 0.9 },
-          { "x": 0.499, "y": 0.435, "w": 0.9 },
-          { "x": 0.499, "y": 0.505, "w": 0.9 },
-          { "x": 0.499, "y": 0.578, "w": 0.9 },
-          { "x": 0.499, "y": 0.650, "w": 0.9 },
-          { "x": 0.499, "y": 0.725, "w": 0.9 },
-          { "x": 0.499, "y": 0.797, "w": 0.9 },
-          { "x": 0.499, "y": 0.870, "w": 0.9 },
-          { "x": 0.499, "y": 0.941, "w": 0.9 }
+          {
+            "x": 0.499,
+            "y": 0.07,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.145,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.215,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.29,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.361,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.435,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.505,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.578,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.65,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.725,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.797,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.87,
+            "w": 0.9
+          },
+          {
+            "x": 0.499,
+            "y": 0.941,
+            "w": 0.9
+          }
         ],
         "001": [
-          { "x": 0.499, "y": 0.435, "w": 0.75 },
-          { "x": 0.499, "y": 0.505, "w": 0.75 },
-          { "x": 0.499, "y": 0.578, "w": 0.75 },
-          { "x": 0.499, "y": 0.650, "w": 0.75 },
-          { "x": 0.499, "y": 0.725, "w": 0.75 },
-          { "x": 0.499, "y": 0.797, "w": 0.75 },
-          { "x": 0.499, "y": 0.870, "w": 0.75 }
+          {
+            "x": 0.499,
+            "y": 0.435,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.505,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.578,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.65,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.725,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.797,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.87,
+            "w": 0.75
+          }
         ],
         "002": [
-          { "x": 0.499, "y": 0.435, "w": 0.75 },
-          { "x": 0.499, "y": 0.505, "w": 0.75 },
-          { "x": 0.499, "y": 0.578, "w": 0.75 },
-          { "x": 0.499, "y": 0.650, "w": 0.75 },
-          { "x": 0.499, "y": 0.725, "w": 0.75 },
-          { "x": 0.499, "y": 0.797, "w": 0.75 },
-          { "x": 0.499, "y": 0.870, "w": 0.75 }
+          {
+            "x": 0.499,
+            "y": 0.435,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.505,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.578,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.65,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.725,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.797,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.87,
+            "w": 0.75
+          }
         ]
       }
     },
@@ -104,160 +315,955 @@
       "aspectRatio": "670/920",
       "lineHeight": 0.068,
       "extraPages": [
-        { "fileNumber": 2, "label": "Tajweed Rules" }
+        {
+          "fileNumber": 2,
+          "label": "Tajweed Rules"
+        }
       ],
       "lineCoordinates": {
         "default": [
-          { "x": 0.499, "y": 0.095, "w": 0.845 },
-          { "x": 0.499, "y": 0.163, "w": 0.845 },
-          { "x": 0.499, "y": 0.231, "w": 0.845 },
-          { "x": 0.499, "y": 0.300, "w": 0.845 },
-          { "x": 0.499, "y": 0.371, "w": 0.845 },
-          { "x": 0.499, "y": 0.438, "w": 0.845 },
-          { "x": 0.499, "y": 0.504, "w": 0.845 },
-          { "x": 0.499, "y": 0.574, "w": 0.845 },
-          { "x": 0.499, "y": 0.638, "w": 0.845 },
-          { "x": 0.499, "y": 0.711, "w": 0.845 },
-          { "x": 0.499, "y": 0.777, "w": 0.845 },
-          { "x": 0.499, "y": 0.844, "w": 0.845 },
-          { "x": 0.499, "y": 0.912, "w": 0.845 }
+          {
+            "x": 0.499,
+            "y": 0.095,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.163,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.231,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.3,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.371,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.438,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.504,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.574,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.638,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.711,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.777,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.844,
+            "w": 0.845
+          },
+          {
+            "x": 0.499,
+            "y": 0.912,
+            "w": 0.845
+          }
         ],
         "001": [
-          { "x": 0.499, "y": 0.435, "w": 0.75 },
-          { "x": 0.499, "y": 0.505, "w": 0.75 },
-          { "x": 0.499, "y": 0.578, "w": 0.75 },
-          { "x": 0.499, "y": 0.650, "w": 0.75 },
-          { "x": 0.499, "y": 0.725, "w": 0.75 },
-          { "x": 0.499, "y": 0.797, "w": 0.75 },
-          { "x": 0.499, "y": 0.870, "w": 0.75 }
+          {
+            "x": 0.499,
+            "y": 0.435,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.505,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.578,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.65,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.725,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.797,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.87,
+            "w": 0.75
+          }
         ],
         "002": [
-          { "x": 0.499, "y": 0.435, "w": 0.75 },
-          { "x": 0.499, "y": 0.505, "w": 0.75 },
-          { "x": 0.499, "y": 0.578, "w": 0.75 },
-          { "x": 0.499, "y": 0.650, "w": 0.75 },
-          { "x": 0.499, "y": 0.725, "w": 0.75 },
-          { "x": 0.499, "y": 0.797, "w": 0.75 },
-          { "x": 0.499, "y": 0.870, "w": 0.75 }
+          {
+            "x": 0.499,
+            "y": 0.435,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.505,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.578,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.65,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.725,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.797,
+            "w": 0.75
+          },
+          {
+            "x": 0.499,
+            "y": 0.87,
+            "w": 0.75
+          }
         ]
       }
     }
   },
   "surahs": [
-    { "num": 1,  "name": "Fatihah",    "arabic": "الفاتحة",   "page": 1,   "ayah": 7   },
-    { "num": 2,  "name": "Baqarah",    "arabic": "البقرة",    "page": 2,   "ayah": 286 },
-    { "num": 3,  "name": "Aali Imraan","arabic": "آل عمران",  "page": 67,  "ayah": 200 },
-    { "num": 4,  "name": "Nisaa",      "arabic": "النساء",    "page": 105, "ayah": 176 },
-    { "num": 5,  "name": "Maaidah",    "arabic": "المائدة",   "page": 146, "ayah": 120 },
-    { "num": 6,  "name": "An'aam",     "arabic": "الأنعام",   "page": 176, "ayah": 165 },
-    { "num": 7,  "name": "A'raaf",     "arabic": "الأعراف",   "page": 208, "ayah": 206 },
-    { "num": 8,  "name": "Anfaal",     "arabic": "الأنفال",   "page": 245, "ayah": 75  },
-    { "num": 9,  "name": "Taubah",     "arabic": "التوبة",    "page": 259, "ayah": 129 },
-    { "num": 10, "name": "Yunus",      "arabic": "يونس",      "page": 287, "ayah": 109 },
-    { "num": 11, "name": "Hud",        "arabic": "هود",       "page": 307, "ayah": 123 },
-    { "num": 12, "name": "Yusuf",      "arabic": "يوسف",      "page": 327, "ayah": 111 },
-    { "num": 13, "name": "Ra'd",       "arabic": "الرعد",     "page": 345, "ayah": 43  },
-    { "num": 14, "name": "Ibrahim",    "arabic": "إبراهيم",   "page": 354, "ayah": 52  },
-    { "num": 15, "name": "Hijr",       "arabic": "الحجر",     "page": 363, "ayah": 99  },
-    { "num": 16, "name": "Nahl",       "arabic": "النحل",     "page": 371, "ayah": 128 },
-    { "num": 17, "name": "Israa",      "arabic": "الإسراء",   "page": 392, "ayah": 111 },
-    { "num": 18, "name": "Kahf",       "arabic": "الكهف",     "page": 407, "ayah": 110 },
-    { "num": 19, "name": "Maryam",     "arabic": "مريم",      "page": 424, "ayah": 98  },
-    { "num": 20, "name": "Taha",       "arabic": "طه",        "page": 434, "ayah": 135 },
-    { "num": 21, "name": "Ambiyaa",    "arabic": "الأنبياء",  "page": 448, "ayah": 112 },
-    { "num": 22, "name": "Hajj",       "arabic": "الحج",      "page": 461, "ayah": 78  },
-    { "num": 23, "name": "Mu'minoon",  "arabic": "المؤمنون",  "page": 476, "ayah": 118 },
-    { "num": 24, "name": "Noor",       "arabic": "النور",     "page": 486, "ayah": 64  },
-    { "num": 25, "name": "Furqaan",    "arabic": "الفرقان",   "page": 500, "ayah": 77  },
-    { "num": 26, "name": "Shu'araa",   "arabic": "الشعراء",   "page": 510, "ayah": 227 },
-    { "num": 27, "name": "Naml",       "arabic": "النمل",     "page": 524, "ayah": 93  },
-    { "num": 28, "name": "Qasas",      "arabic": "القصص",     "page": 536, "ayah": 88  },
-    { "num": 29, "name": "Ankaboot",   "arabic": "العنكبوت",  "page": 551, "ayah": 69  },
-    { "num": 30, "name": "Room",       "arabic": "الروم",     "page": 561, "ayah": 60  },
-    { "num": 31, "name": "Luqmaan",    "arabic": "لقمان",     "page": 570, "ayah": 34  },
-    { "num": 32, "name": "Sajdah",     "arabic": "السجدة",    "page": 576, "ayah": 30  },
-    { "num": 33, "name": "Ahzaab",     "arabic": "الأحزاب",   "page": 580, "ayah": 73  },
-    { "num": 34, "name": "Saba",       "arabic": "سبأ",       "page": 594, "ayah": 54  },
-    { "num": 35, "name": "Faatir",     "arabic": "فاطر",      "page": 602, "ayah": 45  },
-    { "num": 36, "name": "Yaseen",     "arabic": "يس",        "page": 610, "ayah": 83  },
-    { "num": 37, "name": "Saaffaat",   "arabic": "الصافات",   "page": 617, "ayah": 182 },
-    { "num": 38, "name": "Saad",       "arabic": "ص",         "page": 627, "ayah": 88  },
-    { "num": 39, "name": "Zumar",      "arabic": "الزمر",     "page": 634, "ayah": 75  },
-    { "num": 40, "name": "Ghaafir",    "arabic": "غافر",      "page": 646, "ayah": 85  },
-    { "num": 41, "name": "Fussilat",   "arabic": "فصلت",      "page": 658, "ayah": 54  },
-    { "num": 42, "name": "Shooraa",    "arabic": "الشورى",    "page": 667, "ayah": 53  },
-    { "num": 43, "name": "Zukhruf",    "arabic": "الزخرف",    "page": 676, "ayah": 89  },
-    { "num": 44, "name": "Dukhaan",    "arabic": "الدخان",    "page": 685, "ayah": 59  },
-    { "num": 45, "name": "Jaathiyah",  "arabic": "الجاثية",   "page": 690, "ayah": 37  },
-    { "num": 46, "name": "Ahqaaf",     "arabic": "الأحقاف",   "page": 696, "ayah": 35  },
-    { "num": 47, "name": "Muhammad",   "arabic": "محمد",      "page": 703, "ayah": 38  },
-    { "num": 48, "name": "Fath",       "arabic": "الفتح",     "page": 709, "ayah": 29  },
-    { "num": 49, "name": "Hujuraat",   "arabic": "الحجرات",   "page": 715, "ayah": 18  },
-    { "num": 50, "name": "Qaaf",       "arabic": "ق",         "page": 720, "ayah": 45  },
-    { "num": 51, "name": "Zaariyaat",  "arabic": "الذاريات",  "page": 724, "ayah": 60  },
-    { "num": 52, "name": "Toor",       "arabic": "الطور",     "page": 728, "ayah": 49  },
-    { "num": 53, "name": "Najm",       "arabic": "النجم",     "page": 731, "ayah": 62  },
-    { "num": 54, "name": "Qamar",      "arabic": "القمر",     "page": 735, "ayah": 55  },
-    { "num": 55, "name": "Rahmaan",    "arabic": "الرحمن",    "page": 739, "ayah": 78  },
-    { "num": 56, "name": "Waaqi'ah",   "arabic": "الواقعة",   "page": 744, "ayah": 96  },
-    { "num": 57, "name": "Hadeed",     "arabic": "الحديد",    "page": 749, "ayah": 29  },
-    { "num": 58, "name": "Mujaadilah", "arabic": "المجادلة",  "page": 756, "ayah": 22  },
-    { "num": 59, "name": "Hashr",      "arabic": "الحشر",     "page": 760, "ayah": 24  },
-    { "num": 60, "name": "Mumtahinah", "arabic": "الممتحنة",  "page": 765, "ayah": 13  },
-    { "num": 61, "name": "Saff",       "arabic": "الصف",      "page": 769, "ayah": 14  },
-    { "num": 62, "name": "Jumu'ah",    "arabic": "الجمعة",    "page": 772, "ayah": 11  },
-    { "num": 63, "name": "Munaafiqoon","arabic": "المنافقون", "page": 774, "ayah": 11  },
-    { "num": 64, "name": "Taghaabun",  "arabic": "التغابن",   "page": 776, "ayah": 18  },
-    { "num": 65, "name": "Talaaq",     "arabic": "الطلاق",    "page": 779, "ayah": 12  },
-    { "num": 66, "name": "Tahreem",    "arabic": "التحريم",   "page": 782, "ayah": 12  },
-    { "num": 67, "name": "Mulk",       "arabic": "الملك",     "page": 786, "ayah": 30  },
-    { "num": 68, "name": "Qalam",      "arabic": "القلم",     "page": 789, "ayah": 52  },
-    { "num": 69, "name": "Haaqqah",    "arabic": "الحاقة",    "page": 793, "ayah": 52  },
-    { "num": 70, "name": "Ma'aarij",   "arabic": "المعارج",   "page": 796, "ayah": 44  },
-    { "num": 71, "name": "Nooh",       "arabic": "نوح",       "page": 799, "ayah": 28  },
-    { "num": 72, "name": "Jinn",       "arabic": "الجن",      "page": 802, "ayah": 28  },
-    { "num": 73, "name": "Muzzammil",  "arabic": "المزمل",    "page": 805, "ayah": 20  },
-    { "num": 74, "name": "Muddaththir","arabic": "المدثر",    "page": 807, "ayah": 56  },
-    { "num": 75, "name": "Qiyaamah",   "arabic": "القيامة",   "page": 810, "ayah": 40  },
-    { "num": 76, "name": "Insaan",     "arabic": "الإنسان",   "page": 812, "ayah": 31  },
-    { "num": 77, "name": "Mursalaat",  "arabic": "المرسلات",  "page": 815, "ayah": 50  },
-    { "num": 78, "name": "Naba",       "arabic": "النبأ",     "page": 818, "ayah": 40  },
-    { "num": 79, "name": "Naazi'aat",  "arabic": "النازعات",  "page": 819, "ayah": 46  },
-    { "num": 80, "name": "Abasa",      "arabic": "عبس",       "page": 821, "ayah": 42  },
-    { "num": 81, "name": "Takweer",    "arabic": "التكوير",   "page": 823, "ayah": 29  },
-    { "num": 82, "name": "Infitaar",   "arabic": "الانفطار",  "page": 824, "ayah": 19  },
-    { "num": 83, "name": "Mutaffifeen","arabic": "المطففين",  "page": 825, "ayah": 36  },
-    { "num": 84, "name": "Inshiqaaq",  "arabic": "الانشقاق",  "page": 827, "ayah": 25  },
-    { "num": 85, "name": "Burooj",     "arabic": "البروج",    "page": 828, "ayah": 22  },
-    { "num": 86, "name": "Taariq",     "arabic": "الطارق",    "page": 829, "ayah": 17  },
-    { "num": 87, "name": "A'laa",      "arabic": "الأعلى",    "page": 830, "ayah": 19  },
-    { "num": 88, "name": "Ghaashiyah", "arabic": "الغاشية",   "page": 831, "ayah": 26  },
-    { "num": 89, "name": "Fajr",       "arabic": "الفجر",     "page": 832, "ayah": 30  },
-    { "num": 90, "name": "Balad",      "arabic": "البلد",     "page": 834, "ayah": 20  },
-    { "num": 91, "name": "Shams",      "arabic": "الشمس",     "page": 835, "ayah": 15  },
-    { "num": 92, "name": "Layl",       "arabic": "الليل",     "page": 836, "ayah": 21  },
-    { "num": 93, "name": "Duhaa",      "arabic": "الضحى",     "page": 837, "ayah": 11  },
-    { "num": 94, "name": "Sharh",      "arabic": "الشرح",     "page": 837, "ayah": 8   },
-    { "num": 95, "name": "Teen",       "arabic": "التين",     "page": 838, "ayah": 8   },
-    { "num": 96, "name": "Alaq",       "arabic": "العلق",     "page": 838, "ayah": 19  },
-    { "num": 97, "name": "Qadr",       "arabic": "القدر",     "page": 839, "ayah": 5   },
-    { "num": 98, "name": "Bayyinah",   "arabic": "البينة",    "page": 839, "ayah": 8   },
-    { "num": 99, "name": "Zalzalah",   "arabic": "الزلزلة",   "page": 840, "ayah": 8   },
-    { "num": 100,"name": "Aadiyaat",   "arabic": "العاديات",  "page": 841, "ayah": 11  },
-    { "num": 101,"name": "Qaari'ah",   "arabic": "القارعة",   "page": 842, "ayah": 11  },
-    { "num": 102,"name": "Takaathur",  "arabic": "التكاثر",   "page": 842, "ayah": 8   },
-    { "num": 103,"name": "Asr",        "arabic": "العصر",     "page": 843, "ayah": 3   },
-    { "num": 104,"name": "Humazah",    "arabic": "الهمزة",    "page": 843, "ayah": 9   },
-    { "num": 105,"name": "Feel",       "arabic": "الفيل",     "page": 843, "ayah": 5   },
-    { "num": 106,"name": "Quraysh",    "arabic": "قريش",      "page": 844, "ayah": 4   },
-    { "num": 107,"name": "Maa'oon",    "arabic": "الماعون",   "page": 844, "ayah": 7   },
-    { "num": 108,"name": "Kawthar",    "arabic": "الكوثر",    "page": 845, "ayah": 3   },
-    { "num": 109,"name": "Kaafiroon",  "arabic": "الكافرون",  "page": 845, "ayah": 6   },
-    { "num": 110,"name": "Nasr",       "arabic": "النصر",     "page": 845, "ayah": 3   },
-    { "num": 111,"name": "Masad",      "arabic": "المسد",     "page": 846, "ayah": 5   },
-    { "num": 112,"name": "Ikhlaas",    "arabic": "الإخلاص",   "page": 846, "ayah": 4   },
-    { "num": 113,"name": "Falaq",      "arabic": "الفلق",     "page": 846, "ayah": 5   },
-    { "num": 114,"name": "Naas",       "arabic": "الناس",     "page": 847, "ayah": 6   }
+    {
+      "num": 1,
+      "name": "Fatihah",
+      "arabic": "الفاتحة",
+      "page": 1,
+      "ayah": 7
+    },
+    {
+      "num": 2,
+      "name": "Baqarah",
+      "arabic": "البقرة",
+      "page": 2,
+      "ayah": 286
+    },
+    {
+      "num": 3,
+      "name": "Aali Imraan",
+      "arabic": "آل عمران",
+      "page": 67,
+      "ayah": 200
+    },
+    {
+      "num": 4,
+      "name": "Nisaa",
+      "arabic": "النساء",
+      "page": 105,
+      "ayah": 176
+    },
+    {
+      "num": 5,
+      "name": "Maaidah",
+      "arabic": "المائدة",
+      "page": 146,
+      "ayah": 120
+    },
+    {
+      "num": 6,
+      "name": "An'aam",
+      "arabic": "الأنعام",
+      "page": 176,
+      "ayah": 165
+    },
+    {
+      "num": 7,
+      "name": "A'raaf",
+      "arabic": "الأعراف",
+      "page": 208,
+      "ayah": 206
+    },
+    {
+      "num": 8,
+      "name": "Anfaal",
+      "arabic": "الأنفال",
+      "page": 245,
+      "ayah": 75
+    },
+    {
+      "num": 9,
+      "name": "Taubah",
+      "arabic": "التوبة",
+      "page": 259,
+      "ayah": 129
+    },
+    {
+      "num": 10,
+      "name": "Yunus",
+      "arabic": "يونس",
+      "page": 287,
+      "ayah": 109
+    },
+    {
+      "num": 11,
+      "name": "Hud",
+      "arabic": "هود",
+      "page": 307,
+      "ayah": 123
+    },
+    {
+      "num": 12,
+      "name": "Yusuf",
+      "arabic": "يوسف",
+      "page": 327,
+      "ayah": 111
+    },
+    {
+      "num": 13,
+      "name": "Ra'd",
+      "arabic": "الرعد",
+      "page": 345,
+      "ayah": 43
+    },
+    {
+      "num": 14,
+      "name": "Ibrahim",
+      "arabic": "إبراهيم",
+      "page": 354,
+      "ayah": 52
+    },
+    {
+      "num": 15,
+      "name": "Hijr",
+      "arabic": "الحجر",
+      "page": 363,
+      "ayah": 99
+    },
+    {
+      "num": 16,
+      "name": "Nahl",
+      "arabic": "النحل",
+      "page": 371,
+      "ayah": 128
+    },
+    {
+      "num": 17,
+      "name": "Israa",
+      "arabic": "الإسراء",
+      "page": 392,
+      "ayah": 111
+    },
+    {
+      "num": 18,
+      "name": "Kahf",
+      "arabic": "الكهف",
+      "page": 407,
+      "ayah": 110
+    },
+    {
+      "num": 19,
+      "name": "Maryam",
+      "arabic": "مريم",
+      "page": 424,
+      "ayah": 98
+    },
+    {
+      "num": 20,
+      "name": "Taha",
+      "arabic": "طه",
+      "page": 434,
+      "ayah": 135
+    },
+    {
+      "num": 21,
+      "name": "Ambiyaa",
+      "arabic": "الأنبياء",
+      "page": 448,
+      "ayah": 112
+    },
+    {
+      "num": 22,
+      "name": "Hajj",
+      "arabic": "الحج",
+      "page": 461,
+      "ayah": 78
+    },
+    {
+      "num": 23,
+      "name": "Mu'minoon",
+      "arabic": "المؤمنون",
+      "page": 476,
+      "ayah": 118
+    },
+    {
+      "num": 24,
+      "name": "Noor",
+      "arabic": "النور",
+      "page": 486,
+      "ayah": 64
+    },
+    {
+      "num": 25,
+      "name": "Furqaan",
+      "arabic": "الفرقان",
+      "page": 500,
+      "ayah": 77
+    },
+    {
+      "num": 26,
+      "name": "Shu'araa",
+      "arabic": "الشعراء",
+      "page": 510,
+      "ayah": 227
+    },
+    {
+      "num": 27,
+      "name": "Naml",
+      "arabic": "النمل",
+      "page": 524,
+      "ayah": 93
+    },
+    {
+      "num": 28,
+      "name": "Qasas",
+      "arabic": "القصص",
+      "page": 536,
+      "ayah": 88
+    },
+    {
+      "num": 29,
+      "name": "Ankaboot",
+      "arabic": "العنكبوت",
+      "page": 551,
+      "ayah": 69
+    },
+    {
+      "num": 30,
+      "name": "Room",
+      "arabic": "الروم",
+      "page": 561,
+      "ayah": 60
+    },
+    {
+      "num": 31,
+      "name": "Luqmaan",
+      "arabic": "لقمان",
+      "page": 570,
+      "ayah": 34
+    },
+    {
+      "num": 32,
+      "name": "Sajdah",
+      "arabic": "السجدة",
+      "page": 576,
+      "ayah": 30
+    },
+    {
+      "num": 33,
+      "name": "Ahzaab",
+      "arabic": "الأحزاب",
+      "page": 580,
+      "ayah": 73
+    },
+    {
+      "num": 34,
+      "name": "Saba",
+      "arabic": "سبأ",
+      "page": 594,
+      "ayah": 54
+    },
+    {
+      "num": 35,
+      "name": "Faatir",
+      "arabic": "فاطر",
+      "page": 602,
+      "ayah": 45
+    },
+    {
+      "num": 36,
+      "name": "Yaseen",
+      "arabic": "يس",
+      "page": 610,
+      "ayah": 83
+    },
+    {
+      "num": 37,
+      "name": "Saaffaat",
+      "arabic": "الصافات",
+      "page": 617,
+      "ayah": 182
+    },
+    {
+      "num": 38,
+      "name": "Saad",
+      "arabic": "ص",
+      "page": 627,
+      "ayah": 88
+    },
+    {
+      "num": 39,
+      "name": "Zumar",
+      "arabic": "الزمر",
+      "page": 634,
+      "ayah": 75
+    },
+    {
+      "num": 40,
+      "name": "Ghaafir",
+      "arabic": "غافر",
+      "page": 646,
+      "ayah": 85
+    },
+    {
+      "num": 41,
+      "name": "Fussilat",
+      "arabic": "فصلت",
+      "page": 658,
+      "ayah": 54
+    },
+    {
+      "num": 42,
+      "name": "Shooraa",
+      "arabic": "الشورى",
+      "page": 667,
+      "ayah": 53
+    },
+    {
+      "num": 43,
+      "name": "Zukhruf",
+      "arabic": "الزخرف",
+      "page": 676,
+      "ayah": 89
+    },
+    {
+      "num": 44,
+      "name": "Dukhaan",
+      "arabic": "الدخان",
+      "page": 685,
+      "ayah": 59
+    },
+    {
+      "num": 45,
+      "name": "Jaathiyah",
+      "arabic": "الجاثية",
+      "page": 690,
+      "ayah": 37
+    },
+    {
+      "num": 46,
+      "name": "Ahqaaf",
+      "arabic": "الأحقاف",
+      "page": 696,
+      "ayah": 35
+    },
+    {
+      "num": 47,
+      "name": "Muhammad",
+      "arabic": "محمد",
+      "page": 703,
+      "ayah": 38
+    },
+    {
+      "num": 48,
+      "name": "Fath",
+      "arabic": "الفتح",
+      "page": 709,
+      "ayah": 29
+    },
+    {
+      "num": 49,
+      "name": "Hujuraat",
+      "arabic": "الحجرات",
+      "page": 715,
+      "ayah": 18
+    },
+    {
+      "num": 50,
+      "name": "Qaaf",
+      "arabic": "ق",
+      "page": 720,
+      "ayah": 45
+    },
+    {
+      "num": 51,
+      "name": "Zaariyaat",
+      "arabic": "الذاريات",
+      "page": 724,
+      "ayah": 60
+    },
+    {
+      "num": 52,
+      "name": "Toor",
+      "arabic": "الطور",
+      "page": 728,
+      "ayah": 49
+    },
+    {
+      "num": 53,
+      "name": "Najm",
+      "arabic": "النجم",
+      "page": 731,
+      "ayah": 62
+    },
+    {
+      "num": 54,
+      "name": "Qamar",
+      "arabic": "القمر",
+      "page": 735,
+      "ayah": 55
+    },
+    {
+      "num": 55,
+      "name": "Rahmaan",
+      "arabic": "الرحمن",
+      "page": 739,
+      "ayah": 78
+    },
+    {
+      "num": 56,
+      "name": "Waaqi'ah",
+      "arabic": "الواقعة",
+      "page": 744,
+      "ayah": 96
+    },
+    {
+      "num": 57,
+      "name": "Hadeed",
+      "arabic": "الحديد",
+      "page": 749,
+      "ayah": 29
+    },
+    {
+      "num": 58,
+      "name": "Mujaadilah",
+      "arabic": "المجادلة",
+      "page": 756,
+      "ayah": 22
+    },
+    {
+      "num": 59,
+      "name": "Hashr",
+      "arabic": "الحشر",
+      "page": 760,
+      "ayah": 24
+    },
+    {
+      "num": 60,
+      "name": "Mumtahinah",
+      "arabic": "الممتحنة",
+      "page": 765,
+      "ayah": 13
+    },
+    {
+      "num": 61,
+      "name": "Saff",
+      "arabic": "الصف",
+      "page": 769,
+      "ayah": 14
+    },
+    {
+      "num": 62,
+      "name": "Jumu'ah",
+      "arabic": "الجمعة",
+      "page": 772,
+      "ayah": 11
+    },
+    {
+      "num": 63,
+      "name": "Munaafiqoon",
+      "arabic": "المنافقون",
+      "page": 774,
+      "ayah": 11
+    },
+    {
+      "num": 64,
+      "name": "Taghaabun",
+      "arabic": "التغابن",
+      "page": 776,
+      "ayah": 18
+    },
+    {
+      "num": 65,
+      "name": "Talaaq",
+      "arabic": "الطلاق",
+      "page": 779,
+      "ayah": 12
+    },
+    {
+      "num": 66,
+      "name": "Tahreem",
+      "arabic": "التحريم",
+      "page": 782,
+      "ayah": 12
+    },
+    {
+      "num": 67,
+      "name": "Mulk",
+      "arabic": "الملك",
+      "page": 786,
+      "ayah": 30
+    },
+    {
+      "num": 68,
+      "name": "Qalam",
+      "arabic": "القلم",
+      "page": 789,
+      "ayah": 52
+    },
+    {
+      "num": 69,
+      "name": "Haaqqah",
+      "arabic": "الحاقة",
+      "page": 793,
+      "ayah": 52
+    },
+    {
+      "num": 70,
+      "name": "Ma'aarij",
+      "arabic": "المعارج",
+      "page": 796,
+      "ayah": 44
+    },
+    {
+      "num": 71,
+      "name": "Nooh",
+      "arabic": "نوح",
+      "page": 799,
+      "ayah": 28
+    },
+    {
+      "num": 72,
+      "name": "Jinn",
+      "arabic": "الجن",
+      "page": 802,
+      "ayah": 28
+    },
+    {
+      "num": 73,
+      "name": "Muzzammil",
+      "arabic": "المزمل",
+      "page": 805,
+      "ayah": 20
+    },
+    {
+      "num": 74,
+      "name": "Muddaththir",
+      "arabic": "المدثر",
+      "page": 807,
+      "ayah": 56
+    },
+    {
+      "num": 75,
+      "name": "Qiyaamah",
+      "arabic": "القيامة",
+      "page": 810,
+      "ayah": 40
+    },
+    {
+      "num": 76,
+      "name": "Insaan",
+      "arabic": "الإنسان",
+      "page": 812,
+      "ayah": 31
+    },
+    {
+      "num": 77,
+      "name": "Mursalaat",
+      "arabic": "المرسلات",
+      "page": 815,
+      "ayah": 50
+    },
+    {
+      "num": 78,
+      "name": "Naba",
+      "arabic": "النبأ",
+      "page": 818,
+      "ayah": 40
+    },
+    {
+      "num": 79,
+      "name": "Naazi'aat",
+      "arabic": "النازعات",
+      "page": 819,
+      "ayah": 46
+    },
+    {
+      "num": 80,
+      "name": "Abasa",
+      "arabic": "عبس",
+      "page": 821,
+      "ayah": 42
+    },
+    {
+      "num": 81,
+      "name": "Takweer",
+      "arabic": "التكوير",
+      "page": 823,
+      "ayah": 29
+    },
+    {
+      "num": 82,
+      "name": "Infitaar",
+      "arabic": "الانفطار",
+      "page": 824,
+      "ayah": 19
+    },
+    {
+      "num": 83,
+      "name": "Mutaffifeen",
+      "arabic": "المطففين",
+      "page": 825,
+      "ayah": 36
+    },
+    {
+      "num": 84,
+      "name": "Inshiqaaq",
+      "arabic": "الانشقاق",
+      "page": 827,
+      "ayah": 25
+    },
+    {
+      "num": 85,
+      "name": "Burooj",
+      "arabic": "البروج",
+      "page": 828,
+      "ayah": 22
+    },
+    {
+      "num": 86,
+      "name": "Taariq",
+      "arabic": "الطارق",
+      "page": 829,
+      "ayah": 17
+    },
+    {
+      "num": 87,
+      "name": "A'laa",
+      "arabic": "الأعلى",
+      "page": 830,
+      "ayah": 19
+    },
+    {
+      "num": 88,
+      "name": "Ghaashiyah",
+      "arabic": "الغاشية",
+      "page": 831,
+      "ayah": 26
+    },
+    {
+      "num": 89,
+      "name": "Fajr",
+      "arabic": "الفجر",
+      "page": 832,
+      "ayah": 30
+    },
+    {
+      "num": 90,
+      "name": "Balad",
+      "arabic": "البلد",
+      "page": 834,
+      "ayah": 20
+    },
+    {
+      "num": 91,
+      "name": "Shams",
+      "arabic": "الشمس",
+      "page": 835,
+      "ayah": 15
+    },
+    {
+      "num": 92,
+      "name": "Layl",
+      "arabic": "الليل",
+      "page": 836,
+      "ayah": 21
+    },
+    {
+      "num": 93,
+      "name": "Duhaa",
+      "arabic": "الضحى",
+      "page": 837,
+      "ayah": 11
+    },
+    {
+      "num": 94,
+      "name": "Sharh",
+      "arabic": "الشرح",
+      "page": 837,
+      "ayah": 8
+    },
+    {
+      "num": 95,
+      "name": "Teen",
+      "arabic": "التين",
+      "page": 838,
+      "ayah": 8
+    },
+    {
+      "num": 96,
+      "name": "Alaq",
+      "arabic": "العلق",
+      "page": 838,
+      "ayah": 19
+    },
+    {
+      "num": 97,
+      "name": "Qadr",
+      "arabic": "القدر",
+      "page": 839,
+      "ayah": 5
+    },
+    {
+      "num": 98,
+      "name": "Bayyinah",
+      "arabic": "البينة",
+      "page": 839,
+      "ayah": 8
+    },
+    {
+      "num": 99,
+      "name": "Zalzalah",
+      "arabic": "الزلزلة",
+      "page": 840,
+      "ayah": 8
+    },
+    {
+      "num": 100,
+      "name": "Aadiyaat",
+      "arabic": "العاديات",
+      "page": 841,
+      "ayah": 11
+    },
+    {
+      "num": 101,
+      "name": "Qaari'ah",
+      "arabic": "القارعة",
+      "page": 842,
+      "ayah": 11
+    },
+    {
+      "num": 102,
+      "name": "Takaathur",
+      "arabic": "التكاثر",
+      "page": 842,
+      "ayah": 8
+    },
+    {
+      "num": 103,
+      "name": "Asr",
+      "arabic": "العصر",
+      "page": 843,
+      "ayah": 3
+    },
+    {
+      "num": 104,
+      "name": "Humazah",
+      "arabic": "الهمزة",
+      "page": 843,
+      "ayah": 9
+    },
+    {
+      "num": 105,
+      "name": "Feel",
+      "arabic": "الفيل",
+      "page": 843,
+      "ayah": 5
+    },
+    {
+      "num": 106,
+      "name": "Quraysh",
+      "arabic": "قريش",
+      "page": 844,
+      "ayah": 4
+    },
+    {
+      "num": 107,
+      "name": "Maa'oon",
+      "arabic": "الماعون",
+      "page": 844,
+      "ayah": 7
+    },
+    {
+      "num": 108,
+      "name": "Kawthar",
+      "arabic": "الكوثر",
+      "page": 845,
+      "ayah": 3
+    },
+    {
+      "num": 109,
+      "name": "Kaafiroon",
+      "arabic": "الكافرون",
+      "page": 845,
+      "ayah": 6
+    },
+    {
+      "num": 110,
+      "name": "Nasr",
+      "arabic": "النصر",
+      "page": 845,
+      "ayah": 3
+    },
+    {
+      "num": 111,
+      "name": "Masad",
+      "arabic": "المسد",
+      "page": 846,
+      "ayah": 5
+    },
+    {
+      "num": 112,
+      "name": "Ikhlaas",
+      "arabic": "الإخلاص",
+      "page": 846,
+      "ayah": 4
+    },
+    {
+      "num": 113,
+      "name": "Falaq",
+      "arabic": "الفلق",
+      "page": 846,
+      "ayah": 5
+    },
+    {
+      "num": 114,
+      "name": "Naas",
+      "arabic": "الناس",
+      "page": 847,
+      "ayah": 6
+    }
   ],
   "juz": [
     {
@@ -267,11 +1273,28 @@
       "page": 1,
       "sections": [
         {
+          "id": "quarter",
+          "num": 1.25,
+          "name": "Rubu'",
+          "arabicStart": "يَـٰبَنِىٓ إِسْرَٰٓءِيلَ ٱذْكُرُوا۟ نِعْمَتِىَ",
+          "page": 9,
+          "line": 4
+        },
+        {
+          "id": "half",
           "num": 1.5,
           "name": "Nisf",
           "arabicStart": "وَإِذْ أَخَذْنَا مِيثَاقَ بَنِي إِسْرَائِيلَ",
           "page": 15,
-          "isNisf": true
+          "line": 9
+        },
+        {
+          "id": "three_quarter",
+          "num": 1.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَقَالَتِ ٱلْيَهُودُ لَيْسَتِ ٱلنَّصَـٰرَىٰ",
+          "page": 22,
+          "line": 5
         }
       ]
     },
@@ -282,11 +1305,28 @@
       "page": 28,
       "sections": [
         {
+          "id": "quarter",
+          "num": 2.25,
+          "name": "Rubu'",
+          "arabicStart": "لَّيْسَ ٱلْبِرَّ أَن تُوَلُّو",
+          "page": 34,
+          "line": 12
+        },
+        {
+          "id": "half",
           "num": 2.5,
           "name": "Nisf",
           "arabicStart": "سَلْ بَنِىٓ إِسْرَٰٓءِيلَ",
           "page": 43,
-          "isNisf": true
+          "line": 2
+        },
+        {
+          "id": "three_quarter",
+          "num": 2.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَإِذَا طَلَّقْتُمُ ٱلنِّسَآءَ",
+          "page": 49,
+          "line": 8
         }
       ]
     },
@@ -297,11 +1337,28 @@
       "page": 56,
       "sections": [
         {
+          "id": "quarter",
+          "num": 3.25,
+          "name": "Rubu'",
+          "arabicStart": "ٱلَّذِينَ يُنفِقُونَ أَمْوَٰلَهُم",
+          "page": 62,
+          "line": 10
+        },
+        {
+          "id": "half",
           "num": 3.5,
           "name": "Nisf",
-          "arabicStart": "إِنَّ ٱلَّذِينَ يَكْفُرُونَ",
+          "arabicStart": "إِنَّ ٱلَّذِينَ يَكْفُرُونَ",
           "page": 70,
-          "isNisf": true
+          "line": 12
+        },
+        {
+          "id": "three_quarter",
+          "num": 3.75,
+          "name": "Thalaathah",
+          "arabicStart": "إِذْ قَالَ ٱللَّهُ يَـٰعِيسَىٰٓ",
+          "page": 77,
+          "line": 5
         }
       ]
     },
@@ -312,11 +1369,28 @@
       "page": 84,
       "sections": [
         {
+          "id": "quarter",
+          "num": 4.25,
+          "name": "Rubu'",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا لَا تَأْكُلُوا ٱلرِّبَوٰٓ",
+          "page": 90,
+          "line": 13
+        },
+        {
+          "id": "half",
           "num": 4.5,
           "name": "Nisf",
-          "arabicStart": "ٱلَّذِينَ ٱسْتَجَابُوا۟ لِلَّهِ وَٱلرَّسُولِ",
+          "arabicStart": "ٱلَّذِينَ ٱسْتَجَابُوا۟ لِلَّهِ وَٱلرَّسُولِ",
           "page": 99,
-          "isNisf": true
+          "line": 6
+        },
+        {
+          "id": "three_quarter",
+          "num": 4.75,
+          "name": "Thalaathah",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلنَّاسُ ٱتَّقُوا رَبَّكُمُ",
+          "page": 105,
+          "line": 7
         }
       ]
     },
@@ -327,11 +1401,28 @@
       "page": 112,
       "sections": [
         {
+          "id": "quarter",
+          "num": 5.25,
+          "name": "Rubu'",
+          "arabicStart": "أَلَمْ تَرَ إِلَى ٱلَّذِينَ يَزْعُمُونَ",
+          "page": 120,
+          "line": 5
+        },
+        {
+          "id": "half",
           "num": 5.5,
           "name": "Nisf",
           "arabicStart": "فَمَا لَكُمْ فِى ٱلْمُنَـٰفِقِينَ",
           "page": 126,
-          "isNisf": true
+          "line": 2
+        },
+        {
+          "id": "three_quarter",
+          "num": 5.75,
+          "name": "Thalaathah",
+          "arabicStart": "إِنَّ ٱللَّهَ لَا يَغْفِرُ أَن يُشْرَكَ بِهِ",
+          "page": 133,
+          "line": 10
         }
       ]
     },
@@ -342,11 +1433,28 @@
       "page": 140,
       "sections": [
         {
+          "id": "quarter",
+          "num": 6.25,
+          "name": "Rubu'",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا أَوْفُوا بِٱلْعُقُودِ",
+          "page": 146,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 6.5,
           "name": "Nisf",
-          "arabicStart": "وَٱتْلُ عَلَيْهِمْ نَبَأَ ٱبْنَىْ ءَادَمَ بِٱلْحَقِّ",
+          "arabicStart": "وَٱتْلُ عَلَيْهِمْ نَبَأَ ٱبْنَىْ ءَادَمَ بِٱلْحَقِّ",
           "page": 153,
-          "isNisf": true
+          "line": 13
+        },
+        {
+          "id": "three_quarter",
+          "num": 6.75,
+          "name": "Thalaathah",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا لَا تَتَّخِذُو",
+          "page": 161,
+          "line": 13
         }
       ]
     },
@@ -357,11 +1465,28 @@
       "page": 168,
       "sections": [
         {
+          "id": "quarter",
+          "num": 7.25,
+          "name": "Rubu'",
+          "arabicStart": "وَإِذْ قَالَ ٱللَّهُ يَـٰعِيسَى ٱبْنَ مَرْيَمَ",
+          "page": 175,
+          "line": 7
+        },
+        {
+          "id": "half",
           "num": 7.5,
           "name": "Nisf",
-          "arabicStart": "إِنَّمَا يَسْتَجِيبُ ٱلَّذِينَ يَسْمَعُونَ",
+          "arabicStart": "إِنَّمَا يَسْتَجِيبُ ٱلَّذِينَ يَسْمَعُونَ",
           "page": 182,
-          "isNisf": true
+          "line": 6
+        },
+        {
+          "id": "three_quarter",
+          "num": 7.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَإِذْ قَالَ إِبْرَٰهِيمُ لِأَبِيهِ ءَازَرَ",
+          "page": 189,
+          "line": 6
         }
       ]
     },
@@ -372,11 +1497,28 @@
       "page": 196,
       "sections": [
         {
+          "id": "quarter",
+          "num": 8.25,
+          "name": "Rubu'",
+          "arabicStart": "وَهُوَ ٱلَّذِىٓ أَنشَأَ جَنَّـٰتٍۢ",
+          "page": 201,
+          "line": 13
+        },
+        {
+          "id": "half",
           "num": 8.5,
           "name": "Nisf",
           "arabicStart": "الٓمٓصٓ",
           "page": 208,
-          "isNisf": true
+          "line": 3
+        },
+        {
+          "id": "three_quarter",
+          "num": 8.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَنَادَىٰٓ أَصْحَـٰبُ ٱلْأَعْرَافِ",
+          "page": 216,
+          "line": 4
         }
       ]
     },
@@ -387,11 +1529,28 @@
       "page": 224,
       "sections": [
         {
+          "id": "quarter",
+          "num": 9.25,
+          "name": "Rubu'",
+          "arabicStart": "وَوَٰعَدْنَا مُوسَىٰ ثَلَـٰثِينَ لَيْلَةً",
+          "page": 231,
+          "line": 7
+        },
+        {
+          "id": "half",
           "num": 9.5,
           "name": "Nisf",
-          "arabicStart": "وَسْـَٔلْهُمْ عَنِ ٱلْقَرْيَةِ ٱلَّتِى",
+          "arabicStart": "وَسْـَٔلْهُمْ عَنِ ٱلْقَرْيَةِ ٱلَّتِى",
           "page": 237,
-          "isNisf": true
+          "line": 3
+        },
+        {
+          "id": "three_quarter",
+          "num": 9.75,
+          "name": "Thalaathah",
+          "arabicStart": "يَسْـَٔلُونَكَ عَنِ ٱلْأَنفَالِ",
+          "page": 245,
+          "line": 3
         }
       ]
     },
@@ -402,11 +1561,28 @@
       "page": 252,
       "sections": [
         {
+          "id": "quarter",
+          "num": 10.25,
+          "name": "Rubu'",
+          "arabicStart": "بَرَآءَةٌ مِّنَ ٱللَّهِ وَرَسُولِهِ",
+          "page": 259,
+          "line": 5
+        },
+        {
+          "id": "half",
           "num": 10.5,
           "name": "Nisf",
-          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِنَّ كَثِيرًۭا",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِنَّ كَثِيرًۭا",
           "page": 266,
-          "isNisf": true
+          "line": 3
+        },
+        {
+          "id": "three_quarter",
+          "num": 10.75,
+          "name": "Thalaathah",
+          "arabicStart": "ٱلْمُنَـٰفِقُونَ وَٱلْمُنَـٰفِقَـٰتُ بَعْضُهُم",
+          "page": 273,
+          "line": 9
         }
       ]
     },
@@ -417,11 +1593,28 @@
       "page": 280,
       "sections": [
         {
+          "id": "quarter",
+          "num": 11.25,
+          "name": "Rubu'",
+          "arabicStart": "الٓر تِلْكَ ءَايَـٰتُ ٱلْكِتَـٰبِ ٱلْحَكِيمِ",
+          "page": 287,
+          "line": 12
+        },
+        {
+          "id": "half",
           "num": 11.5,
           "name": "Nisf",
           "arabicStart": "قُلْ مَن يَرْزُقُكُم",
           "page": 294,
-          "isNisf": true
+          "line": 2
+        },
+        {
+          "id": "three_quarter",
+          "num": 11.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَٱتْلُ عَلَيْهِمْ نَبَأَ نُوحٍ",
+          "page": 300,
+          "line": 7
         }
       ]
     },
@@ -432,11 +1625,28 @@
       "page": 308,
       "sections": [
         {
+          "id": "quarter",
+          "num": 12.25,
+          "name": "Rubu'",
+          "arabicStart": "وَإِلَىٰ عَادٍ أَخَاهُمْ هُودًۭا",
+          "page": 315,
+          "line": 12
+        },
+        {
+          "id": "half",
           "num": 12.5,
           "name": "Nisf",
           "arabicStart": "وَإِلَىٰ مَدْيَنَ أَخَاهُمْ شُعَيْبًۭا",
           "page": 321,
-          "isNisf": true
+          "line": 4
+        },
+        {
+          "id": "three_quarter",
+          "num": 12.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَقَالَ ٱلَّذِى ٱشْتَرَىٰهُ مِن مِّصْرَ",
+          "page": 330,
+          "line": 3
         }
       ]
     },
@@ -447,11 +1657,28 @@
       "page": 336,
       "sections": [
         {
+          "id": "quarter",
+          "num": 13.25,
+          "name": "Rubu'",
+          "arabicStart": "وَلَمَّا فَصَلَتِ ٱلْعِيرُ",
+          "page": 342,
+          "line": 9
+        },
+        {
+          "id": "half",
           "num": 13.5,
           "name": "Nisf",
-          "arabicStart": "أَفَمَن يَعْلَمُ أَنَّمَآ أُنزِلَ إِلَيْكَ",
+          "arabicStart": "أَفَمَن يَعْلَمُ أَنَّمَآ أُنزِلَ إِلَيْكَ",
           "page": 350,
-          "isNisf": true
+          "line": 2
+        },
+        {
+          "id": "three_quarter",
+          "num": 13.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَقَالَ ٱلَّذِينَ كَفَرُوا لِرُسُلِهِمْ",
+          "page": 357,
+          "line": 8
         }
       ]
     },
@@ -462,11 +1689,28 @@
       "page": 364,
       "sections": [
         {
+          "id": "quarter",
+          "num": 14.25,
+          "name": "Rubu'",
+          "arabicStart": "أَتَىٰٓ أَمْرُ ٱللَّهِ",
+          "page": 371,
+          "line": 7
+        },
+        {
+          "id": "half",
           "num": 14.5,
           "name": "Nisf",
-          "arabicStart": "وَقَالَ ٱللَّهُ لَا تَتَّخِذُوٓا۟ إِلَـٰهَيْنِ ٱثْنَيْنِ",
-          "page": 377,
-          "isNisf": true
+          "arabicStart": "وَقَالَ ٱللَّهُ لَا تَتَّخِذُوٓا۟ إِلَـٰهَيْنِ ٱثْنَيْنِ",
+          "page": 378,
+          "line": 9
+        },
+        {
+          "id": "three_quarter",
+          "num": 14.75,
+          "name": "Thalaathah",
+          "arabicStart": "إِنَّ ٱللَّهَ يَأْمُرُ بِٱلْعَدْلِ وَٱلْإِحْسَـٰنِ",
+          "page": 385,
+          "line": 7
         }
       ]
     },
@@ -477,11 +1721,28 @@
       "page": 392,
       "sections": [
         {
+          "id": "quarter",
+          "num": 15.25,
+          "name": "Rubu'",
+          "arabicStart": "وَقُل لِّعِبَادِى",
+          "page": 399,
+          "line": 4
+        },
+        {
+          "id": "half",
           "num": 15.5,
           "name": "Nisf",
           "arabicStart": "وَلَقَدْ ءَاتَيْنَا مُوسَىٰ تِسْعَ ءَايَـٰتٍۭ",
-          "page": 405,
-          "isNisf": true
+          "page": 406,
+          "line": 4
+        },
+        {
+          "id": "three_quarter",
+          "num": 15.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَٱضْرِبْ لَهُم مَّثَلًا رَّجُلَيْنِ",
+          "page": 413,
+          "line": 6
         }
       ]
     },
@@ -492,11 +1753,28 @@
       "page": 420,
       "sections": [
         {
+          "id": "quarter",
+          "num": 16.25,
+          "name": "Rubu'",
+          "arabicStart": "وَٱذْكُرْ فِى ٱلْكِتَـٰبِ إِبْرَٰهِيمَ ۚ",
+          "page": 428,
+          "line": 6
+        },
+        {
+          "id": "half",
           "num": 16.5,
           "name": "Nisf",
           "arabicStart": "طه",
           "page": 434,
-          "isNisf": true
+          "line": 4
+        },
+        {
+          "id": "three_quarter",
+          "num": 16.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَلَقَدْ أَوْحَيْنَآ إِلَىٰ مُوسَىٰٓ ",
+          "page": 440,
+          "line": 10
         }
       ]
     },
@@ -507,11 +1785,28 @@
       "page": 448,
       "sections": [
         {
+          "id": "quarter",
+          "num": 17.25,
+          "name": "Rubu'",
+          "arabicStart": "وَلَقَدْ ءَاتَيْنَآ إِبْرَٰهِيمَ رُشْدَهُۥ",
+          "page": 454,
+          "line": 5
+        },
+        {
+          "id": "half",
           "num": 17.5,
           "name": "Nisf",
-          "arabicStart": "يَـٰٓأَيُّهَا ٱلنَّاسُ ٱتَّقُوا۟ رَبَّكُمْ",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلنَّاسُ ٱتَّقُوا۟ رَبَّكُمْ",
           "page": 461,
-          "isNisf": true
+          "line": 9
+        },
+        {
+          "id": "three_quarter",
+          "num": 17.75,
+          "name": "Thalaathah",
+          "arabicStart": "أُذِنَ لِلَّذِينَ يُقَـٰتَلُونَ",
+          "page": 468,
+          "line": 11
         }
       ]
     },
@@ -522,11 +1817,28 @@
       "page": 476,
       "sections": [
         {
+          "id": "quarter",
+          "num": 18.25,
+          "name": "Rubu'",
+          "arabicStart": "وَهُوَ ٱلَّذِىٓ أَنشَأَ لَكُمُ ٱلسَّمْعَ",
+          "page": 483,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 18.5,
           "name": "Nisf",
-          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ لَا تَتَّبِعُوا۟",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ لَا تَتَّبِعُوا۟",
           "page": 489,
-          "isNisf": true
+          "line": 10
+        },
+        {
+          "id": "three_quarter",
+          "num": 18.75,
+          "name": "Thalaathah",
+          "arabicStart": "إِنَّمَا كَانَ قَوْلَ ٱلْمُؤْمِنِينَ",
+          "page": 496,
+          "line": 6
         }
       ]
     },
@@ -537,11 +1849,28 @@
       "page": 504,
       "sections": [
         {
+          "id": "quarter",
+          "num": 19.25,
+          "name": "Rubu'",
+          "arabicStart": "طسٓمٓ تِلْكَ ءَايَـٰتُ ٱلْكِتَـٰبِ ٱلْمُبِينِ",
+          "page": 510,
+          "line": 5
+        },
+        {
+          "id": "half",
           "num": 19.5,
           "name": "Nisf",
-          "arabicStart": "كَذَّبَتْ عَادٌ ٱلْمُرْسَلِينَ",
+          "arabicStart": "كَذَّبَتْ عَادٌ ٱلْمُرْسَلِينَ",
           "page": 517,
-          "isNisf": true
+          "line": 13
+        },
+        {
+          "id": "three_quarter",
+          "num": 19.75,
+          "name": "Thalaathah",
+          "arabicStart": "طسٓ تِلْكَ ءَايَـٰتُ ٱلْقُرْءَانِ",
+          "page": 524,
+          "line": 6
         }
       ]
     },
@@ -552,11 +1881,28 @@
       "page": 532,
       "sections": [
         {
+          "id": "quarter",
+          "num": 20.25,
+          "name": "Rubu'",
+          "arabicStart": "وَلَمَّا بَلَغَ أَشُدَّهُۥ وَٱسْتَوَىٰ",
+          "page": 537,
+          "line": 13
+        },
+        {
+          "id": "half",
           "num": 20.5,
           "name": "Nisf",
-          "arabicStart": "وَلَقَدْ وَصَّلْنَا لَهُمُ ٱلْقَوْلَ",
+          "arabicStart": "وَلَقَدْ وَصَّلْنَا لَهُمُ ٱلْقَوْلَ",
           "page": 544,
-          "isNisf": true
+          "line": 8
+        },
+        {
+          "id": "three_quarter",
+          "num": 20.75,
+          "name": "Thalaathah",
+          "arabicStart": "الٓمٓ أَحَسِبَ ٱلنَّاسُ أَن يُتْرَكُوٓا۟",
+          "page": 551,
+          "line": 3
         }
       ]
     },
@@ -567,11 +1913,28 @@
       "page": 558,
       "sections": [
         {
+          "id": "quarter",
+          "num": 21.25,
+          "name": "Rubu'",
+          "arabicStart": "ضَرَبَ لَكُم مَّثَلًۭا مِّنْ أَنفُسِكُمْ ۖ",
+          "page": 565,
+          "line": 4
+        },
+        {
+          "id": "half",
           "num": 21.5,
           "name": "Nisf",
-          "arabicStart": "أَلَمْ تَرَوْا۟ أَنَّ ٱللَّهَ سَخَّرَ لَكُم",
+          "arabicStart": "أَلَمْ تَرَوْا۟ أَنَّ ٱللَّهَ سَخَّرَ لَكُم",
           "page": 573,
-          "isNisf": true
+          "line": 4
+        },
+        {
+          "id": "three_quarter",
+          "num": 21.75,
+          "name": "Thalaathah",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلنَّبِىُّ ٱتَّقِ ٱللَّهَ",
+          "page": 580,
+          "line": 7
         }
       ]
     },
@@ -582,11 +1945,28 @@
       "page": 586,
       "sections": [
         {
+          "id": "quarter",
+          "num": 22.25,
+          "name": "Rubu'",
+          "arabicStart": "ٱلْحَمْدُ لِلَّهِ ٱلَّذِى لَهُۥ",
+          "page": 594,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 22.5,
           "name": "Nisf",
-          "arabicStart": "وَقَالَ ٱلَّذِينَ كَفَرُوا۟ لَن",
+          "arabicStart": "وَقَالَ ٱلَّذِينَ كَفَرُوا۟ لَن",
           "page": 598,
-          "isNisf": true
+          "line": 11
+        },
+        {
+          "id": "three_quarter",
+          "num": 22.75,
+          "name": "Thalaathah",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلنَّاسُ أَنتُمُ ٱلْفُقَرَآءُ",
+          "page": 605,
+          "line": 6
         }
       ]
     },
@@ -597,11 +1977,28 @@
       "page": 612,
       "sections": [
         {
+          "id": "quarter",
+          "num": 23.25,
+          "name": "Rubu'",
+          "arabicStart": "ٱحْشُرُوا ٱلَّذِينَ ظَلَمُو",
+          "page": 618,
+          "line": 13
+        },
+        {
+          "id": "half",
           "num": 23.5,
           "name": "Nisf",
-          "arabicStart": "وَإِنَّ يُونُسَ لَمِنَ ٱلْمُرْسَلِينَ",
+          "arabicStart": "وَإِنَّ يُونُسَ لَمِنَ ٱلْمُرْسَلِينَ",
           "page": 625,
-          "isNisf": true
+          "line": 2
+        },
+        {
+          "id": "three_quarter",
+          "num": 23.75,
+          "name": "Thalaathah",
+          "arabicStart": "قُلْ إِنَّمَآ أَنَا۠ مُنذِرٌ",
+          "page": 633,
+          "line": 1
         }
       ]
     },
@@ -612,11 +2009,28 @@
       "page": 640,
       "sections": [
         {
+          "id": "quarter",
+          "num": 24.25,
+          "name": "Rubu'",
+          "arabicStart": "حمٓ. تَنزِيلُ ٱلْكِتَـٰبِ",
+          "page": 646,
+          "line": 5
+        },
+        {
+          "id": "half",
           "num": 24.5,
           "name": "Nisf",
-          "arabicStart": "إِنَّا لَنَنصُرُ رُسُلَنَا",
+          "arabicStart": "إِنَّا لَنَنصُرُ رُسُلَنَا",
           "page": 653,
-          "isNisf": true
+          "line": 10
+        },
+        {
+          "id": "three_quarter",
+          "num": 24.75,
+          "name": "Thalaathah",
+          "arabicStart": "حمٓ تَنزِيلٌ مِّنَ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+          "page": 658,
+          "line": 12
         }
       ]
     },
@@ -627,11 +2041,28 @@
       "page": 666,
       "sections": [
         {
+          "id": "quarter",
+          "num": 25.25,
+          "name": "Rubu'",
+          "arabicStart": "وَمَآ أَصَـٰبَكُم مِّن مُّصِيبَةٍۢ",
+          "page": 673,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 25.5,
           "name": "Nisf",
           "arabicStart": "وَإِذْ قَالَ إِبْرَٰهِيمُ لِأَبِيهِ",
           "page": 679,
-          "isNisf": true
+          "line": 6
+        },
+        {
+          "id": "three_quarter",
+          "num": 25.75,
+          "name": "Thalaathah",
+          "arabicStart": "وَلَقَدْ نَجَّيْنَا بَنِىٓ إِسْرَٰٓءِيلَ",
+          "page": 687,
+          "line": 13
         }
       ]
     },
@@ -642,11 +2073,28 @@
       "page": 696,
       "sections": [
         {
+          "id": "quarter",
+          "num": 26.25,
+          "name": "Rubu'",
+          "arabicStart": "ٱلَّذِينَ كَفَرُوا۟ وَصَدُّوا۟ عَن سَبِيلِ ٱللَّهِ",
+          "page": 703,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 26.5,
           "name": "Nisf",
-          "arabicStart": "لَّقَدْ رَضِىَ ٱللَّهُ عَنِ ٱلْمُؤْمِنِينَ",
+          "arabicStart": "لَّقَدْ رَضِىَ ٱللَّهُ عَنِ ٱلْمُؤْمِنِينَ",
           "page": 712,
-          "isNisf": true
+          "line": 11
+        },
+        {
+          "id": "three_quarter",
+          "num": 26.75,
+          "name": "Thalaathah",
+          "arabicStart": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا لَا يَسْخَرْ",
+          "page": 717,
+          "line": 12
         }
       ]
     },
@@ -657,11 +2105,28 @@
       "page": 726,
       "sections": [
         {
+          "id": "quarter",
+          "num": 27.25,
+          "name": "Rubu'",
+          "arabicStart": "أَفَرَءَيْتَ ٱلَّذِى تَوَلَّىٰ",
+          "page": 734,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 27.5,
           "name": "Nisf",
-          "arabicStart": "كُلُّ مَنْ عَلَيْهَا فَانٍۢ",
+          "arabicStart": "كُلُّ مَنْ عَلَيْهَا فَانٍۢ",
           "page": 740,
-          "isNisf": true
+          "line": 11
+        },
+        {
+          "id": "three_quarter",
+          "num": 27.75,
+          "name": "Thalaathah",
+          "arabicStart": "فَلَآ أُقْسِمُ بِمَوَٰقِعِ ٱلنُّجُومِ",
+          "page": 747,
+          "line": 13
         }
       ]
     },
@@ -672,11 +2137,28 @@
       "page": 756,
       "sections": [
         {
+          "id": "quarter",
+          "num": 28.25,
+          "name": "Rubu'",
+          "arabicStart": "أَلَمْ تَرَ إِلَى ٱلَّذِينَ نَافَقُوا۟",
+          "page": 763,
+          "line": 3
+        },
+        {
+          "id": "half",
           "num": 28.5,
           "name": "Nisf",
-          "arabicStart": "سَبَّحَ لِلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ",
+          "arabicStart": "سَبَّحَ لِلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ",
           "page": 769,
-          "isNisf": true
+          "line": 9
+        },
+        {
+          "id": "three_quarter",
+          "num": 28.75,
+          "name": "Thalaathah",
+          "arabicStart": "مَآ أَصَابَ مِن مُّصِيبَةٍ",
+          "page": 777,
+          "line": 13
         }
       ]
     },
@@ -687,11 +2169,28 @@
       "page": 786,
       "sections": [
         {
+          "id": "quarter",
+          "num": 29.25,
+          "name": "Rubu'",
+          "arabicStart": "ٱلْحَآقَّةُ مَا ٱلْحَآقَّةُ",
+          "page": 793,
+          "line": 6
+        },
+        {
+          "id": "half",
           "num": 29.5,
           "name": "Nisf",
-          "arabicStart": "قُلْ أُوحِىَ إِلَىَّ أَنَّهُ ٱسْتَمَعَ",
+          "arabicStart": "قُلْ أُوحِىَ إِلَىَّ أَنَّهُ ٱسْتَمَعَ",
           "page": 802,
-          "isNisf": true
+          "line": 3
+        },
+        {
+          "id": "three_quarter",
+          "num": 29.75,
+          "name": "Thalaathah",
+          "arabicStart": "لَآ أُقْسِمُ بِيَوْمِ ٱلْقِيَـٰمَةِ",
+          "page": 810,
+          "line": 9
         }
       ]
     },
@@ -702,11 +2201,28 @@
       "page": 818,
       "sections": [
         {
+          "id": "quarter",
+          "num": 30.25,
+          "name": "Rubu'",
+          "arabicStart": "وَيْلٌ لِّلْمُطَفِّفِينَ",
+          "page": 825,
+          "line": 9
+        },
+        {
+          "id": "half",
           "num": 30.5,
           "name": "Nisf",
           "arabicStart": "وَٱلْفَجْرِ",
           "page": 832,
-          "isNisf": true
+          "line": 11
+        },
+        {
+          "id": "three_quarter",
+          "num": 30.75,
+          "name": "Thalaathah",
+          "arabicStart": "لَمْ يَكُنِ ٱلَّذِينَ كَفَرُوا۟",
+          "page": 839,
+          "line": 13
         }
       ]
     }

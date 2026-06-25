@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t, needsFontScale } from "../i18n";
@@ -7,10 +8,12 @@ type Props = {
   lang: Lang;
   juz: Juz[];
   surahs: Surah[];
+  currentPage: number;
   showSections: boolean;
   onToggleSections: () => void;
   onClose: () => void;
   onNavigate: (page: number) => void;
+  onNavigateSection: (page: number, line: number) => void;
   dragHandlers: DragHandlers;
 };
 
@@ -37,7 +40,19 @@ function getJuzSurahSubtitle(item: Juz, juzList: Juz[], surahs: Surah[]): string
   return `${surahs[startIdx].name} – ${surahs[endIdx].name}`;
 }
 
-export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, onClose, onNavigate, dragHandlers }: Props) {
+export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggleSections, onClose, onNavigate, onNavigateSection, dragHandlers }: Props) {
+  const activeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "center" });
+  }, []);
+
+  let activeJuzNum = juz[0].num;
+  for (const item of juz) {
+    if (item.page <= currentPage) activeJuzNum = item.num;
+    else break;
+  }
+
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
       <div
@@ -60,7 +75,7 @@ export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, on
               showSections ? "border-transparent bg-(--fg) text-(--bg)" : "border-border bg-(--bg2) text-(--fg2)"
             }`}
           >
-            {t(lang, "juzIndex.halves")}
+            {t(lang, "juzIndex.quarters")}
           </button>
           <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
             <X className="size-4" />
@@ -71,6 +86,7 @@ export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, on
         {juz.map((item) => (
           <div key={item.num}>
             <button
+              ref={item.num === activeJuzNum ? activeRef : undefined}
               type="button"
               onClick={() => onNavigate(item.page)}
               className={`flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2) ${item.isNisf ? "opacity-75" : ""}`}
@@ -86,10 +102,12 @@ export function JuzSheet({ lang, juz, surahs, showSections, onToggleSections, on
               <button
                 key={section.num}
                 type="button"
-                onClick={() => onNavigate(section.page)}
+                onClick={() => section.line != null ? onNavigateSection(section.page, section.line) : onNavigate(section.page)}
                 className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2) opacity-80"
               >
-                <span className="w-6 text-right text-sm tabular-nums text-(--fg2)">½</span>
+                <span className="w-6 text-center text-sm text-(--fg2)">
+                  {section.id === "quarter" ? "¼" : section.id === "half" ? "½" : "¾"}
+                </span>
                 <span className="min-w-0 flex-1 truncate text-sm text-(--fg) opacity-60">{section.name}</span>
                 <span className="text-xs text-(--fg2)">p.{section.page + 1}</span>
                 <span className="font-amiri text-[18px] opacity-60" dir="rtl">{section.arabicStart}</span>

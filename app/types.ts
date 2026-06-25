@@ -17,6 +17,8 @@ export type Juz = {
   name: string;
   arabicStart: string;
   page: number;
+  id?: string;
+  line?: number;
   isNisf?: boolean;
   sections?: Juz[];
 };

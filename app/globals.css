@@ -177,6 +177,15 @@
   animation: pop-in 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+@keyframes line-flash {
+  0% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+.animate-line-flash {
+  animation: line-flash 1.5s ease-out forwards;
+}
+
 .font-amiri {
   font-family: var(--font-amiri), serif;
 }

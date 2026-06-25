@@ -88,6 +88,7 @@ export default function Home() {
   const [highlights, setHighlights] = useState<Record<number, Record<number, HighlightColorKey>>>({});
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
+  const [navFlash, setNavFlash] = useState<{ page: number; line: number; stamp: number } | null>(null);
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
 
@@ -106,6 +107,7 @@ export default function Home() {
   const pressInfo = useRef<{ page: number; line: number; x: number; y: number } | null>(null);
   const suppressClick = useRef(false);
   const sheetDragY = useRef<number | null>(null);
+  const navFlashTimer = useRef<number | null>(null);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -244,6 +246,18 @@ export default function Home() {
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
+  }, []);
+
+  const goToSection = useCallback((targetPage: number, line: number) => {
+    setPage(clampPage(targetPage));
+    setActiveSheet(null);
+    setPageInput("");
+    if (navFlashTimer.current !== null) window.clearTimeout(navFlashTimer.current);
+    setNavFlash({ page: clampPage(targetPage), line, stamp: Date.now() });
+    navFlashTimer.current = window.setTimeout(() => {
+      setNavFlash(null);
+      navFlashTimer.current = null;
+    }, 2000);
   }, []);
 
   const setRakatMarker = useCallback((targetPage: number, line: number, rakat: number | null) => {
@@ -453,31 +467,31 @@ export default function Home() {
             {/* RTL: index 0 = page − 2 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page - 2) && <PageCard {...pageCardProps} candidate={page - 2} bands={bandsForPage(page - 2)} />}
+                {canRenderPage(page - 2) && <PageCard {...pageCardProps} candidate={page - 2} bands={bandsForPage(page - 2)} flashLine={navFlash?.page === page - 2 ? navFlash.line : undefined} flashKey={navFlash?.page === page - 2 ? navFlash.stamp : undefined} />}
               </div>
             </SwiperSlide>
             {/* index 1 = page − 1 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page - 1) && <PageCard {...pageCardProps} candidate={page - 1} bands={bandsForPage(page - 1)} />}
+                {canRenderPage(page - 1) && <PageCard {...pageCardProps} candidate={page - 1} bands={bandsForPage(page - 1)} flashLine={navFlash?.page === page - 1 ? navFlash.line : undefined} flashKey={navFlash?.page === page - 1 ? navFlash.stamp : undefined} />}
               </div>
             </SwiperSlide>
             {/* index 2 = current page */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page) && <PageCard {...pageCardProps} candidate={page} bands={bandsForPage(page)} />}
+                {canRenderPage(page) && <PageCard {...pageCardProps} candidate={page} bands={bandsForPage(page)} flashLine={navFlash?.page === page ? navFlash.line : undefined} flashKey={navFlash?.page === page ? navFlash.stamp : undefined} />}
               </div>
             </SwiperSlide>
             {/* index 3 = page + 1 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page + 1) && <PageCard {...pageCardProps} candidate={page + 1} bands={bandsForPage(page + 1)} />}
+                {canRenderPage(page + 1) && <PageCard {...pageCardProps} candidate={page + 1} bands={bandsForPage(page + 1)} flashLine={navFlash?.page === page + 1 ? navFlash.line : undefined} flashKey={navFlash?.page === page + 1 ? navFlash.stamp : undefined} />}
               </div>
             </SwiperSlide>
             {/* index 4 = page + 2 */}
             <SwiperSlide style={{ overflowY: "auto" }}>
               <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page + 2) && <PageCard {...pageCardProps} candidate={page + 2} bands={bandsForPage(page + 2)} />}
+                {canRenderPage(page + 2) && <PageCard {...pageCardProps} candidate={page + 2} bands={bandsForPage(page + 2)} flashLine={navFlash?.page === page + 2 ? navFlash.line : undefined} flashKey={navFlash?.page === page + 2 ? navFlash.stamp : undefined} />}
               </div>
             </SwiperSlide>
           </Swiper>
@@ -552,10 +566,12 @@ export default function Home() {
               lang={lang}
               juz={juz}
               surahs={surahs}
+              currentPage={page}
               showSections={showSections}
               onToggleSections={() => setShowSections((v) => !v)}
               onClose={() => setActiveSheet(null)}
               onNavigate={goToPage}
+              onNavigateSection={goToSection}
               dragHandlers={dragHandlers}
             />
           )}
