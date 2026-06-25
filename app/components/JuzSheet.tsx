@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t, needsFontScale } from "../i18n";
@@ -42,16 +42,33 @@ function getJuzSurahSubtitle(item: Juz, juzList: Juz[], surahs: Surah[]): string
 
 export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggleSections, onClose, onNavigate, onNavigateSection, dragHandlers }: Props) {
   const activeRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const preservedOffsetRef = useRef<number | null>(null);
 
   useEffect(() => {
     activeRef.current?.scrollIntoView({ block: "center" });
   }, []);
+
+  useLayoutEffect(() => {
+    if (preservedOffsetRef.current !== null && scrollRef.current && activeRef.current) {
+      const newOffset = activeRef.current.getBoundingClientRect().top - scrollRef.current.getBoundingClientRect().top;
+      scrollRef.current.scrollTop += newOffset - preservedOffsetRef.current;
+      preservedOffsetRef.current = null;
+    }
+  }, [showSections]);
 
   let activeJuzNum = juz[0].num;
   for (const item of juz) {
     if (item.page <= currentPage) activeJuzNum = item.num;
     else break;
   }
+
+  const handleToggle = () => {
+    if (scrollRef.current && activeRef.current) {
+      preservedOffsetRef.current = activeRef.current.getBoundingClientRect().top - scrollRef.current.getBoundingClientRect().top;
+    }
+    onToggleSections();
+  };
 
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
@@ -70,7 +87,7 @@ export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggl
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={onToggleSections}
+            onClick={handleToggle}
             className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
               showSections ? "border-transparent bg-(--fg) text-(--bg)" : "border-border bg-(--bg2) text-(--fg2)"
             }`}
@@ -82,7 +99,7 @@ export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggl
           </Button>
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
         {juz.map((item) => (
           <div key={item.num}>
             <button
