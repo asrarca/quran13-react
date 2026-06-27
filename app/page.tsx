@@ -140,6 +140,17 @@ export default function Home() {
     return value;
   }, [juz, page]);
 
+  const currentJuzSection = useMemo(() => {
+    const sections = currentJuz.sections;
+    if (!sections) return null;
+    let found: Juz | null = null;
+    for (const s of sections) {
+      if (s.page <= page) found = s;
+      else break;
+    }
+    return found;
+  }, [currentJuz, page]);
+
   useEffect(() => {
     setMounted(true);
     const storedTheme = localStorage.getItem("quran13-theme");
@@ -399,7 +410,7 @@ export default function Home() {
         <div className="min-w-0">
           <div className="truncate text-[15px] font-semibold">{t(lang, "header.surahPrefix")} {surahsOnPage.map((s) => s.name).join(", ")}</div>
           <div className="mt-px text-xs text-(--fg2)">
-            {t(lang, "header.juzPage", { juz: Math.floor(currentJuz.num), page: page + 1 })}
+            {t(lang, "header.juzPage", { juz: Math.floor(currentJuz.num), page: page + 1, section: currentJuzSection ? ` ${currentJuzSection.id === "quarter" ? "¼" : currentJuzSection.id === "half" ? "½" : "¾"}` : "" })}
             <span className="ml-1.5 opacity-70">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
           </div>
         </div>

@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "सूरह",
-    "juzPage": "जुज़ {juz} · पृष्ठ {page}"
+    "juzPage": "जुज़ {juz}{section} · पृष्ठ {page}"
   },
   "surahIndex": {
     "title": "सूरह सूची"

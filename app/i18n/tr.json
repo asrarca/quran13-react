@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "Sure",
-    "juzPage": "Cüz {juz} · Sayfa {page}"
+    "juzPage": "Cüz {juz}{section} · Sayfa {page}"
   },
   "surahIndex": {
     "title": "SURELER"

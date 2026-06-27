@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "سورة",
-    "juzPage": "الجزء {juz} · الصفحة {page}"
+    "juzPage": "الجزء {juz}{section} · الصفحة {page}"
   },
   "surahIndex": {
     "title": "فهرس السور"

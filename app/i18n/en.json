@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "Sūrah",
-    "juzPage": "Juz {juz} · Page {page}"
+    "juzPage": "Juz {juz}{section} · Page {page}"
   },
   "surahIndex": {
     "title": "SURAHS"

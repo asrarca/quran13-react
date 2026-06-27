@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "Sourate",
-    "juzPage": "Jouz {juz} · Page {page}"
+    "juzPage": "Jouz {juz}{section} · Page {page}"
   },
   "surahIndex": {
     "title": "SOURATES"

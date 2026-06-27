@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "Сура",
-    "juzPage": "Джуз {juz} · Страница {page}"
+    "juzPage": "Джуз {juz}{section} · Страница {page}"
   },
   "surahIndex": {
     "title": "СУРЫ"

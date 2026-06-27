@@ -8,7 +8,7 @@
   },
   "header": {
     "surahPrefix": "Sure",
-    "juzPage": "Dschuz {juz} · Seite {page}"
+    "juzPage": "Dschuz {juz}{section} · Seite {page}"
   },
   "surahIndex": {
     "title": "SUREN"
