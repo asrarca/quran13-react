@@ -30,6 +30,13 @@ import { PageSheet } from "./components/PageSheet";
 import { BookmarksSheet } from "./components/BookmarksSheet";
 import { SettingsSheet } from "./components/SettingsSheet";
 
+// Number of pages pre-rendered on each side of the active page. The Swiper
+// holds 2 * SLIDE_RADIUS + 1 slides with the active page centered, so the user
+// can swipe this many pages before reaching a slide edge.
+const SLIDE_RADIUS = 7;
+const CENTER_SLIDE = SLIDE_RADIUS;
+const SLIDE_OFFSETS = Array.from({ length: 2 * SLIDE_RADIUS + 1 }, (_, i) => i - SLIDE_RADIUS);
+
 function clampPage(value: number) {
   return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, value));
 }
@@ -454,7 +461,7 @@ export default function Home() {
         <div className="absolute inset-0">
           <Swiper
             dir="rtl"
-            initialSlide={2}
+            initialSlide={CENTER_SLIDE}
             slidesPerView={1}
             speed={320}
             threshold={8}
@@ -465,46 +472,35 @@ export default function Home() {
             allowSlidePrev={page > FIRST_PAGE}
             onSlideChangeTransitionEnd={(swiper) => {
               const idx = swiper.activeIndex;
-              if (idx === 2) return;
-              const delta = idx < 2 ? -1 : 1;
+              if (idx === CENTER_SLIDE) return;
+              const delta = idx - CENTER_SLIDE;
               flushSync(() => setPage((prev) => clampPage(prev + delta)));
-              swiper.slideTo(2, 0, false);
-              swiper.slides[2].scrollTop = 0;
+              swiper.slideTo(CENTER_SLIDE, 0, false);
+              swiper.slides[CENTER_SLIDE].scrollTop = 0;
               window.scrollTo(0, 0);
             }}
             className="h-full"
             style={{ touchAction: "pan-y" } as React.CSSProperties}
           >
-            {/* RTL: index 0 = page − 2 */}
-            <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page - 2) && <PageCard {...pageCardProps} candidate={page - 2} bands={bandsForPage(page - 2)} flashLine={navFlash?.page === page - 2 ? navFlash.line : undefined} flashKey={navFlash?.page === page - 2 ? navFlash.stamp : undefined} />}
-              </div>
-            </SwiperSlide>
-            {/* index 1 = page − 1 */}
-            <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page - 1) && <PageCard {...pageCardProps} candidate={page - 1} bands={bandsForPage(page - 1)} flashLine={navFlash?.page === page - 1 ? navFlash.line : undefined} flashKey={navFlash?.page === page - 1 ? navFlash.stamp : undefined} />}
-              </div>
-            </SwiperSlide>
-            {/* index 2 = current page */}
-            <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page) && <PageCard {...pageCardProps} candidate={page} bands={bandsForPage(page)} flashLine={navFlash?.page === page ? navFlash.line : undefined} flashKey={navFlash?.page === page ? navFlash.stamp : undefined} />}
-              </div>
-            </SwiperSlide>
-            {/* index 3 = page + 1 */}
-            <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page + 1) && <PageCard {...pageCardProps} candidate={page + 1} bands={bandsForPage(page + 1)} flashLine={navFlash?.page === page + 1 ? navFlash.line : undefined} flashKey={navFlash?.page === page + 1 ? navFlash.stamp : undefined} />}
-              </div>
-            </SwiperSlide>
-            {/* index 4 = page + 2 */}
-            <SwiperSlide style={{ overflowY: "auto" }}>
-              <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
-                {canRenderPage(page + 2) && <PageCard {...pageCardProps} candidate={page + 2} bands={bandsForPage(page + 2)} flashLine={navFlash?.page === page + 2 ? navFlash.line : undefined} flashKey={navFlash?.page === page + 2 ? navFlash.stamp : undefined} />}
-              </div>
-            </SwiperSlide>
+            {/* RTL: slides run oldest → newest; offset 0 is the active page, centered */}
+            {SLIDE_OFFSETS.map((offset) => {
+              const candidate = page + offset;
+              return (
+                <SwiperSlide key={offset} style={{ overflowY: "auto" }}>
+                  <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
+                    {canRenderPage(candidate) && (
+                      <PageCard
+                        {...pageCardProps}
+                        candidate={candidate}
+                        bands={bandsForPage(candidate)}
+                        flashLine={navFlash?.page === candidate ? navFlash.line : undefined}
+                        flashKey={navFlash?.page === candidate ? navFlash.stamp : undefined}
+                      />
+                    )}
+                  </div>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
         </div>
 
