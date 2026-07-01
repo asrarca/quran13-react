@@ -12,9 +12,9 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "portrait",
     icons: [
       {
-        src: "/icon.svg",
+        src: "/quran13-logo.jpg",
         sizes: "any",
-        type: "image/svg+xml",
+        type: "image/jpeg",
       },
     ],
   };
