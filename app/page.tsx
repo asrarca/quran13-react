@@ -33,7 +33,7 @@ import { SettingsSheet } from "./components/SettingsSheet";
 // Number of pages pre-rendered on each side of the active page. The Swiper
 // holds 2 * SLIDE_RADIUS + 1 slides with the active page centered, so the user
 // can swipe this many pages before reaching a slide edge.
-const SLIDE_RADIUS = 7;
+const SLIDE_RADIUS = 10;
 const CENTER_SLIDE = SLIDE_RADIUS;
 const SLIDE_OFFSETS = Array.from({ length: 2 * SLIDE_RADIUS + 1 }, (_, i) => i - SLIDE_RADIUS);
 
