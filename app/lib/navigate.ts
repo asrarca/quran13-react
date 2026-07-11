@@ -1,0 +1,89 @@
+// Server-only: resolve a natural-language question to a Quran verse + page.
+//
+// "what's the ayah about wudu?" -> Claude resolves to "5:6" -> we map it to the
+// app's 13-line page via data/ayah-map.json. Claude is grounded on the actual
+// Quran text (it knows the corpus well); we then VALIDATE the verse key against
+// the map so a hallucinated reference can never navigate the user somewhere real.
+//
+// Uses the Anthropic SDK directly (Claude Opus 4.8) with structured outputs — a
+// single constrained call is more reliable than an agent loop for this task.
+
+import Anthropic from "@anthropic-ai/sdk";
+import { locateVerse, verseKeyExists } from "./ayah-map";
+
+const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
+
+export type NavigateResult = {
+  verseKey: string;
+  surahName: string;
+  page: number; // app numbering (1-based) — pass straight to goToPage
+  line: number; // approximate; page-level nav is what we trust
+  note: string;
+  confidence: number;
+};
+
+const SYSTEM = `You help a Quran-reader app resolve a user's natural-language question to the single most relevant verse of the Quran.
+
+Rules:
+- Ground your answer in the actual text of the Quran. Identify the verse a knowledgeable reciter would point to.
+- Return the verse as "surah:ayah" using the standard numbering (surahs 1-114). Example: the ablution (wudu) verse is 5:6.
+- If several verses fit, choose the single most canonical / well-known one and mention the others in the note.
+- Never invent a reference. If you are genuinely unsure, pick the closest well-attested verse and set a low confidence.
+- Keep "note" to one short sentence a layperson understands.`;
+
+const SCHEMA = {
+  type: "object",
+  properties: {
+    verseKey: { type: "string", description: 'The verse as "surah:ayah", e.g. "5:6".' },
+    surahName: { type: "string", description: "English name of the surah, e.g. Al-Ma'idah." },
+    confidence: { type: "number", description: "0 to 1 — how sure you are this is the intended verse." },
+    note: { type: "string", description: "One short sentence on why this verse matches." },
+  },
+  required: ["verseKey", "surahName", "confidence", "note"],
+  additionalProperties: false,
+} as const;
+
+export class NavigateError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+  }
+}
+
+export async function resolveQuery(query: string): Promise<NavigateResult> {
+  const trimmed = query.trim();
+  if (!trimmed) throw new NavigateError("Empty query.", 400);
+  if (trimmed.length > 500) throw new NavigateError("Query too long.", 400);
+
+  const response = await client.messages.create({
+    model: "claude-opus-4-8",
+    max_tokens: 1024,
+    system: SYSTEM,
+    // Low effort + no thinking keeps this fast for an interactive lookup.
+    output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
+    messages: [{ role: "user", content: trimmed }],
+  });
+
+  const text = response.content.find((b) => b.type === "text");
+  if (!text || text.type !== "text") throw new NavigateError("No response from model.", 502);
+
+  let parsed: { verseKey: string; surahName: string; confidence: number; note: string };
+  try {
+    parsed = JSON.parse(text.text);
+  } catch {
+    throw new NavigateError("Could not parse model response.", 502);
+  }
+
+  if (!verseKeyExists(parsed.verseKey)) {
+    throw new NavigateError(`Model returned an invalid verse (${parsed.verseKey}).`, 422);
+  }
+  const loc = locateVerse(parsed.verseKey)!; // exists — verseKeyExists passed
+
+  return {
+    verseKey: parsed.verseKey,
+    surahName: parsed.surahName,
+    page: loc.page,
+    line: loc.line,
+    note: parsed.note,
+    confidence: parsed.confidence,
+  };
+}

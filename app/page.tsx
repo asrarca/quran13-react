@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { Bookmark, BookOpen, Hash, Layers, Moon, Settings, Sun, SunMoon, X } from "lucide-react";
+import { Bookmark, BookOpen, Hash, Layers, Moon, Settings, Sparkles, Sun, SunMoon, X } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -29,6 +29,7 @@ import { JuzSheet } from "./components/JuzSheet";
 import { PageSheet } from "./components/PageSheet";
 import { BookmarksSheet } from "./components/BookmarksSheet";
 import { SettingsSheet } from "./components/SettingsSheet";
+import { AskSheet } from "./components/AskSheet";
 
 // Number of pages pre-rendered on each side of the active page. The Swiper
 // holds 2 * SLIDE_RADIUS + 1 slides with the active page centered, so the user
@@ -427,6 +428,16 @@ export default function Home() {
             size="icon"
             variant="ghost"
             className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
+            onClick={() => setActiveSheet("ask")}
+            aria-label="Ask"
+          >
+            <Sparkles className="size-4.5" />
+          </Button>
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
             onClick={toggleBookmark}
             aria-label="Toggle bookmark"
           >
@@ -581,6 +592,9 @@ export default function Home() {
               onNavigateSection={goToSection}
               dragHandlers={dragHandlers}
             />
+          )}
+          {activeSheet === "ask" && (
+            <AskSheet lang={lang} onClose={() => setActiveSheet(null)} onNavigate={goToPage} />
           )}
           {activeSheet === "page" && (
             <PageSheet

@@ -6,9 +6,12 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ayah-map:discover": "node --env-file=.env.local scripts/build-ayah-map.mjs discover",
+    "ayah-map:build": "node --env-file=.env.local scripts/build-ayah-map.mjs build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
     "@base-ui/react": "^1.6.0",
     "@ducanh2912/next-pwa": "^10.2.9",
     "class-variance-authority": "^0.7.1",

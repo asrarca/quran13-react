@@ -2,7 +2,7 @@ import type React from "react";
 import quranData from "@/data/quran-data.json";
 
 export type Theme = "light" | "dark" | "dark-invert";
-export type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "settings";
+export type ActiveSheet = null | "surah" | "juz" | "page" | "bookmarks" | "settings" | "ask";
 
 export type Surah = {
   num: number;
