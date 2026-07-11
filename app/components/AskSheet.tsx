@@ -50,7 +50,7 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
   }
 
   return (
-    <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 flex w-[21rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 flex-col rounded-3xl bg-(--bg) p-5.5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
+    <div className="animate-pop-in absolute left-1/2 top-20 z-50 flex w-[21rem] max-w-[92vw] -translate-x-1/2 flex-col rounded-3xl bg-(--bg) p-5.5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-lg font-semibold">
           <Sparkles className="size-4.5 text-(--fg2)" />
