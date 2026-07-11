@@ -71,6 +71,15 @@
     "theme": "Theme",
     "themeDesc": "Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image)."
   },
+  "ask": {
+    "title": "Ask",
+    "subtitle": "Describe a verse and jump straight to its page.",
+    "placeholder": "What's the ayah about…",
+    "example1": "the ayah about wudu",
+    "example2": "the throne verse",
+    "example3": "no compulsion in religion",
+    "pageLabel": "Page"
+  },
   "misc": {
     "imageUnavailable": "Page {page} image is unavailable",
     "langName": "English",

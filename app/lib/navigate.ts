@@ -13,6 +13,17 @@ import { locateVerse, verseKeyExists } from "./ayah-map";
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
 
+// Claude model IDs. Point MODEL at whichever tier you want the resolver to use.
+const MODELS = {
+  haiku: "claude-haiku-4-5", // cheapest ($1/$5 per MTok), fine for this verse lookup
+  sonnet: "claude-sonnet-5", // balanced ($3/$15), strong Quran knowledge
+  opus: "claude-opus-4-8", // most capable ($5/$25)
+} as const;
+const MODEL = MODELS.haiku;
+
+// The `effort` parameter is supported on Sonnet 5 / Opus 4.6+ but NOT on Haiku 4.5.
+const SUPPORTS_EFFORT = MODEL !== MODELS.haiku;
+
 export type NavigateResult = {
   verseKey: string;
   surahName: string;
@@ -55,11 +66,16 @@ export async function resolveQuery(query: string): Promise<NavigateResult> {
   if (trimmed.length > 500) throw new NavigateError("Query too long.", 400);
 
   const response = await client.messages.create({
-    model: "claude-opus-4-8",
+    model: MODEL,
     max_tokens: 1024,
     system: SYSTEM,
-    // Low effort + no thinking keeps this fast for an interactive lookup.
-    output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
+    // Disable thinking (Sonnet 5 would otherwise run adaptive thinking by default),
+    // and use low effort where the model supports it, to keep this a fast lookup.
+    thinking: { type: "disabled" },
+    output_config: {
+      ...(SUPPORTS_EFFORT ? { effort: "low" as const } : {}),
+      format: { type: "json_schema", schema: SCHEMA },
+    },
     messages: [{ role: "user", content: trimmed }],
   });
 

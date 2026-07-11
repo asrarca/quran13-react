@@ -71,6 +71,15 @@
     "theme": "Design",
     "themeDesc": "Tippe auf das Sonne/Mond-Symbol oben rechts, um zwischen drei Anzeigemodi zu wechseln: Hell, Dunkel und Dunkel Invertiert (weißer Text auf schwarzem Seitenbild)."
   },
+  "ask": {
+    "title": "Fragen",
+    "subtitle": "Beschreibe einen Vers und springe direkt zu seiner Seite.",
+    "placeholder": "Welcher Vers handelt von…",
+    "example1": "der Vers über die Gebetswaschung (Wudu)",
+    "example2": "der Thronvers",
+    "example3": "kein Zwang im Glauben",
+    "pageLabel": "Seite"
+  },
   "misc": {
     "imageUnavailable": "Bild für Seite {page} nicht verfügbar",
     "langName": "Deutsch",

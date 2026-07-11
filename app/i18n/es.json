@@ -71,6 +71,15 @@
     "theme": "Tema",
     "themeDesc": "Toca el ícono de sol/luna en la esquina superior derecha para cambiar entre tres modos: Claro, Oscuro y Oscuro Invertido (texto blanco sobre imagen negra de página)."
   },
+  "ask": {
+    "title": "Preguntar",
+    "subtitle": "Describe una aleya y salta directamente a su página.",
+    "placeholder": "¿Cuál es la aleya sobre…",
+    "example1": "la aleya sobre la ablución (wudu)",
+    "example2": "la aleya del Trono",
+    "example3": "no hay coacción en la religión",
+    "pageLabel": "Página"
+  },
   "misc": {
     "imageUnavailable": "Imagen de la página {page} no disponible",
     "langName": "Español",

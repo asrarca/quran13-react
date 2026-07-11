@@ -71,6 +71,15 @@
     "theme": "Thème",
     "themeDesc": "Appuyez sur l'icône soleil/lune en haut à droite pour faire défiler trois modes d'affichage : Clair, Sombre et Sombre Inversé (texte blanc sur image de page noire)."
   },
+  "ask": {
+    "title": "Demander",
+    "subtitle": "Décrivez un verset et accédez directement à sa page.",
+    "placeholder": "Quel est le verset sur…",
+    "example1": "le verset sur les ablutions (wudu)",
+    "example2": "le verset du Trône",
+    "example3": "nulle contrainte en religion",
+    "pageLabel": "Page"
+  },
   "misc": {
     "imageUnavailable": "Image de la page {page} indisponible",
     "langName": "Français",
