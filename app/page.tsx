@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { Bookmark, BookOpen, Hash, Layers, Moon, Settings, Sparkles, Sun, SunMoon, X } from "lucide-react";
+import { Bookmark, BookOpen, Hash, Languages, Layers, Settings, Sparkles, X } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -30,6 +30,7 @@ import { PageSheet } from "./components/PageSheet";
 import { BookmarksSheet } from "./components/BookmarksSheet";
 import { SettingsSheet } from "./components/SettingsSheet";
 import { AskSheet } from "./components/AskSheet";
+import { TranslationSheet } from "./components/TranslationSheet";
 
 // Number of pages pre-rendered on each side of the active page. The Swiper
 // holds 2 * SLIDE_RADIUS + 1 slides with the active page centered, so the user
@@ -85,7 +86,7 @@ export default function Home() {
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
-  const [settingsSubView, setSettingsSubView] = useState<"mushaf" | "about" | "language" | "install" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"display" | "mushaf" | "about" | "language" | "install" | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
   const [lang, setLang] = useState<Lang>("en");
@@ -438,20 +439,20 @@ export default function Home() {
             size="icon"
             variant="ghost"
             className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
-            onClick={toggleBookmark}
-            aria-label="Toggle bookmark"
+            onClick={() => setActiveSheet("translate")}
+            aria-label="Translation"
           >
-            <Bookmark className="size-4.5" fill={isBookmarked ? "currentColor" : "none"} />
+            <Languages className="size-4.5" />
           </Button>
           <Button
             type="button"
             size="icon"
             variant="ghost"
             className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
-            onClick={() => setTheme((prev) => prev === "light" ? "dark" : prev === "dark" ? "dark-invert" : "light")}
-            aria-label="Toggle theme"
+            onClick={toggleBookmark}
+            aria-label="Toggle bookmark"
           >
-            {theme === "light" ? <Sun className="size-4.5" /> : theme === "dark" ? <SunMoon className="size-4.5" /> : <Moon className="size-4.5" />}
+            <Bookmark className="size-4.5" fill={isBookmarked ? "currentColor" : "none"} />
           </Button>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-0.5 bg-black/[0.07] dark:bg-white/[0.07]">
@@ -593,6 +594,9 @@ export default function Home() {
               dragHandlers={dragHandlers}
             />
           )}
+          {activeSheet === "translate" && (
+            <TranslationSheet lang={lang} page={page} surahs={surahs} onClose={() => setActiveSheet(null)} dragHandlers={dragHandlers} />
+          )}
           {activeSheet === "ask" && (
             <AskSheet lang={lang} onClose={() => setActiveSheet(null)} onNavigate={goToSection} />
           )}
@@ -625,10 +629,12 @@ export default function Home() {
               settingsSubView={settingsSubView}
               setSettingsSubView={setSettingsSubView}
               activeMushafKey={activeMushafKey}
+              theme={theme}
               isStandalone={isStandalone}
               appVersion={APP_VERSION}
               onClose={() => setActiveSheet(null)}
               onMushafChange={(key) => { setActiveMushafKey(key); setMissingImages({}); }}
+              onThemeChange={setTheme}
               onShowTajweedRules={() => setShowTajweedRules(true)}
               onLangChange={setLang}
               dragHandlers={dragHandlers}

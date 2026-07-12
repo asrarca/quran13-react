@@ -38,7 +38,8 @@
     "tajweedRules": "Tajweed Rules",
     "language": "Language",
     "about": "About",
-    "footer": "Developed by Asrar Abbasi"
+    "footer": "Developed by Asrar Abbasi",
+    "display": "Display"
   },
   "installApp": {
     "title": "Install App",
@@ -69,7 +70,7 @@
     "viewSavedPagesDesc": "Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.",
     "displaySection": "Display",
     "theme": "Theme",
-    "themeDesc": "Tap the sun/moon icon in the top-right to cycle through three display modes: Light, Dark, and Dark Inverted (white text on a black page image)."
+    "themeDesc": "Open Settings › Display to switch between three modes: Light, Dark, and Dark Inverted (white text on a black page image)."
   },
   "ask": {
     "title": "Ask",
@@ -80,9 +81,18 @@
     "example3": "no compulsion in religion",
     "pageLabel": "Page"
   },
+  "translation": {
+    "title": "Translation",
+    "unavailable": "Translation unavailable."
+  },
   "misc": {
     "imageUnavailable": "Page {page} image is unavailable",
     "langName": "English",
     "tajweedRulesAlt": "Tajweed Rules"
+  },
+  "display": {
+    "light": "Light",
+    "dark": "Dark with white pages",
+    "darkInvert": "Dark with black pages"
   }
 }

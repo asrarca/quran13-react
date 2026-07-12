@@ -38,7 +38,8 @@
     "tajweedRules": "Reglas de Tajweed",
     "language": "Idioma",
     "about": "Acerca de",
-    "footer": "Desarrollado por Asrar Abbasi"
+    "footer": "Desarrollado por Asrar Abbasi",
+    "display": "Pantalla"
   },
   "installApp": {
     "title": "Instalar aplicación",
@@ -69,7 +70,7 @@
     "viewSavedPagesDesc": "Abre la pestaña Guardado en la barra de navegación para ver todas tus páginas marcadas, ordenadas por las más recientes.",
     "displaySection": "Pantalla",
     "theme": "Tema",
-    "themeDesc": "Toca el ícono de sol/luna en la esquina superior derecha para cambiar entre tres modos: Claro, Oscuro y Oscuro Invertido (texto blanco sobre imagen negra de página)."
+    "themeDesc": "Abre Ajustes › Pantalla para elegir entre tres modos: Claro, Oscuro y Oscuro invertido (texto blanco sobre imagen negra de página)."
   },
   "ask": {
     "title": "Preguntar",
@@ -80,9 +81,18 @@
     "example3": "no hay coacción en la religión",
     "pageLabel": "Página"
   },
+  "translation": {
+    "title": "Traducción",
+    "unavailable": "Traducción no disponible."
+  },
   "misc": {
     "imageUnavailable": "Imagen de la página {page} no disponible",
     "langName": "Español",
     "tajweedRulesAlt": "Reglas de Tajweed"
+  },
+  "display": {
+    "light": "Claro",
+    "dark": "Oscuro con páginas blancas",
+    "darkInvert": "Oscuro con páginas negras"
   }
 }

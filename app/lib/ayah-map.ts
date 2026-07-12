@@ -42,3 +42,47 @@ export function verseKeyExists(key: string): boolean {
   const parsed = parseVerseKey(key);
   return parsed ? `${parsed.surah}:${parsed.ayah}` in LOCATIONS : false;
 }
+
+// Ordered (mushaf order) list of every ayah's start page + line, built once.
+const ORDERED: { key: string; startPage: number; line: number }[] = Object.entries(LOCATIONS).map(
+  ([key, [page, line]]) => ({ key, startPage: page, line })
+);
+
+/**
+ * Every ayah that appears on the given page, in order — all ayahs starting on
+ * this page, plus a carry-over ayah spilling in from the previous page when one
+ * exists. Whole ayahs (translation is per-ayah), so page splits don't matter.
+ *
+ * The carry-over is only included when the first ayah starting on the page begins
+ * below line 1: if the page opens at line 1, the previous ayah ended cleanly on
+ * the prior page and there's nothing carried over.
+ */
+export function ayahsOnPage(page: number): string[] {
+  const starters: number[] = [];
+  let first = -1;
+  for (let i = 0; i < ORDERED.length; i++) {
+    if (ORDERED[i].startPage === page) {
+      if (first < 0) first = i;
+      starters.push(i);
+    } else if (ORDERED[i].startPage > page) break;
+  }
+
+  const out: string[] = [];
+  if (starters.length) {
+    const prev = first - 1;
+    if (prev >= 0 && ORDERED[prev].startPage < page && ORDERED[first].line > 1) out.push(ORDERED[prev].key);
+    for (const i of starters) out.push(ORDERED[i].key);
+  } else {
+    // No ayah starts on this page: a single long ayah spans it entirely.
+    let idx = -1;
+    for (let i = 0; i < ORDERED.length; i++) {
+      if (ORDERED[i].startPage < page) idx = i;
+      else break;
+    }
+    if (idx >= 0) {
+      const nextStart = idx + 1 < ORDERED.length ? ORDERED[idx + 1].startPage : Infinity;
+      if (nextStart > page) out.push(ORDERED[idx].key);
+    }
+  }
+  return out;
+}

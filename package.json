@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "ayah-map:discover": "node --env-file=.env.local scripts/build-ayah-map.mjs discover",
-    "ayah-map:build": "node --env-file=.env.local scripts/build-ayah-map.mjs build"
+    "ayah-map:build": "node --env-file=.env.local scripts/build-ayah-map.mjs build",
+    "translations:build": "node --env-file=.env.local scripts/build-translations.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
