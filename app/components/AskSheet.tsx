@@ -17,7 +17,7 @@ type Resolved = {
 type Props = {
   lang: Lang;
   onClose: () => void;
-  onNavigate: (page: number) => void;
+  onNavigate: (page: number, line: number) => void;
 };
 
 export function AskSheet({ lang, onClose, onNavigate }: Props) {
@@ -111,7 +111,7 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
       {result && (
         <button
           type="button"
-          onClick={() => onNavigate(result.page)}
+          onClick={() => onNavigate(result.page, result.line)}
           className="mt-3 flex w-full flex-col gap-1 rounded-[14px] bg-(--bg2) p-3.5 text-left active:bg-border"
         >
           <div className="flex items-center justify-between">

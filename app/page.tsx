@@ -594,7 +594,7 @@ export default function Home() {
             />
           )}
           {activeSheet === "ask" && (
-            <AskSheet lang={lang} onClose={() => setActiveSheet(null)} onNavigate={goToPage} />
+            <AskSheet lang={lang} onClose={() => setActiveSheet(null)} onNavigate={goToSection} />
           )}
           {activeSheet === "page" && (
             <PageSheet

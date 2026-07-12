@@ -228,6 +228,19 @@ function crossValidate(anchors) {
   report("juz sections", (a) => a.kind.startsWith("sec:"));
 }
 
+// Serialize with readable metadata but each "surah:ayah": [page, line] on one line.
+function serializeMap(out) {
+  const { ayahToLocation, ...meta } = out;
+  let s = "{\n";
+  for (const [k, v] of Object.entries(meta)) s += `  ${JSON.stringify(k)}: ${JSON.stringify(v)},\n`;
+  s += `  "ayahToLocation": {\n`;
+  s += Object.entries(ayahToLocation)
+    .map(([k, v]) => `    ${JSON.stringify(k)}: [${v[0]}, ${v[1]}]`)
+    .join(",\n");
+  s += "\n  }\n}\n";
+  return s;
+}
+
 async function build(token, mushafId) {
   const quranData = JSON.parse(readFileSync(resolve(ROOT, "data/quran-data.json"), "utf8"));
   const order = await fetchReferenceOrder(token, mushafId);
@@ -249,7 +262,7 @@ async function build(token, mushafId) {
     ayahToLocation,
   };
   const outPath = resolve(ROOT, "data/ayah-map.json");
-  writeFileSync(outPath, JSON.stringify(out));
+  writeFileSync(outPath, serializeMap(out));
   console.log(`\nWrote ${Object.keys(ayahToLocation).length} ayahs -> ${outPath}`);
 }
 
