@@ -35,7 +35,7 @@ export function HighlightPicker({
         onClick={onClose}
       />
       <div className="animate-pop-in absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 rounded-3xl bg-(--bg) px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.32)] min-w-64 max-w-[calc(100vw-2rem)]">
-        <span className={`${needsFontScale(lang) ? "text-[17px]" : "text-[11px] uppercase tracking-widest"} font-semibold text-(--fg2)`}>
+        <span className={`${needsFontScale(lang) ? "text-[1.0625rem]" : "text-[0.6875rem] uppercase tracking-widest"} font-semibold text-(--fg2)`}>
           {t(lang, "highlightPicker.lineHighlight")}
         </span>
         <div className="flex items-center gap-3">
@@ -61,7 +61,7 @@ export function HighlightPicker({
           )}
         </div>
         <div className="w-full h-px bg-border" />
-        <span className={`${needsFontScale(lang) ? "text-[17px]" : "text-[11px] uppercase tracking-widest"} font-semibold text-(--fg2)`}>
+        <span className={`${needsFontScale(lang) ? "text-[1.0625rem]" : "text-[0.6875rem] uppercase tracking-widest"} font-semibold text-(--fg2)`}>
           {t(lang, "highlightPicker.numberAnnotation")}
         </span>
         <div className="grid grid-cols-7 gap-1">
@@ -70,7 +70,7 @@ export function HighlightPicker({
               key={n}
               type="button"
               aria-label={`Rakat ${n}`}
-              className={`flex size-7 items-center justify-center rounded-full text-[12px] font-semibold transition-transform active:scale-90 ${
+              className={`flex size-7 items-center justify-center rounded-full text-[0.75rem] font-semibold transition-transform active:scale-90 ${
                 currentRakat === n ? "bg-teal-500 text-white" : "bg-(--bg2) text-(--fg)"
               }`}
               onClick={() => { onSetRakat(page, line, n); onClose(); }}

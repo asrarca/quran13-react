@@ -67,7 +67,7 @@ export function SurahSheet({ lang, surahs, juz, currentPage, onClose, onNavigate
         <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
       </div>
       <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-        <span className={`${needsFontScale(lang) ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "surahIndex.title")}</span>
+        <span className={`${needsFontScale(lang) ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "surahIndex.title")}</span>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />
         </Button>
@@ -87,7 +87,7 @@ export function SurahSheet({ lang, surahs, juz, currentPage, onClose, onNavigate
               <span className="truncate text-xs text-(--fg2)">{getSurahJuzSubtitle(surah, surahs, juz, lang)}</span>
             </div>
             <span className="text-xs text-(--fg2)">p.{surah.page + 1}</span>
-            <span className="font-amiri font-bold text-[22px]" dir="rtl">{surah.arabic}</span>
+            <span className="font-amiri font-bold text-[1.375rem]" dir="rtl">{surah.arabic}</span>
           </button>
         ))}
       </div>

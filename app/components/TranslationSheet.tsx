@@ -41,10 +41,10 @@ export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: 
       </div>
       <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
         <div className="min-w-0">
-          <div className={`${scale ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>
+          <div className={`${scale ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>
             {t(lang, "translation.title")}
           </div>
-          {data?.source && <div className="mt-0.5 truncate text-[11px] text-(--fg3)">{data.source}</div>}
+          {data?.source && <div className="mt-0.5 truncate text-[0.6875rem] text-(--fg3)">{data.source}</div>}
         </div>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />
@@ -64,7 +64,7 @@ export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: 
             const surah = surahByNum.get(Number(surahNum));
             return (
               <div key={key} className="border-b border-border px-5 py-3.5">
-                <div className="mb-1 flex items-center gap-2 text-[11px] font-medium uppercase tracking-wide text-(--fg2)">
+                <div className="mb-1 flex items-center gap-2 text-[0.6875rem] font-medium uppercase tracking-wide text-(--fg2)">
                   <span>{surah?.name}</span>
                   <span className="tabular-nums opacity-70">
                     {surahNum}:{ayahNum}
@@ -72,7 +72,7 @@ export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: 
                 </div>
                 <p
                   dir={rtl ? "rtl" : "ltr"}
-                  className={`${scale ? "text-[19px] leading-[2] font-amiri" : "text-[15px] leading-relaxed"} text-(--fg)`}
+                  className={`${scale ? "text-[1.1875rem] leading-[2] font-amiri" : "text-[0.9375rem] leading-relaxed"} text-(--fg)`}
                 >
                   {data.text[key] ?? ""}
                 </p>

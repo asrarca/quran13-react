@@ -83,7 +83,7 @@ export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggl
         <div className="pointer-events-none h-1.25 w-9.5 rounded-full bg-border" />
       </div>
       <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
-        <span className={`${needsFontScale(lang) ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "juzIndex.title")}</span>
+        <span className={`${needsFontScale(lang) ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "juzIndex.title")}</span>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -113,7 +113,7 @@ export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggl
                 <span className="truncate text-xs text-(--fg2)">{getJuzSurahSubtitle(item, juz, surahs)}</span>
               </div>
               <span className="text-xs text-(--fg2)">p.{item.page + 1}</span>
-              <span className="font-amiri font-bold text-[22px]" dir="rtl">{item.arabicStart}</span>
+              <span className="font-amiri font-bold text-[1.375rem]" dir="rtl">{item.arabicStart}</span>
             </button>
             {showSections && item.sections?.map((section) => (
               <button
@@ -122,12 +122,12 @@ export function JuzSheet({ lang, juz, surahs, currentPage, showSections, onToggl
                 onClick={() => section.line != null ? onNavigateSection(section.page, section.line) : onNavigate(section.page)}
                 className="flex w-full items-center gap-3.5 border-b border-border px-5 py-3.25 text-start hover:bg-(--bg2) opacity-80"
               >
-                <span className="w-6 text-center text-sm text-(--fg2)">
+                <span className="w-6 shrink-0 text-center text-sm text-(--fg2)">
                   {section.id === "quarter" ? "¼" : section.id === "half" ? "½" : "¾"}
                 </span>
-                <span className="min-w-0 flex-1 truncate text-sm text-(--fg) opacity-60">{section.name}</span>
-                <span className="text-xs text-(--fg2)">p.{section.page + 1}</span>
-                <span className="font-amiri text-[18px] opacity-60" dir="rtl">{section.arabicStart}</span>
+                <span className="shrink-0 text-sm text-(--fg) opacity-60">{section.name}</span>
+                <span className="shrink-0 text-xs text-(--fg2)">p.{section.page + 1}</span>
+                <span className="min-w-0 flex-1 truncate text-right font-amiri text-[1.125rem] opacity-60" dir="rtl">{section.arabicStart}</span>
               </button>
             ))}
           </div>

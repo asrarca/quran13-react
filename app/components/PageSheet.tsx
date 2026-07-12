@@ -33,10 +33,10 @@ export function PageSheet({
           <X className="size-4" />
         </Button>
       </div>
-      <span className="mt-1 text-[13px] text-(--fg2)">
+      <span className="mt-1 text-[0.8125rem] text-(--fg2)">
         {t(lang, "goToPage.hint", { min: firstPage + 1, max: lastPage + 1 })}
       </span>
-      <div className="my-4 flex h-16 items-center justify-center rounded-[14px] bg-(--bg2) text-[34px] font-semibold tracking-[3px] tabular-nums">
+      <div className="my-4 flex h-16 items-center justify-center rounded-[14px] bg-(--bg2) text-[2.125rem] font-semibold tracking-[3px] tabular-nums">
         {pageDisplay}
       </div>
       <div className="grid grid-cols-3 gap-2.5">
@@ -44,7 +44,7 @@ export function PageSheet({
           <button
             key={digit}
             type="button"
-            className="h-13 rounded-[14px] bg-(--bg2) text-[22px] font-medium text-(--fg) active:bg-border"
+            className="h-13 rounded-[14px] bg-(--bg2) text-[1.375rem] font-medium text-(--fg) active:bg-border"
             onClick={() => onPressDigit(digit)}
           >
             {digit}
@@ -59,7 +59,7 @@ export function PageSheet({
         </button>
         <button
           type="button"
-          className="h-13 rounded-[14px] bg-(--bg2) text-[22px] font-medium text-(--fg) active:bg-border"
+          className="h-13 rounded-[14px] bg-(--bg2) text-[1.375rem] font-medium text-(--fg) active:bg-border"
           onClick={() => onPressDigit("0")}
         >
           0

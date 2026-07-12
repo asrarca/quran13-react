@@ -64,7 +64,7 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
           <X className="size-4" />
         </Button>
       </div>
-      <span className="mt-1 text-[13px] text-(--fg2)">{t(lang, "ask.subtitle")}</span>
+      <span className="mt-1 text-[0.8125rem] text-(--fg2)">{t(lang, "ask.subtitle")}</span>
 
       <form
         className="mt-4 flex items-center gap-2 rounded-[14px] bg-(--bg2) px-3"
@@ -80,7 +80,7 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
           onChange={(e) => setQuery(e.target.value)}
           maxLength={500}
           placeholder={t(lang, "ask.placeholder")}
-          className="h-12 min-w-0 flex-1 bg-transparent text-[15px] text-(--fg) outline-none placeholder:text-(--fg3)"
+          className="h-12 min-w-0 flex-1 bg-transparent text-[0.9375rem] text-(--fg) outline-none placeholder:text-(--fg3)"
         />
         <button
           type="submit"
@@ -102,7 +102,7 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
                 setQuery(ex);
                 submit(ex);
               }}
-              className="rounded-full bg-(--bg2) px-3 py-1.5 text-[12px] text-(--fg2) active:bg-border"
+              className="rounded-full bg-(--bg2) px-3 py-1.5 text-[0.75rem] text-(--fg2) active:bg-border"
             >
               {ex}
             </button>
@@ -111,7 +111,7 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
       )}
 
       {error && !isFetching && (
-        <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[13px] text-(--fg2)">{error.message}</div>
+        <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[0.8125rem] text-(--fg2)">{error.message}</div>
       )}
 
       {result && !isFetching && (
@@ -121,14 +121,14 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
           className="mt-3 flex w-full flex-col gap-1 rounded-[14px] bg-(--bg2) p-3.5 text-left active:bg-border"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[15px] font-semibold">
+            <span className="text-[0.9375rem] font-semibold">
               {result.surahName} · {result.verseKey}
             </span>
-            <span className="flex items-center gap-1 text-[13px] font-medium text-(--fg2)">
+            <span className="flex items-center gap-1 text-[0.8125rem] font-medium text-(--fg2)">
               {t(lang, "ask.pageLabel")} {result.page} <CornerDownLeft className="size-3.5 -scale-x-100" />
             </span>
           </div>
-          <span className="text-[13px] leading-snug text-(--fg2)">{result.note}</span>
+          <span className="text-[0.8125rem] leading-snug text-(--fg2)">{result.note}</span>
         </button>
       )}
     </div>

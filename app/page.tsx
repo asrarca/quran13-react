@@ -21,6 +21,7 @@ import {
   type MushafKey,
   type Surah,
   type Theme,
+  type FontSize,
 } from "./types";
 import { PageCard } from "./components/PageCard";
 import { HighlightPicker } from "./components/HighlightPicker";
@@ -82,11 +83,12 @@ const LONG_PRESS_MOVE_TOLERANCE = 10;
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
+  const [fontSize, setFontSize] = useState<FontSize>("normal");
   const [page, setPage] = useState(DEFAULT_START_PAGE);
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>("original_tajweed");
-  const [settingsSubView, setSettingsSubView] = useState<"display" | "mushaf" | "about" | "language" | "install" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"display" | "fontsize" | "mushaf" | "about" | "language" | "install" | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
   const [lang, setLang] = useState<Lang>("en");
@@ -220,6 +222,9 @@ export default function Home() {
     const storedLang = localStorage.getItem("quran13-lang");
     if (storedLang && SUPPORTED_LANGS.some((l) => l.code === storedLang)) setLang(storedLang as Lang);
 
+    const storedFontSize = localStorage.getItem("quran13-fontsize");
+    if (storedFontSize === "normal" || storedFontSize === "large") setFontSize(storedFontSize);
+
     setIsStandalone(
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true
@@ -231,6 +236,15 @@ export default function Home() {
     document.documentElement.classList.toggle("dark", theme === "dark" || theme === "dark-invert");
     localStorage.setItem("quran13-theme", theme);
   }, [mounted, theme]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    // "large" scales the root font-size so every rem-based UI label, icon, and
+    // spacing grows 1.25x. The Quran page images are sized in %/vw, so they are
+    // unaffected. Resetting to "" restores the browser default (16px).
+    document.documentElement.style.fontSize = fontSize === "large" ? "125%" : "";
+    localStorage.setItem("quran13-fontsize", fontSize);
+  }, [mounted, fontSize]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -417,7 +431,7 @@ export default function Home() {
     <main data-theme={theme} dir={isRtlLang(lang) ? "rtl" : undefined} className="flex min-h-screen flex-col bg-(--bg) text-(--fg)">
       <header className="relative flex items-center justify-between gap-3 px-4 pb-3 pt-1">
         <div className="min-w-0">
-          <div className="truncate text-[15px] font-semibold">{t(lang, "header.surahPrefix")} {surahsOnPage.map((s) => s.name).join(", ")}</div>
+          <div className="truncate text-[0.9375rem] font-semibold">{t(lang, "header.surahPrefix")} {surahsOnPage.map((s) => s.name).join(", ")}</div>
           <div className="mt-px text-xs text-(--fg2)">
             {t(lang, "header.juzPage", { juz: Math.floor(currentJuz.num), page: page + 1, section: currentJuzSection ? ` ${currentJuzSection.id === "quarter" ? "¼" : currentJuzSection.id === "half" ? "½" : "¾"}` : "" })}
             <span className="ml-1.5 opacity-70">· {((page - FIRST_PAGE) / (LAST_PAGE - FIRST_PAGE) * 100).toFixed(1)}%</span>
@@ -516,22 +530,22 @@ export default function Home() {
           </Swiper>
         </div>
 
-        {false && <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-(--bg2) px-3.5 py-1.5 text-[13px] text-(--fg2)">
-          <span className="font-amiri text-[17px] text-(--fg)">{toArabicNumber(page + 1)}</span>
+        {false && <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-(--bg2) px-3.5 py-1.5 text-[0.8125rem] text-(--fg2)">
+          <span className="font-amiri text-[1.0625rem] text-(--fg)">{toArabicNumber(page + 1)}</span>
           <span className="opacity-50">·</span>
           <span className="tabular-nums">{page + 1}</span>
         </div>}
       </section>
 
       <div className={`fixed inset-x-0 bottom-0 z-30 transition-opacity duration-300 ${navVisible ? "opacity-99" : "opacity-0 pointer-events-none"}`}>
-        <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-6 pt-2 backdrop-blur-[14px]">
+        <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-2 pt-2 backdrop-blur-[14px]">
           <button type="button" onClick={() => setActiveSheet("surah")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <BookOpen className="size-5.5" />
-            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.surah")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.surah")}</span>
           </button>
           <button type="button" onClick={() => setActiveSheet("juz")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Layers className="size-5.5" />
-            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.juz")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.juz")}</span>
           </button>
           <button
             type="button"
@@ -539,11 +553,11 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Hash className="size-5.5" />
-            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.page")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.page")}</span>
           </button>
           <button type="button" onClick={() => setActiveSheet("bookmarks")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Bookmark className="size-5.5" fill={activeSheet === "bookmarks" ? "currentColor" : "none"} />
-            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.saved")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.saved")}</span>
           </button>
           <button
             type="button"
@@ -551,7 +565,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
           >
             <Settings className="size-5.5" />
-            <span className={`${needsFontScale(lang) ? 'text-[17px]' : 'text-[11px]'} font-medium`}>{t(lang, "nav.settings")}</span>
+            <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.settings")}</span>
           </button>
         </nav>
       </div>
@@ -630,11 +644,13 @@ export default function Home() {
               setSettingsSubView={setSettingsSubView}
               activeMushafKey={activeMushafKey}
               theme={theme}
+              fontSize={fontSize}
               isStandalone={isStandalone}
               appVersion={APP_VERSION}
               onClose={() => setActiveSheet(null)}
               onMushafChange={(key) => { setActiveMushafKey(key); setMissingImages({}); }}
               onThemeChange={setTheme}
+              onFontSizeChange={setFontSize}
               onShowTajweedRules={() => setShowTajweedRules(true)}
               onLangChange={setLang}
               dragHandlers={dragHandlers}

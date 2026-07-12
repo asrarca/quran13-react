@@ -39,7 +39,8 @@
     "language": "Langue",
     "about": "À propos",
     "footer": "Développé par Asrar Abbasi",
-    "theme": "Thème"
+    "theme": "Thème",
+    "fontSize": "Taille du texte"
   },
   "installApp": {
     "title": "Installer l'application",
@@ -99,5 +100,9 @@
     "light": "Clair",
     "dark": "Sombre avec pages blanches",
     "darkInvert": "Sombre avec pages noires"
+  },
+  "fontSize": {
+    "normal": "Normale",
+    "large": "Grande"
   }
 }
