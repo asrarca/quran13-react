@@ -23,9 +23,19 @@
     "go": "Los"
   },
   "bookmarks": {
-    "title": "GESPEICHERTE SEITEN",
+    "title": "GESPEICHERTE INHALTE",
     "empty": "Noch keine gespeicherten Seiten",
-    "emptyHint": "Tippe beim Lesen auf das Lesezeichen-Symbol"
+    "emptyHint": "Tippe beim Lesen auf das Lesezeichen-Symbol",
+    "tab": {
+      "bookmarks": "Lesezeichen",
+      "highlights": "Markierungen",
+      "annotations": "Anmerkungen"
+    },
+    "pageLine": "Seite {page}, Zeile {line}",
+    "highlightsEmpty": "Noch keine Markierungen",
+    "annotationsEmpty": "Noch keine Anmerkungen",
+    "lineHint": "Halte beim Lesen eine Zeile gedrückt",
+    "delete": "Löschen"
   },
   "highlightPicker": {
     "lineHighlight": "Zeile markieren",

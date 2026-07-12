@@ -23,9 +23,19 @@
     "go": "انتقال"
   },
   "bookmarks": {
-    "title": "الصفحات المحفوظة",
+    "title": "المحتوى المحفوظ",
     "empty": "لا توجد صفحات محفوظة",
-    "emptyHint": "اضغط على أيقونة الإشارة المرجعية أثناء القراءة"
+    "emptyHint": "اضغط على أيقونة الإشارة المرجعية أثناء القراءة",
+    "tab": {
+      "bookmarks": "الإشارات المرجعية",
+      "highlights": "التظليلات",
+      "annotations": "التعليقات"
+    },
+    "pageLine": "صفحة {page}، سطر {line}",
+    "highlightsEmpty": "لا توجد تظليلات بعد",
+    "annotationsEmpty": "لا توجد تعليقات بعد",
+    "lineHint": "اضغط مطولًا على سطر أثناء القراءة",
+    "delete": "حذف"
   },
   "highlightPicker": {
     "lineHighlight": "تلوين السطر",

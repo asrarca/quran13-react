@@ -23,9 +23,19 @@
     "go": "OK"
   },
   "bookmarks": {
-    "title": "PAGES SAUVEGARDÉES",
+    "title": "CONTENU SAUVEGARDÉ",
     "empty": "Aucune page sauvegardée",
-    "emptyHint": "Appuyez sur l'icône de signet en lisant"
+    "emptyHint": "Appuyez sur l'icône de signet en lisant",
+    "tab": {
+      "bookmarks": "Signets",
+      "highlights": "Surlignages",
+      "annotations": "Annotations"
+    },
+    "pageLine": "Page {page}, ligne {line}",
+    "highlightsEmpty": "Aucun surlignage",
+    "annotationsEmpty": "Aucune annotation",
+    "lineHint": "Appuyez longuement sur une ligne en lisant",
+    "delete": "Supprimer"
   },
   "highlightPicker": {
     "lineHighlight": "Surligner la ligne",

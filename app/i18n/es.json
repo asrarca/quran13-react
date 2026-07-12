@@ -23,9 +23,19 @@
     "go": "Ir"
   },
   "bookmarks": {
-    "title": "PÁGINAS GUARDADAS",
+    "title": "CONTENIDO GUARDADO",
     "empty": "No hay páginas guardadas",
-    "emptyHint": "Toca el ícono de marcador mientras lees"
+    "emptyHint": "Toca el ícono de marcador mientras lees",
+    "tab": {
+      "bookmarks": "Marcadores",
+      "highlights": "Resaltados",
+      "annotations": "Anotaciones"
+    },
+    "pageLine": "Página {page}, línea {line}",
+    "highlightsEmpty": "No hay resaltados",
+    "annotationsEmpty": "No hay anotaciones",
+    "lineHint": "Mantén pulsada una línea mientras lees",
+    "delete": "Eliminar"
   },
   "highlightPicker": {
     "lineHighlight": "Resaltar línea",

@@ -23,9 +23,19 @@
     "go": "जाएं"
   },
   "bookmarks": {
-    "title": "सहेजे गए पृष्ठ",
+    "title": "सहेजी गई सामग्री",
     "empty": "कोई सहेजा गया पृष्ठ नहीं",
-    "emptyHint": "पढ़ते समय बुकमार्क आइकन पर टैप करें"
+    "emptyHint": "पढ़ते समय बुकमार्क आइकन पर टैप करें",
+    "tab": {
+      "bookmarks": "बुकमार्क",
+      "highlights": "हाइलाइट",
+      "annotations": "टिप्पणियाँ"
+    },
+    "pageLine": "पृष्ठ {page}, पंक्ति {line}",
+    "highlightsEmpty": "अभी कोई हाइलाइट नहीं",
+    "annotationsEmpty": "अभी कोई टिप्पणी नहीं",
+    "lineHint": "पढ़ते समय किसी पंक्ति को देर तक दबाएँ",
+    "delete": "हटाएँ"
   },
   "highlightPicker": {
     "lineHighlight": "पंक्ति हाइलाइट",

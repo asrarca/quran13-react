@@ -23,9 +23,19 @@
     "go": "جائیں"
   },
   "bookmarks": {
-    "title": "محفوظ صفحات",
+    "title": "محفوظ مواد",
     "empty": "ابھی تک کوئی صفحہ محفوظ نہیں",
-    "emptyHint": "پڑھتے وقت بک مارک آئیکن پر ٹیپ کریں"
+    "emptyHint": "پڑھتے وقت بک مارک آئیکن پر ٹیپ کریں",
+    "tab": {
+      "bookmarks": "بک مارکس",
+      "highlights": "ہائی لائٹس",
+      "annotations": "تشریحات"
+    },
+    "pageLine": "صفحہ {page}، سطر {line}",
+    "highlightsEmpty": "ابھی کوئی ہائی لائٹ نہیں",
+    "annotationsEmpty": "ابھی کوئی تشریح نہیں",
+    "lineHint": "پڑھتے وقت کسی سطر کو دیر تک دبائیں",
+    "delete": "حذف کریں"
   },
   "highlightPicker": {
     "lineHighlight": "لائن ہائی لائٹ",

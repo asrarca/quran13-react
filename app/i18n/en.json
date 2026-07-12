@@ -23,9 +23,19 @@
     "go": "Go"
   },
   "bookmarks": {
-    "title": "SAVED PAGES",
+    "title": "SAVED CONTENT",
     "empty": "No saved pages yet",
-    "emptyHint": "Tap the bookmark icon while reading"
+    "emptyHint": "Tap the bookmark icon while reading",
+    "tab": {
+      "bookmarks": "Bookmarks",
+      "highlights": "Highlights",
+      "annotations": "Annotations"
+    },
+    "pageLine": "Page {page}, Line {line}",
+    "highlightsEmpty": "No highlights yet",
+    "annotationsEmpty": "No annotations yet",
+    "lineHint": "Long-press a line while reading",
+    "delete": "Delete"
   },
   "highlightPicker": {
     "lineHighlight": "Line Highlight",

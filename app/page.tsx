@@ -685,8 +685,13 @@ export default function Home() {
               lang={lang}
               sortedBookmarks={sortedBookmarks}
               surahs={surahs}
+              highlights={highlights}
+              rakatMarkers={rakatMarkers}
               onClose={() => setActiveSheet(null)}
               onNavigate={goToPage}
+              onNavigateLine={goToSection}
+              onDeleteHighlight={(p, line) => setHighlightColor(p, line, null)}
+              onDeleteAnnotation={(p, line) => setRakatMarker(p, line, null)}
               dragHandlers={dragHandlers}
             />
           )}
