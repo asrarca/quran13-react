@@ -39,7 +39,7 @@
     "language": "Language",
     "about": "About",
     "footer": "Developed by Asrar Abbasi",
-    "display": "Display"
+    "theme": "Theme"
   },
   "installApp": {
     "title": "Install App",
@@ -70,7 +70,12 @@
     "viewSavedPagesDesc": "Open the Saved tab in the navigation bar to see all your bookmarked pages, sorted by most recently added.",
     "displaySection": "Display",
     "theme": "Theme",
-    "themeDesc": "Open Settings › Display to switch between three modes: Light, Dark, and Dark Inverted (white text on a black page image)."
+    "themeDesc": "Open Settings › Display to switch between three modes: Light, Dark, and Dark Inverted (white text on a black page image).",
+    "aiSection": "AI & Translation",
+    "askFeature": "Ask",
+    "askFeatureDesc": "Tap the sparkle icon in the header and describe a verse in your own words — for example “the verse about wudu.” The app finds it and jumps to its page.",
+    "translateFeature": "Translation",
+    "translateFeatureDesc": "Tap the languages icon to read the meaning of every verse on the current page, in your selected language. Translations work offline once loaded."
   },
   "ask": {
     "title": "Ask",

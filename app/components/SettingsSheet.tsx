@@ -132,7 +132,7 @@ export function SettingsSheet({
                 className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
                 onClick={() => setSettingsSubView("display")}
               >
-                <span className="text-base text-(--fg)">{t(lang, "settings.display")}</span>
+                <span className="text-base text-(--fg)">{t(lang, "settings.theme")}</span>
                 <div className="flex items-center gap-1.5 text-(--fg2)">
                   <span className="text-sm">{t(lang, THEME_LABEL_KEY[theme])}</span>
                   <ForwardChevron className="size-4" />
@@ -173,7 +173,7 @@ export function SettingsSheet({
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
                   <BackChevron className="size-4" />
                 </Button>
-                <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.display")}</span>
+                <span className={`${scaleFont ? "text-[20px]" : "text-[13px] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.theme")}</span>
               </div>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
                 <X className="size-4" />
@@ -267,6 +267,20 @@ export function SettingsSheet({
                   <div>
                     <p className="text-[17px] font-medium text-(--fg)">{t(lang, "about.toggleMenu")}</p>
                     <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, "about.toggleMenuDesc")}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-(--fg3)">{t(lang, "about.aiSection")}</p>
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <p className="text-[17px] font-medium text-(--fg)">{t(lang, "about.askFeature")}</p>
+                    <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, "about.askFeatureDesc")}</p>
+                  </div>
+                  <div>
+                    <p className="text-[17px] font-medium text-(--fg)">{t(lang, "about.translateFeature")}</p>
+                    <p className="mt-0.5 text-[15px] text-(--fg2)">{t(lang, "about.translateFeatureDesc")}</p>
                   </div>
                 </div>
               </div>
