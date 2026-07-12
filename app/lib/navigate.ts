@@ -60,10 +60,25 @@ export class NavigateError extends Error {
   }
 }
 
+// In-memory result cache. The same normalized query always resolves to the same
+// verse, so we return the cached result instead of re-calling the LLM. This lives
+// per server instance (resets on cold start); the route's Cache-Control headers
+// add cross-user edge/browser caching on top.
+const cache = new Map<string, NavigateResult>();
+const CACHE_MAX = 1000;
+
+export function normalizeQuery(q: string): string {
+  return q.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 export async function resolveQuery(query: string): Promise<NavigateResult> {
   const trimmed = query.trim();
   if (!trimmed) throw new NavigateError("Empty query.", 400);
   if (trimmed.length > 500) throw new NavigateError("Query too long.", 400);
+
+  const key = normalizeQuery(trimmed);
+  const cached = cache.get(key);
+  if (cached) return cached;
 
   const response = await client.messages.create({
     model: MODEL,
@@ -94,7 +109,7 @@ export async function resolveQuery(query: string): Promise<NavigateResult> {
   }
   const loc = locateVerse(parsed.verseKey)!; // exists — verseKeyExists passed
 
-  return {
+  const result: NavigateResult = {
     verseKey: parsed.verseKey,
     surahName: parsed.surahName,
     page: loc.page,
@@ -102,4 +117,10 @@ export async function resolveQuery(query: string): Promise<NavigateResult> {
     note: parsed.note,
     confidence: parsed.confidence,
   };
+
+  // Cache with a simple size cap (drop the oldest entry when full).
+  if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value!);
+  cache.set(key, result);
+
+  return result;
 }

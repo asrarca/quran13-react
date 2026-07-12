@@ -1,28 +1,29 @@
-// POST /api/navigate  { query: string }  ->  { verseKey, surahName, page, line, note, confidence }
+// GET /api/navigate?q=<question>  ->  { verseKey, surahName, page, line, note, confidence }
 //
-// The natural-language navigation endpoint. The client sends a question, gets
-// back a resolved verse + the page to jump to via goToPage().
+// The natural-language navigation endpoint. GET (not POST) so the response can be
+// cached by the browser and the CDN — the same question always resolves to the
+// same verse, so we never need to hit the LLM twice for it.
 
 import { NextResponse } from "next/server";
 import { resolveQuery, NavigateError } from "@/app/lib/navigate";
 
 export const runtime = "nodejs"; // Anthropic SDK needs the Node runtime, not edge
 
-export async function POST(request: Request) {
-  let body: { query?: unknown };
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
-  }
-
-  if (typeof body.query !== "string") {
-    return NextResponse.json({ error: "`query` must be a string." }, { status: 400 });
+export async function GET(request: Request) {
+  const q = new URL(request.url).searchParams.get("q");
+  if (typeof q !== "string" || !q.trim()) {
+    return NextResponse.json({ error: "`q` query parameter is required." }, { status: 400 });
   }
 
   try {
-    const result = await resolveQuery(body.query);
-    return NextResponse.json(result);
+    const result = await resolveQuery(q);
+    return NextResponse.json(result, {
+      headers: {
+        // Query → verse is stable: cache in the browser (1h) and hard at the CDN
+        // (1y), serving stale while revalidating so repeat lookups never re-hit the LLM.
+        "Cache-Control": "public, max-age=3600, s-maxage=31536000, stale-while-revalidate=86400",
+      },
+    });
   } catch (err) {
     if (err instanceof NavigateError) {
       return NextResponse.json({ error: err.message }, { status: err.status });

@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CornerDownLeft, Loader2, Search, Sparkles, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t } from "../i18n";
 
 // Natural-language navigation: ask a question, jump to the verse's page.
+// Requests go through TanStack Query, so repeating a question in the same session
+// is served from cache (no refetch); the server + CDN cache it across sessions.
 
 type Resolved = {
   verseKey: string;
@@ -20,33 +23,34 @@ type Props = {
   onNavigate: (page: number, line: number) => void;
 };
 
-export function AskSheet({ lang, onClose, onNavigate }: Props) {
-  const examples = [t(lang, "ask.example1"), t(lang, "ask.example2"), t(lang, "ask.example3")];
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<Resolved | null>(null);
+// Normalize so "The Ayah About Wudu" and "the ayah about wudu" share one cache key
+// (matches the server's normalization).
+function normalize(q: string): string {
+  return q.trim().toLowerCase().replace(/\s+/g, " ");
+}
 
-  async function submit(q: string) {
-    const trimmed = q.trim();
-    if (!trimmed || loading) return;
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      const res = await fetch("/api/navigate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: trimmed }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Navigation failed.");
-      setResult(data as Resolved);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+async function fetchNavigate(q: string): Promise<Resolved> {
+  const res = await fetch(`/api/navigate?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? "Navigation failed.");
+  return data as Resolved;
+}
+
+export function AskSheet({ lang, onClose, onNavigate }: Props) {
+  const [query, setQuery] = useState("");
+  const [submitted, setSubmitted] = useState("");
+  const examples = [t(lang, "ask.example1"), t(lang, "ask.example2"), t(lang, "ask.example3")];
+
+  const { data: result, error, isFetching } = useQuery({
+    queryKey: ["navigate", submitted],
+    queryFn: () => fetchNavigate(submitted),
+    enabled: submitted.length > 0,
+  });
+
+  function submit(q: string) {
+    const n = normalize(q);
+    if (!n || isFetching) return;
+    setSubmitted(n);
   }
 
   return (
@@ -80,15 +84,15 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
         />
         <button
           type="submit"
-          disabled={!query.trim() || loading}
+          disabled={!query.trim() || isFetching}
           className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg) disabled:opacity-30"
           aria-label={t(lang, "ask.title")}
         >
-          {loading ? <Loader2 className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />}
+          {isFetching ? <Loader2 className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />}
         </button>
       </form>
 
-      {!result && !error && !loading && (
+      {!result && !error && !isFetching && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {examples.map((ex) => (
             <button
@@ -106,9 +110,11 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
         </div>
       )}
 
-      {error && <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[13px] text-(--fg2)">{error}</div>}
+      {error && !isFetching && (
+        <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[13px] text-(--fg2)">{error.message}</div>
+      )}
 
-      {result && (
+      {result && !isFetching && (
         <button
           type="button"
           onClick={() => onNavigate(result.page, result.line)}
