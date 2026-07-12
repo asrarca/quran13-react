@@ -45,10 +45,17 @@ const THEME_LABEL_KEY: Record<Theme, string> = {
   "dark-invert": "display.darkInvert",
 };
 
-const FONT_SIZES: FontSize[] = ["normal", "large"];
+const FONT_SIZES: FontSize[] = ["small", "medium", "large"];
 const FONT_SIZE_LABEL_KEY: Record<FontSize, string> = {
-  normal: "fontSize.normal",
+  small: "fontSize.small",
+  medium: "fontSize.medium",
   large: "fontSize.large",
+};
+// Each option previews its own scale (relative to base 16px).
+const FONT_SIZE_PREVIEW: Record<FontSize, string> = {
+  small: "text-base",
+  medium: "text-[1.15rem]",
+  large: "text-[1.35rem]",
 };
 
 export function SettingsSheet({
@@ -250,7 +257,7 @@ export function SettingsSheet({
                     <div className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
                       {selected && <div className="size-2 rounded-full bg-(--bg)" />}
                     </div>
-                    <span className={`${key === "large" ? "text-[1.25rem]" : "text-base"} ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>
+                    <span className={`${FONT_SIZE_PREVIEW[key]} ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>
                       {t(lang, FONT_SIZE_LABEL_KEY[key])}
                     </span>
                   </button>

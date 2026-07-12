@@ -83,7 +83,7 @@ const LONG_PRESS_MOVE_TOLERANCE = 10;
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
-  const [fontSize, setFontSize] = useState<FontSize>("normal");
+  const [fontSize, setFontSize] = useState<FontSize>("small");
   const [page, setPage] = useState(DEFAULT_START_PAGE);
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
@@ -223,7 +223,11 @@ export default function Home() {
     if (storedLang && SUPPORTED_LANGS.some((l) => l.code === storedLang)) setLang(storedLang as Lang);
 
     const storedFontSize = localStorage.getItem("quran13-fontsize");
-    if (storedFontSize === "normal" || storedFontSize === "large") setFontSize(storedFontSize);
+    if (storedFontSize === "small" || storedFontSize === "medium" || storedFontSize === "large") {
+      setFontSize(storedFontSize);
+    } else if (storedFontSize === "normal") {
+      setFontSize("small"); // legacy value from the previous 2-option setting
+    }
 
     setIsStandalone(
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -239,10 +243,11 @@ export default function Home() {
 
   useEffect(() => {
     if (!mounted) return;
-    // "large" scales the root font-size so every rem-based UI label, icon, and
-    // spacing grows 1.25x. The Quran page images are sized in %/vw, so they are
-    // unaffected. Resetting to "" restores the browser default (16px).
-    document.documentElement.style.fontSize = fontSize === "large" ? "125%" : "";
+    // Scaling the root font-size grows every rem-based UI label, icon, and
+    // spacing. The Quran page images are sized in %/vw, so they are unaffected.
+    // "small" (100%) resets to "" to restore the browser default (16px).
+    document.documentElement.style.fontSize =
+      fontSize === "large" ? "135%" : fontSize === "medium" ? "115%" : "";
     localStorage.setItem("quran13-fontsize", fontSize);
   }, [mounted, fontSize]);
 
@@ -617,6 +622,7 @@ export default function Home() {
           {activeSheet === "page" && (
             <PageSheet
               lang={lang}
+              fontSize={fontSize}
               pageInput={pageInput}
               pageDisplay={pageDisplay}
               firstPage={FIRST_PAGE}

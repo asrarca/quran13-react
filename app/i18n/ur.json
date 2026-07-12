@@ -102,7 +102,8 @@
     "darkInvert": "سیاہ صفحات کے ساتھ گہرا"
   },
   "fontSize": {
-    "normal": "عام",
+    "small": "چھوٹا",
+    "medium": "درمیانہ",
     "large": "بڑا"
   }
 }

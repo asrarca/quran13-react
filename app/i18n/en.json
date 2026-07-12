@@ -80,7 +80,7 @@
   },
   "ask": {
     "title": "Ask",
-    "subtitle": "Describe a verse and jump straight to its page.",
+    "subtitle": "Describe a verse to go directly to its page.",
     "placeholder": "What's the ayah about…",
     "example1": "the ayah about wudu",
     "example2": "the throne verse",
@@ -102,7 +102,8 @@
     "darkInvert": "Dark with black pages"
   },
   "fontSize": {
-    "normal": "Normal",
+    "small": "Small",
+    "medium": "Medium",
     "large": "Large"
   }
 }

@@ -149,7 +149,7 @@
       }
     },
     "original_tajweed": {
-      "name": "Uthmani (Color Coded Tajweed)",
+      "name": "Uthmani (Color Coded)",
       "dir": "/quran-pages/original_tajweed",
       "filePrefix": "page-",
       "fileExtension": "jpg",

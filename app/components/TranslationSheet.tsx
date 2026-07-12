@@ -44,7 +44,7 @@ export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: 
           <div className={`${scale ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>
             {t(lang, "translation.title")}
           </div>
-          {data?.source && <div className="mt-0.5 truncate text-[0.6875rem] text-(--fg3)">{data.source}</div>}
+          {data?.source && <div className="mt-0.5 truncate text-sm text-(--fg2)">{data.source}</div>}
         </div>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />
