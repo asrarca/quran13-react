@@ -30,7 +30,7 @@ import { JuzSheet } from "./components/JuzSheet";
 import { PageSheet } from "./components/PageSheet";
 import { BookmarksSheet } from "./components/BookmarksSheet";
 import { SettingsSheet } from "./components/SettingsSheet";
-import { AskSheet } from "./components/AskSheet";
+import { AskSheet, VOICE_LONG_PRESS_ENABLED } from "./components/AskSheet";
 import { TranslationSheet } from "./components/TranslationSheet";
 
 // Number of pages pre-rendered on each side of the active page. The Swiper
@@ -100,6 +100,7 @@ export default function Home() {
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
   const [navFlash, setNavFlash] = useState<{ page: number; line: number; stamp: number } | null>(null);
+  const [askVoice, setAskVoice] = useState(false);
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
 
@@ -119,6 +120,9 @@ export default function Home() {
   const suppressClick = useRef(false);
   const sheetDragY = useRef<number | null>(null);
   const navFlashTimer = useRef<number | null>(null);
+  const askPressTimer = useRef<number | null>(null);
+  const askSuppressClick = useRef(false);
+  const askVoiceOpenStamp = useRef(0);
 
   const surahs = useMemo<Surah[]>(() => {
     return (quranData.surahs as Surah[]).map((surah) => ({
@@ -382,6 +386,44 @@ export default function Home() {
     [cancelPress]
   );
 
+  // Long-press on the Ask button opens the sheet in voice mode. The synthesized
+  // click after the press lands on the sheet overlay (it covers the button by
+  // then), so closeOverlay ignores clicks right after a long-press open.
+  const handleAskPressStart = useCallback(() => {
+    if (!VOICE_LONG_PRESS_ENABLED) return;
+    askSuppressClick.current = false;
+    if (askPressTimer.current !== null) window.clearTimeout(askPressTimer.current);
+    askPressTimer.current = window.setTimeout(() => {
+      askPressTimer.current = null;
+      askSuppressClick.current = true;
+      askVoiceOpenStamp.current = Date.now();
+      navigator.vibrate?.(15);
+      setAskVoice(true);
+      setActiveSheet("ask");
+    }, LONG_PRESS_MS);
+  }, []);
+
+  const handleAskPressEnd = useCallback(() => {
+    if (askPressTimer.current !== null) {
+      window.clearTimeout(askPressTimer.current);
+      askPressTimer.current = null;
+    }
+  }, []);
+
+  const handleAskClick = useCallback(() => {
+    if (askSuppressClick.current) {
+      askSuppressClick.current = false;
+      return;
+    }
+    setAskVoice(false);
+    setActiveSheet("ask");
+  }, []);
+
+  const closeOverlay = useCallback(() => {
+    if (Date.now() - askVoiceOpenStamp.current < 600) return;
+    setActiveSheet(null);
+  }, []);
+
   const toggleBookmark = () => {
     setBookmarks((prev) => {
       const next = { ...prev };
@@ -447,8 +489,13 @@ export default function Home() {
             type="button"
             size="icon"
             variant="ghost"
-            className="size-9 rounded-full bg-(--bg2) text-(--fg2)"
-            onClick={() => setActiveSheet("ask")}
+            className="size-9 select-none rounded-full bg-(--bg2) text-(--fg2) [-webkit-touch-callout:none]"
+            onClick={handleAskClick}
+            onPointerDown={handleAskPressStart}
+            onPointerUp={handleAskPressEnd}
+            onPointerLeave={handleAskPressEnd}
+            onPointerCancel={handleAskPressEnd}
+            onContextMenu={(e) => e.preventDefault()}
             aria-label="Ask"
           >
             <Sparkles className="size-4.5" />
@@ -594,7 +641,7 @@ export default function Home() {
             type="button"
             className="absolute inset-0 bg-(--sheetbd)"
             aria-label="Close overlay"
-            onClick={() => setActiveSheet(null)}
+            onClick={closeOverlay}
           />
           {activeSheet === "surah" && (
             <SurahSheet lang={lang} surahs={surahs} juz={juz} currentPage={page} onClose={() => setActiveSheet(null)} onNavigate={goToPage} dragHandlers={dragHandlers} />
@@ -617,7 +664,7 @@ export default function Home() {
             <TranslationSheet lang={lang} page={page} surahs={surahs} onClose={() => setActiveSheet(null)} dragHandlers={dragHandlers} />
           )}
           {activeSheet === "ask" && (
-            <AskSheet lang={lang} onClose={() => setActiveSheet(null)} onNavigate={goToSection} />
+            <AskSheet lang={lang} voice={askVoice} onClose={() => setActiveSheet(null)} onNavigate={goToSection} />
           )}
           {activeSheet === "page" && (
             <PageSheet

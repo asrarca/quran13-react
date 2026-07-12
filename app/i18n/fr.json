@@ -74,7 +74,7 @@
     "themeDesc": "Ouvrez Réglages › Affichage pour choisir entre trois modes : Clair, Sombre et Sombre inversé (texte blanc sur image de page noire).",
     "aiSection": "IA et traduction",
     "askFeature": "Demander",
-    "askFeatureDesc": "Appuyez sur l’icône étoile dans l’en-tête et décrivez un verset avec vos propres mots — par exemple « le verset sur les ablutions ». L’application le trouve et ouvre sa page.",
+    "askFeatureDesc": "Appuyez sur l’icône étoile dans l’en-tête et décrivez un verset avec vos propres mots — par exemple « le verset sur les ablutions ». L’application le trouve et ouvre sa page. Appuyez longuement sur l’icône pour poser votre question à voix haute.",
     "translateFeature": "Traduction",
     "translateFeatureDesc": "Appuyez sur l’icône des langues pour lire le sens de chaque verset de la page actuelle, dans la langue choisie. Les traductions fonctionnent hors ligne une fois chargées."
   },
@@ -85,7 +85,10 @@
     "example1": "le verset sur les ablutions (wudu)",
     "example2": "le verset du Trône",
     "example3": "nulle contrainte en religion",
-    "pageLabel": "Page"
+    "pageLabel": "Page",
+    "listening": "Écoute en cours…",
+    "voiceUnsupported": "La saisie vocale n'est pas prise en charge par ce navigateur.",
+    "voiceError": "Impossible de capter votre voix — veuillez saisir votre question."
   },
   "translation": {
     "title": "Traduction",

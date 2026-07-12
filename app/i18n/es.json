@@ -74,7 +74,7 @@
     "themeDesc": "Abre Ajustes › Pantalla para elegir entre tres modos: Claro, Oscuro y Oscuro invertido (texto blanco sobre imagen negra de página).",
     "aiSection": "IA y traducción",
     "askFeature": "Preguntar",
-    "askFeatureDesc": "Toca el icono de estrella en el encabezado y describe un versículo con tus palabras — por ejemplo «el versículo sobre la ablución». La app lo encuentra y abre su página.",
+    "askFeatureDesc": "Toca el icono de estrella en el encabezado y describe un versículo con tus palabras — por ejemplo «el versículo sobre la ablución». La app lo encuentra y abre su página. Mantén pulsado el icono para preguntar con la voz.",
     "translateFeature": "Traducción",
     "translateFeatureDesc": "Toca el icono de idiomas para leer el significado de cada versículo de la página actual, en el idioma elegido. Las traducciones funcionan sin conexión una vez cargadas."
   },
@@ -85,7 +85,10 @@
     "example1": "la aleya sobre la ablución (wudu)",
     "example2": "la aleya del Trono",
     "example3": "no hay coacción en la religión",
-    "pageLabel": "Página"
+    "pageLabel": "Página",
+    "listening": "Escuchando…",
+    "voiceUnsupported": "La entrada de voz no es compatible con este navegador.",
+    "voiceError": "No se pudo captar tu voz — escribe tu pregunta."
   },
   "translation": {
     "title": "Traducción",

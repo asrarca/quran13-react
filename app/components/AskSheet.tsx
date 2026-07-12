@@ -1,12 +1,40 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CornerDownLeft, Loader2, Search, Sparkles, X } from "lucide-react";
+import { CornerDownLeft, Loader2, Mic, Search, Sparkles, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { type Lang, t } from "../i18n";
+import { type Lang, t, langDateLocale } from "../i18n";
 
 // Natural-language navigation: ask a question, jump to the verse's page.
 // Requests go through TanStack Query, so repeating a question in the same session
 // is served from cache (no refetch); the server + CDN cache it across sessions.
+
+// Feature flag: long-pressing the header Ask button opens this sheet in voice
+// mode (page.tsx checks this before arming its long-press timer). Set to false
+// to make the button a plain tap-only trigger.
+export const VOICE_LONG_PRESS_ENABLED = true;
+
+// Minimal Web Speech API surface — not in TypeScript's DOM lib for the webkit-prefixed
+// constructor that Safari/iOS exposes.
+type SpeechResultEvent = {
+  resultIndex: number;
+  results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }>;
+};
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((e: SpeechResultEvent) => void) | null;
+  onerror: ((e: { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+};
+
+function getSpeechRecognition(): (new () => SpeechRecognitionLike) | null {
+  const w = window as unknown as Record<string, unknown>;
+  return (w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null) as (new () => SpeechRecognitionLike) | null;
+}
 
 type Resolved = {
   verseKey: string;
@@ -19,6 +47,7 @@ type Resolved = {
 
 type Props = {
   lang: Lang;
+  voice?: boolean; // start listening for a spoken question on open (long-press entry)
   onClose: () => void;
   onNavigate: (page: number, line: number) => void;
 };
@@ -36,9 +65,16 @@ async function fetchNavigate(q: string): Promise<Resolved> {
   return data as Resolved;
 }
 
-export function AskSheet({ lang, onClose, onNavigate }: Props) {
+export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState("");
+  // Lazy initializers: voice support is known at mount, so the unsupported
+  // message / listening state start correct without a setState-in-effect.
+  const [listening, setListening] = useState(() => voice && getSpeechRecognition() !== null);
+  const [voiceError, setVoiceError] = useState<string | null>(() =>
+    voice && getSpeechRecognition() === null ? t(lang, "ask.voiceUnsupported") : null
+  );
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const examples = [t(lang, "ask.example1"), t(lang, "ask.example2"), t(lang, "ask.example3")];
 
   const { data: result, error, isFetching } = useQuery({
@@ -52,6 +88,44 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
     if (!n || isFetching) return;
     setSubmitted(n);
   }
+
+  useEffect(() => {
+    if (!voice) return;
+    const Recognition = getSpeechRecognition();
+    if (!Recognition) return; // unsupported message already set by the initializer
+    const rec = new Recognition();
+    recognitionRef.current = rec;
+    rec.lang = langDateLocale[lang];
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    let final = "";
+    rec.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) final += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      setQuery(final || interim);
+    };
+    rec.onerror = (e) => {
+      // "no-speech" / "aborted" just fall back to typing; anything else gets a message
+      if (e.error !== "no-speech" && e.error !== "aborted") setVoiceError(t(lang, "ask.voiceError"));
+    };
+    rec.onend = () => {
+      recognitionRef.current = null;
+      setListening(false);
+      if (final.trim()) submit(final);
+    };
+    rec.start();
+    return () => {
+      rec.onresult = null;
+      rec.onerror = null;
+      rec.onend = null;
+      rec.abort();
+      recognitionRef.current = null;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="animate-pop-in absolute left-1/2 top-20 z-50 flex w-[21rem] max-w-[92vw] -translate-x-1/2 flex-col rounded-3xl bg-(--bg) p-5.5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
@@ -73,26 +147,45 @@ export function AskSheet({ lang, onClose, onNavigate }: Props) {
           submit(query);
         }}
       >
-        <Search className="size-4.5 shrink-0 text-(--fg2)" />
+        {listening ? (
+          <Mic className="size-4.5 shrink-0 animate-pulse text-red-500" />
+        ) : (
+          <Search className="size-4.5 shrink-0 text-(--fg2)" />
+        )}
         <input
-          autoFocus
+          autoFocus={!voice}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           maxLength={500}
-          placeholder={t(lang, "ask.placeholder")}
+          placeholder={t(lang, listening ? "ask.listening" : "ask.placeholder")}
           className="h-12 min-w-0 flex-1 bg-transparent text-[0.9375rem] text-(--fg) outline-none placeholder:text-(--fg3)"
         />
-        <button
-          type="submit"
-          disabled={!query.trim() || isFetching}
-          className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg) disabled:opacity-30"
-          aria-label={t(lang, "ask.title")}
-        >
-          {isFetching ? <Loader2 className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />}
-        </button>
+        {listening ? (
+          <button
+            type="button"
+            onClick={() => recognitionRef.current?.stop()}
+            className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg)"
+            aria-label={t(lang, "ask.listening")}
+          >
+            <X className="size-4" />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!query.trim() || isFetching}
+            className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg) disabled:opacity-30"
+            aria-label={t(lang, "ask.title")}
+          >
+            {isFetching ? <Loader2 className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />}
+          </button>
+        )}
       </form>
 
-      {!result && !error && !isFetching && (
+      {voiceError && !listening && !result && !error && !isFetching && (
+        <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[0.8125rem] text-(--fg2)">{voiceError}</div>
+      )}
+
+      {!result && !error && !isFetching && !listening && !voiceError && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {examples.map((ex) => (
             <button

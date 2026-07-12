@@ -74,7 +74,7 @@
     "themeDesc": "Open Settings › Display to switch between three modes: Light, Dark, and Dark Inverted (white text on a black page image).",
     "aiSection": "AI & Translation",
     "askFeature": "Ask",
-    "askFeatureDesc": "Tap the sparkle icon in the header and describe a verse in your own words — for example “the verse about wudu.” The app finds it and jumps to its page.",
+    "askFeatureDesc": "Tap the sparkle icon in the header and describe a verse in your own words — for example “the verse about wudu.” The app finds it and jumps to its page. Long-press the icon to ask by voice.",
     "translateFeature": "Translation",
     "translateFeatureDesc": "Tap the languages icon to read the meaning of every verse on the current page, in your selected language. Translations work offline once loaded."
   },
@@ -85,7 +85,10 @@
     "example1": "the ayah about wudu",
     "example2": "the throne verse",
     "example3": "no compulsion in religion",
-    "pageLabel": "Page"
+    "pageLabel": "Page",
+    "listening": "Listening…",
+    "voiceUnsupported": "Voice input isn't supported in this browser.",
+    "voiceError": "Couldn't capture your voice — please type instead."
   },
   "translation": {
     "title": "Translation",
