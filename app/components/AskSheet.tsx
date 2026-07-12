@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CornerDownLeft, Loader2, Mic, Search, Sparkles, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { type Lang, t, langDateLocale } from "../i18n";
+import { type Lang, t } from "../i18n";
 
 // Natural-language navigation: ask a question, jump to the verse's page.
 // Requests go through TanStack Query, so repeating a question in the same session
@@ -58,16 +58,21 @@ function normalize(q: string): string {
   return q.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-async function fetchNavigate(q: string): Promise<Resolved> {
-  const res = await fetch(`/api/navigate?q=${encodeURIComponent(q)}`);
+// voice=1 tells the resolver the query is the transcription of an Arabic
+// recitation of a verse, to be matched against the Quranic text.
+async function fetchNavigate(q: string, voice: boolean): Promise<Resolved> {
+  const res = await fetch(`/api/navigate?q=${encodeURIComponent(q)}${voice ? "&voice=1" : ""}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data.error ?? "Navigation failed.");
   return data as Resolved;
 }
 
+const VOICE_SILENCE_MS = 2000; // stop listening this long after the last speech
+const VOICE_MAX_WAIT_MS = 8000; // stop if nothing was heard at all (iOS never auto-stops)
+
 export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
-  const [submitted, setSubmitted] = useState("");
+  const [submitted, setSubmitted] = useState<{ q: string; voice: boolean } | null>(null);
   // Lazy initializers: voice support is known at mount, so the unsupported
   // message / listening state start correct without a setState-in-effect.
   const [listening, setListening] = useState(() => voice && getSpeechRecognition() !== null);
@@ -78,15 +83,15 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
   const examples = [t(lang, "ask.example1"), t(lang, "ask.example2"), t(lang, "ask.example3")];
 
   const { data: result, error, isFetching } = useQuery({
-    queryKey: ["navigate", submitted],
-    queryFn: () => fetchNavigate(submitted),
-    enabled: submitted.length > 0,
+    queryKey: ["navigate", submitted?.q, submitted?.voice],
+    queryFn: () => fetchNavigate(submitted!.q, submitted!.voice),
+    enabled: submitted !== null,
   });
 
-  function submit(q: string) {
+  function submit(q: string, fromVoice = false) {
     const n = normalize(q);
     if (!n || isFetching) return;
-    setSubmitted(n);
+    setSubmitted({ q: n, voice: fromVoice });
   }
 
   useEffect(() => {
@@ -95,10 +100,24 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
     if (!Recognition) return; // unsupported message already set by the initializer
     const rec = new Recognition();
     recognitionRef.current = rec;
-    rec.lang = langDateLocale[lang];
+    // Voice input is a recitation of the Quran itself, so always recognize Arabic
+    // regardless of the app language.
+    rec.lang = "ar-SA";
     rec.interimResults = true;
     rec.maxAlternatives = 1;
+    // iOS never stops a session on its own, so we manage the lifecycle: stop as
+    // soon as a final result lands, or after VOICE_SILENCE_MS without new speech.
     let final = "";
+    let latest = "";
+    let silenceTimer: number | null = null;
+    const clearSilenceTimer = () => {
+      if (silenceTimer !== null) window.clearTimeout(silenceTimer);
+      silenceTimer = null;
+    };
+    const armSilenceTimer = (ms: number) => {
+      clearSilenceTimer();
+      silenceTimer = window.setTimeout(() => rec.stop(), ms);
+    };
     rec.onresult = (e) => {
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -106,19 +125,27 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
         if (r.isFinal) final += r[0].transcript;
         else interim += r[0].transcript;
       }
-      setQuery(final || interim);
+      latest = final.trim() ? final : interim;
+      setQuery(latest);
+      if (e.results[e.results.length - 1]?.isFinal) rec.stop();
+      else armSilenceTimer(VOICE_SILENCE_MS);
     };
     rec.onerror = (e) => {
       // "no-speech" / "aborted" just fall back to typing; anything else gets a message
       if (e.error !== "no-speech" && e.error !== "aborted") setVoiceError(t(lang, "ask.voiceError"));
     };
     rec.onend = () => {
+      clearSilenceTimer();
       recognitionRef.current = null;
       setListening(false);
-      if (final.trim()) submit(final);
+      // iOS can delay or skip isFinal entirely, so submit the best transcript we
+      // have (interim included), flagged as voice for phonetic interpretation.
+      if (latest.trim()) submit(latest, true);
     };
     rec.start();
+    armSilenceTimer(VOICE_MAX_WAIT_MS);
     return () => {
+      clearSilenceTimer();
       rec.onresult = null;
       rec.onerror = null;
       rec.onend = null;
@@ -154,6 +181,7 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
         )}
         <input
           autoFocus={!voice}
+          dir="auto"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           maxLength={500}

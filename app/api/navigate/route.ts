@@ -10,13 +10,17 @@ import { resolveQuery, NavigateError } from "@/app/lib/navigate";
 export const runtime = "nodejs"; // Anthropic SDK needs the Node runtime, not edge
 
 export async function GET(request: Request) {
-  const q = new URL(request.url).searchParams.get("q");
+  const params = new URL(request.url).searchParams;
+  const q = params.get("q");
   if (typeof q !== "string" || !q.trim()) {
     return NextResponse.json({ error: "`q` query parameter is required." }, { status: 400 });
   }
+  // voice=1: the query is a speech transcription — the resolver interprets it
+  // phonetically. Part of the URL, so CDN/browser caches stay distinct.
+  const voice = params.get("voice") === "1";
 
   try {
-    const result = await resolveQuery(q);
+    const result = await resolveQuery(q, voice);
     return NextResponse.json(result, {
       headers: {
         // Query → verse is stable: cache in the browser (1h) and hard at the CDN

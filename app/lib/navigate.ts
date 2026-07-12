@@ -42,6 +42,13 @@ Rules:
 - Never invent a reference. If you are genuinely unsure, pick the closest well-attested verse and set a low confidence.
 - Keep "note" to one short sentence a layperson understands.`;
 
+// Used when the query came from voice: the user recited a verse (or fragment)
+// of the Quran aloud in Arabic, and we get the raw speech-to-text transcription.
+// The model must locate that recitation in the Quranic text.
+const VOICE_SYSTEM = `${SYSTEM}
+
+The user recited a verse of the Quran — or a fragment of one — aloud in Arabic, and the message below is the raw speech-to-text transcription of that recitation. The recognizer is not tuned for Quranic Arabic: expect missing diacritics, oddly split or joined words, and substitutions of similar-sounding everyday words for Quranic ones. Match the transcription tolerantly against the Quranic text and return the verse being recited. If the fragment occurs in more than one verse, pick the most well-known occurrence and mention the alternatives in the note. If the recitation spans several verses, return only the single verse where it begins — never a range.`;
+
 const SCHEMA = {
   type: "object",
   properties: {
@@ -71,19 +78,20 @@ export function normalizeQuery(q: string): string {
   return q.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-export async function resolveQuery(query: string): Promise<NavigateResult> {
+export async function resolveQuery(query: string, voice = false): Promise<NavigateResult> {
   const trimmed = query.trim();
   if (!trimmed) throw new NavigateError("Empty query.", 400);
   if (trimmed.length > 500) throw new NavigateError("Query too long.", 400);
 
-  const key = normalizeQuery(trimmed);
+  // Voice queries use a different system prompt, so cache them separately.
+  const key = (voice ? "voice:" : "") + normalizeQuery(trimmed);
   const cached = cache.get(key);
   if (cached) return cached;
 
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1024,
-    system: SYSTEM,
+    system: voice ? VOICE_SYSTEM : SYSTEM,
     // Disable thinking (Sonnet 5 would otherwise run adaptive thinking by default),
     // and use low effort where the model supports it, to keep this a fast lookup.
     thinking: { type: "disabled" },
@@ -103,6 +111,10 @@ export async function resolveQuery(query: string): Promise<NavigateResult> {
   } catch {
     throw new NavigateError("Could not parse model response.", 502);
   }
+
+  // A multi-verse recitation can still come back as a range ("93:1-2") despite
+  // the prompt; keep the starting verse.
+  parsed.verseKey = parsed.verseKey.replace(/^(\d+:\d+)[-–]\d+$/, "$1");
 
   if (!verseKeyExists(parsed.verseKey)) {
     throw new NavigateError(`Model returned an invalid verse (${parsed.verseKey}).`, 422);
