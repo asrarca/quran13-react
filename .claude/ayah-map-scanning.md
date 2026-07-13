@@ -60,10 +60,35 @@ common source of off-by-one line errors, in both directions.
 ## Verified ranges (scanned, not interpolated)
 
 - **3:1 – 3:92** — verified 2026-07-12 (JSON pages 67–84 / images `page-068`–`085`).
-- **4:24 – 4:118** — verified 2026-07-12 (JSON pages 112–133 / images `page-113`–`134`).
+- **3:92 – 3:159** — verified 2026-07-12 (JSON pages 84–96 / images `page-085`–`097`).
+- **4:24 – 9:4** — verified 2026-07-13 (JSON pages 112–259 / images `page-113`–`260`). Surah 8
+  (An'am) is fully verified end-to-end (all 75 ayahs).
 - The user manually corrected everything **up to 3:92** before that.
-- Everything **after 4:118** is still interpolated: treat `page` as roughly right
-  and `line` as unreliable until scanned.
+- Everything in **3:160 – 4:23** and **after 9:4** is still interpolated: treat
+  `page` as roughly right and `line` as unreliable until scanned.
+- Recurring error pattern found across all scanned batches: the interpolation
+  drifts a full **page** late (not just a line or two) over a run of ~10-20
+  ayahs, then resyncs when a long ayah absorbs the slack. Always re-derive the
+  page from the actual verse text at page/line boundaries, don't just trust the
+  existing page number and only fix the line.
+- **Circled ayah-end marker digits are unreliable ~20-30% of the time** even
+  when clearly visible — don't trust a marker's apparent position over known
+  verse content. Concretely found on pages 212-213 and 217-218 (surah 7):
+  markers appeared to close a verse mid-sentence, which is impossible once you
+  check the actual verse text. Ground truth is: does the sentence grammatically
+  end at that word? If yes, the ayah boundary is there regardless of where a
+  tiny marker glyph seems to sit. Only treat a following word as "spillover"
+  (staying on the same line as the previous ayah's end) if the image genuinely
+  shows more text after the ayah-end point on that same visual line — don't
+  default to assuming spillover.
+
+## Surah 9 (At-Taubah) has no Bismillah
+
+Unlike every other surah, At-Taubah's header ornament box occupies its **only**
+line-slot before the first ayah — there's no separate Bismillah line to
+account for. Confirmed at JSON page 259 (image `page-260.png`): `9:1` starts
+at line 5, i.e. only 4 lines of surah-8 tail text precede the header box, and
+the header box itself is the sole non-text row before `9:1`.
 
 ## Correction workflow
 
