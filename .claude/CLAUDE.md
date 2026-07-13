@@ -177,6 +177,16 @@ Sheet drag-to-dismiss: dragging down > 72px closes the sheet.
 - `missingImages` tracks 404s; shows a localized fallback message
 - Switching mushaf calls `setActiveMushafKey` + `setMissingImages({})` via `onMushafChange` prop
 
+## Ayah → Page/Line Map (`data/ayah-map.json`)
+
+Maps `"surah:ayah"` → `[page, line]` (page 1-based Fatihah=1; line 1-based 1–13)
+for natural-language navigation. Interpolated originally, so **line is
+approximate** and being hand-corrected by scanning the page images. When reading
+scans or editing this file, follow **[.claude/ayah-map-scanning.md](ayah-map-scanning.md)** —
+it covers the **+1 image-file offset** (`page-NNN.png` = JSON page N−1; printed
+page number = file number, not JSON page), the line-counting convention
+(single-word spillovers count), and which ayah ranges are already scan-verified.
+
 ## Theme
 
 3 modes cycled in order: `light` → `dark` → `dark-invert` → `light`
