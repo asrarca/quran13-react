@@ -91,6 +91,7 @@
   "ask": {
     "title": "Ask",
     "subtitle": "Describe a verse to go directly to its page.",
+    "subtitleVoice": "Recite a verse to go directly to its page.",
     "placeholder": "What's the ayah about…",
     "example1": "the ayah about wudu",
     "example2": "the throne verse",

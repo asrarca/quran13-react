@@ -67,8 +67,8 @@ async function fetchNavigate(q: string, voice: boolean): Promise<Resolved> {
   return data as Resolved;
 }
 
-const VOICE_SILENCE_MS = 2000; // stop listening this long after the last speech
-const VOICE_MAX_WAIT_MS = 8000; // stop if nothing was heard at all (iOS never auto-stops)
+const VOICE_SILENCE_MS = 1500; // stop listening this long after the last speech
+const VOICE_MAX_WAIT_MS = 6000; // stop if nothing was heard at all (iOS never auto-stops)
 
 export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
@@ -165,7 +165,7 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
           <X className="size-4" />
         </Button>
       </div>
-      <span className="mt-1 text-[0.8125rem] text-(--fg2)">{t(lang, "ask.subtitle")}</span>
+      <span className="mt-1 text-[0.8125rem] text-(--fg2)">{t(lang, voice ? "ask.subtitleVoice" : "ask.subtitle")}</span>
 
       <form
         className="mt-4 flex items-center gap-2 rounded-[14px] bg-(--bg2) px-3"

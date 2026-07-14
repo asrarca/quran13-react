@@ -91,6 +91,7 @@
   "ask": {
     "title": "Demander",
     "subtitle": "Décrivez un verset et accédez directement à sa page.",
+    "subtitleVoice": "Récitez un verset pour accéder directement à sa page.",
     "placeholder": "Quel est le verset sur…",
     "example1": "le verset sur les ablutions (wudu)",
     "example2": "le verset du Trône",

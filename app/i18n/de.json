@@ -91,6 +91,7 @@
   "ask": {
     "title": "Fragen",
     "subtitle": "Beschreibe einen Vers und springe direkt zu seiner Seite.",
+    "subtitleVoice": "Rezitiere einen Vers, um direkt zu seiner Seite zu springen.",
     "placeholder": "Welcher Vers handelt von…",
     "example1": "der Vers über die Gebetswaschung (Wudu)",
     "example2": "der Thronvers",

@@ -91,6 +91,7 @@
   "ask": {
     "title": "Preguntar",
     "subtitle": "Describe una aleya y salta directamente a su página.",
+    "subtitleVoice": "Recita una aleya para ir directamente a su página.",
     "placeholder": "¿Cuál es la aleya sobre…",
     "example1": "la aleya sobre la ablución (wudu)",
     "example2": "la aleya del Trono",
