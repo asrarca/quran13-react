@@ -11,7 +11,7 @@ import quranData from "@/data/quran-data.json";
 import { Button } from "@/app/components/ui/button";
 import { t, type Lang, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "./i18n";
 import { APP_VERSION, FIRST_PAGE, LAST_PAGE } from "./constants";
-import { COOKIE, readCookie, writeCookie, rootFontScale } from "./lib/reader-cookies";
+import { COOKIE, readCookie, writeCookie, rootFontScale, pageToParam } from "./lib/reader-cookies";
 import {
   type ActiveSheet,
   type DragHandlers,
@@ -310,6 +310,15 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
   useEffect(() => {
     if (!mounted) return;
     writeCookie(COOKIE.page, String(page));
+  }, [mounted, page]);
+
+  // Keep the address bar on /page/[n] (n = header page number) so the current
+  // page is always a shareable link. replaceState, not push, so swiping doesn't
+  // flood browser history.
+  useEffect(() => {
+    if (!mounted) return;
+    const path = `/page/${pageToParam(page)}`;
+    if (window.location.pathname !== path) window.history.replaceState(null, "", path);
   }, [mounted, page]);
 
   useEffect(() => {

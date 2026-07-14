@@ -43,6 +43,19 @@ export function parsePage(raw: string | undefined): number {
   return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, Math.round(n)));
 }
 
+// Deep-link URLs (/page/[n]) use the page number shown in the app header, which
+// is the internal page + 1. These two are the single source of truth for that
+// mapping — used by the server route and the client URL-sync effect alike.
+export function pageToParam(internalPage: number): number {
+  return internalPage + 1;
+}
+
+export function paramToPage(raw: string | undefined): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return DEFAULT_START_PAGE;
+  return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, Math.round(n) - 1));
+}
+
 export function parseMushaf(raw: string | undefined): MushafKey {
   return raw && raw in quranData.mushafs ? (raw as MushafKey) : DEFAULT_MUSHAF;
 }
