@@ -26,7 +26,7 @@ const MODELS = {
 const MODEL = MODELS.sonnet;
 
 // The `effort` parameter is supported on Sonnet 5 / Opus 4.6+ but NOT on Haiku 4.5.
-const SUPPORTS_EFFORT = MODEL !== MODELS.haiku;
+const SUPPORTS_EFFORT = (MODEL === MODELS.sonnet || MODEL === MODELS.opus);
 
 export type NavigateResult = {
   verseKey: string;
