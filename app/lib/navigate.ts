@@ -19,7 +19,11 @@ const MODELS = {
   sonnet: "claude-sonnet-5", // balanced ($3/$15), strong Quran knowledge
   opus: "claude-opus-4-8", // most capable ($5/$25)
 } as const;
-const MODEL = MODELS.haiku;
+
+// July 2026: Keep Sonnet for now to get better results, since it is
+// just friends and family using the app. If this app becomes popular,
+// switch to Haiku.
+const MODEL = MODELS.sonnet;
 
 // The `effort` parameter is supported on Sonnet 5 / Opus 4.6+ but NOT on Haiku 4.5.
 const SUPPORTS_EFFORT = MODEL !== MODELS.haiku;
