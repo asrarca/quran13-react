@@ -13,20 +13,21 @@ import { locateVerse, verseKeyExists } from "./ayah-map";
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
 
-// Claude model IDs. Point MODEL at whichever tier you want the resolver to use.
+// Claude models. Point MODEL at whichever tier you want the resolver to use.
+// `supportsEffort` records whether the model accepts the `effort` output param —
+// supported on Sonnet 5 / Opus 4.6+ but NOT on Haiku 4.5. Carrying it on each
+// model (rather than deriving it from MODEL) avoids the "no overlap" type error
+// that comparing MODEL against a fixed tier would raise when the tier changes.
 const MODELS = {
-  haiku: "claude-haiku-4-5", // cheapest ($1/$5 per MTok), fine for this verse lookup
-  sonnet: "claude-sonnet-5", // balanced ($3/$15), strong Quran knowledge
-  opus: "claude-opus-4-8", // most capable ($5/$25)
+  haiku: { id: "claude-haiku-4-5", supportsEffort: false }, // cheapest ($1/$5 per MTok), fine for this verse lookup
+  sonnet: { id: "claude-sonnet-5", supportsEffort: true }, // balanced ($3/$15), strong Quran knowledge
+  opus: { id: "claude-opus-4-8", supportsEffort: true }, // most capable ($5/$25)
 } as const;
 
 // July 2026: Keep Sonnet for now to get better results, since it is
 // just friends and family using the app. If this app becomes popular,
 // switch to Haiku.
-const MODEL = MODELS.sonnet;
-
-// The `effort` parameter is supported on Sonnet 5 / Opus 4.6+ but NOT on Haiku 4.5.
-const SUPPORTS_EFFORT = (MODEL === MODELS.sonnet || MODEL === MODELS.opus);
+const MODEL = MODELS.haiku;
 
 export type NavigateMatch = {
   verseKey: string;
@@ -119,7 +120,7 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
   if (cached) return cached;
 
   const response = await client.messages.create({
-    model: MODEL,
+    model: MODEL.id,
     max_tokens: 1024,
     system: voice ? VOICE_SYSTEM : SYSTEM,
     // Disable thinking (Sonnet 5 would otherwise run adaptive thinking by default).
@@ -129,7 +130,7 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
     // wrong verse (e.g. 5:27 "نبأ ابني آدم بالحق" mis-resolved to 18:13).
     thinking: { type: "disabled" },
     output_config: {
-      ...(SUPPORTS_EFFORT ? { effort: voice ? ("medium" as const) : ("low" as const) } : {}),
+      ...(MODEL.supportsEffort ? { effort: voice ? ("medium" as const) : ("low" as const) } : {}),
       format: { type: "json_schema", schema: SCHEMA },
     },
     messages: [{ role: "user", content: trimmed }],
