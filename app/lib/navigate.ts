@@ -29,6 +29,10 @@ const MODELS = {
 // switch to Haiku.
 const MODEL = MODELS.haiku;
 
+// Most matches the resolver will return (best first). The schema can't enforce a
+// maxItems cap, so this is applied in the prompt copy and the parse loop below.
+const MAX_MATCHES = 5;
+
 export type NavigateMatch = {
   verseKey: string;
   surahName: string;
@@ -38,7 +42,7 @@ export type NavigateMatch = {
   confidence: number;
 };
 
-// The resolver returns up to three matches, best first. Extra matches are
+// The resolver returns up to MAX_MATCHES matches, best first. Extra matches are
 // included only when they're genuine alternatives, so the UI can offer them.
 export type NavigateResult = {
   matches: NavigateMatch[];
@@ -49,7 +53,7 @@ const SYSTEM = `You help a Quran-reader app resolve a user's natural-language qu
 Rules:
 - Ground your answer in the actual text of the Quran. Identify the verse a knowledgeable reciter would point to.
 - Return the verse as "surah:ayah" using the standard numbering (surahs 1-114). Example: the ablution (wudu) verse is 5:6.
-- Return your single best match first, then up to two more (three total) — but only verses that are genuinely plausible answers to the same question. Never pad the list; one strong match beats a strong one plus weak filler.
+- Return your single best match first, then up to ${MAX_MATCHES - 1} more (${MAX_MATCHES} total) — but only verses that are genuinely plausible answers to the same question. Never pad the list; one strong match beats a strong one plus weak filler.
 - Never invent a reference. If you are genuinely unsure, pick the closest well-attested verse and set a low confidence.
 - Keep each "note" to one short sentence a layperson understands. The note describes the verse itself, not why it matched.`;
 
@@ -62,7 +66,7 @@ The user recited a verse of the Quran — or a fragment of one — aloud in Arab
 The recognizer is not tuned for Quranic Arabic: expect missing diacritics, oddly split or joined words, and substitutions of similar-sounding everyday words for Quranic ones.
 Match the transcription tolerantly against the Quranic text and return the verse being recited.
 Anchor on the distinctive content words of the recitation, not just its overall shape — e.g. "نبأ ابني آدم بالحق" is 5:27 (the sons of Adam), even though "نبأ … بالحق" echoes elsewhere. Do not snap to a more famous verse that merely shares the skeleton.
-Return the verse being recited as your first match. If the fragment genuinely occurs in more than one place, add those other occurrences too (up to three matches total), best first.
+Return the verse being recited as your first match. If the fragment genuinely occurs in more than one place, add those other occurrences too (up to ${MAX_MATCHES} matches total), best first.
 If the recitation spans several verses, return only the single verse where it begins — never a range.`;
 
 const MATCH_SCHEMA = {
@@ -81,10 +85,10 @@ const SCHEMA = {
   type: "object",
   properties: {
     // Anthropic structured outputs reject array minItems/maxItems, so the "at most
-    // three" cap is expressed in the description and prompt, and enforced below.
+    // MAX_MATCHES" cap is expressed in the description and prompt, and enforced below.
     matches: {
       type: "array",
-      description: "Best-matching verse(s), most relevant first, at most three. Include extras only as real alternatives.",
+      description: `Best-matching verse(s), most relevant first, at most ${MAX_MATCHES}. Include extras only as real alternatives.`,
       items: MATCH_SCHEMA,
     },
   },
@@ -166,7 +170,7 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
       note: m.note,
       confidence: m.confidence,
     });
-    if (matches.length === 3) break; // cap: the schema can't enforce maxItems
+    if (matches.length === MAX_MATCHES) break; // cap: the schema can't enforce maxItems
   }
 
   if (matches.length === 0) {

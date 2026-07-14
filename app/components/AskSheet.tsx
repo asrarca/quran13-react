@@ -46,7 +46,7 @@ type Match = {
   confidence: number;
 };
 
-// The resolver returns up to three matches (best first); we show all it returns.
+// The resolver returns up to five matches (best first); we show all it returns.
 type Resolved = {
   matches: Match[];
 };
@@ -247,7 +247,7 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
       )}
 
       {result && !isFetching && result.matches.length > 0 && (
-        // Up to three matches; cap the height and scroll if the notes run long.
+        // Up to five matches; cap the height and scroll if the notes run long.
         <div className="mt-3 flex max-h-[46vh] flex-col gap-2 overflow-y-auto">
           {result.matches.map((m) => (
             <button
