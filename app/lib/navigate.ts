@@ -51,7 +51,11 @@ Rules:
 // The model must locate that recitation in the Quranic text.
 const VOICE_SYSTEM = `${SYSTEM}
 
-The user recited a verse of the Quran — or a fragment of one — aloud in Arabic, and the message below is the raw speech-to-text transcription of that recitation. The recognizer is not tuned for Quranic Arabic: expect missing diacritics, oddly split or joined words, and substitutions of similar-sounding everyday words for Quranic ones. Match the transcription tolerantly against the Quranic text and return the verse being recited. If the fragment occurs in more than one verse, pick the most well-known occurrence and mention the alternatives in the note. If the recitation spans several verses, return only the single verse where it begins — never a range.`;
+The user recited a verse of the Quran — or a fragment of one — aloud in Arabic, and the message below is the raw speech-to-text transcription of that recitation.
+The recognizer is not tuned for Quranic Arabic: expect missing diacritics, oddly split or joined words, and substitutions of similar-sounding everyday words for Quranic ones.
+Match the transcription tolerantly against the Quranic text and return the verse being recited.
+If the fragment occurs in more than one verse, pick the most well-known occurrence and mention the alternatives in the note.
+If the recitation spans several verses, return only the single verse where it begins — never a range.`;
 
 const SCHEMA = {
   type: "object",
@@ -96,11 +100,14 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
     model: MODEL,
     max_tokens: 1024,
     system: voice ? VOICE_SYSTEM : SYSTEM,
-    // Disable thinking (Sonnet 5 would otherwise run adaptive thinking by default),
-    // and use low effort where the model supports it, to keep this a fast lookup.
+    // Disable thinking (Sonnet 5 would otherwise run adaptive thinking by default).
+    // Effort: "low" keeps typed lookups fast, but voice queries need to match a
+    // fuzzy speech-to-text transcription against recall of the whole Quran — that
+    // extra bit of reasoning ("medium") stops the model snapping to a similar-but-
+    // wrong verse (e.g. 5:27 "نبأ ابني آدم بالحق" mis-resolved to 18:13).
     thinking: { type: "disabled" },
     output_config: {
-      ...(SUPPORTS_EFFORT ? { effort: "low" as const } : {}),
+      ...(SUPPORTS_EFFORT ? { effort: voice ? ("medium" as const) : ("low" as const) } : {}),
       format: { type: "json_schema", schema: SCHEMA },
     },
     messages: [{ role: "user", content: trimmed }],
