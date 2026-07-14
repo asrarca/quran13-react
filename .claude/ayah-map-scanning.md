@@ -61,11 +61,22 @@ common source of off-by-one line errors, in both directions.
 
 - **3:1 – 3:92** — verified 2026-07-12 (JSON pages 67–84 / images `page-068`–`085`).
 - **3:92 – 3:159** — verified 2026-07-12 (JSON pages 84–96 / images `page-085`–`097`).
-- **4:24 – 9:4** — verified 2026-07-13 (JSON pages 112–259 / images `page-113`–`260`). Surah 8
-  (An'am) is fully verified end-to-end (all 75 ayahs).
+- **4:24 – 17:57** — verified 2026-07-13 (JSON pages 112–399 / images `page-113`–`400`). Surahs 6
+  (An'am), 7 (A'raf), 8 (Anfal), 9 (At-Taubah), 10 (Yunus), 11 (Hud), 12 (Yusuf), 13 (Ar-Ra'd),
+  14 (Ibrahim), 15 (Al-Hijr), and 16 (An-Nahl) are fully verified end-to-end. 17 (Al-Isra /
+  Bani Isra'il) is verified through ayah 57. Surah 17's anchor page (392) matches
+  `quran-data.json` exactly, and its header+Bismillah occupy lines 1-2 before the first verse
+  text starts at line 3 (same convention as other surahs).
 - The user manually corrected everything **up to 3:92** before that.
-- Everything in **3:160 – 4:23** and **after 9:4** is still interpolated: treat
+- Everything in **3:160 – 4:23** and **after 17:57** is still interpolated: treat
   `page` as roughly right and `line` as unreliable until scanned.
+- **Watch for skipped/merged ayahs, not just marker mis-position.** While scanning Surah 14, ayah
+  17 ("يتجرعه...") got silently merged into the transcription of ayah 18, shifting every
+  subsequent ayah number down by one for ~10 ayahs before it was caught (via the surah-15 anchor
+  page mismatch) and fixed. A similar merge happened at Surah 15 ayahs 2/3. The fix: whenever an
+  ayah's full text doesn't cleanly match a single verse end-to-end, re-derive the *count* of
+  distinct verses in that line span from a real mushaf reference, not just the boundary
+  positions — a merged pair is easy to miss because each half still "reads fine" on its own.
 - Recurring error pattern found across all scanned batches: the interpolation
   drifts a full **page** late (not just a line or two) over a run of ~10-20
   ayahs, then resyncs when a long ayah absorbs the slack. Always re-derive the
