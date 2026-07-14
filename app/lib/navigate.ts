@@ -28,7 +28,7 @@ const MODEL = MODELS.sonnet;
 // The `effort` parameter is supported on Sonnet 5 / Opus 4.6+ but NOT on Haiku 4.5.
 const SUPPORTS_EFFORT = (MODEL === MODELS.sonnet || MODEL === MODELS.opus);
 
-export type NavigateResult = {
+export type NavigateMatch = {
   verseKey: string;
   surahName: string;
   page: number; // app numbering (1-based) — pass straight to goToPage
@@ -37,14 +37,20 @@ export type NavigateResult = {
   confidence: number;
 };
 
-const SYSTEM = `You help a Quran-reader app resolve a user's natural-language question to the single most relevant verse of the Quran.
+// The resolver returns up to three matches, best first. Extra matches are
+// included only when they're genuine alternatives, so the UI can offer them.
+export type NavigateResult = {
+  matches: NavigateMatch[];
+};
+
+const SYSTEM = `You help a Quran-reader app resolve a user's natural-language question to the most relevant verse(s) of the Quran.
 
 Rules:
 - Ground your answer in the actual text of the Quran. Identify the verse a knowledgeable reciter would point to.
 - Return the verse as "surah:ayah" using the standard numbering (surahs 1-114). Example: the ablution (wudu) verse is 5:6.
-- If several verses fit, choose the single most canonical / well-known one and mention the others in the note.
+- Return your single best match first, then up to two more (three total) — but only verses that are genuinely plausible answers to the same question. Never pad the list; one strong match beats a strong one plus weak filler.
 - Never invent a reference. If you are genuinely unsure, pick the closest well-attested verse and set a low confidence.
-- Keep "note" to one short sentence a layperson understands.`;
+- Keep each "note" to one short sentence a layperson understands. The note describes the verse itself, not why it matched.`;
 
 // Used when the query came from voice: the user recited a verse (or fragment)
 // of the Quran aloud in Arabic, and we get the raw speech-to-text transcription.
@@ -54,18 +60,34 @@ const VOICE_SYSTEM = `${SYSTEM}
 The user recited a verse of the Quran — or a fragment of one — aloud in Arabic, and the message below is the raw speech-to-text transcription of that recitation.
 The recognizer is not tuned for Quranic Arabic: expect missing diacritics, oddly split or joined words, and substitutions of similar-sounding everyday words for Quranic ones.
 Match the transcription tolerantly against the Quranic text and return the verse being recited.
-If the fragment occurs in more than one verse, pick the most well-known occurrence and mention the alternatives in the note.
+Anchor on the distinctive content words of the recitation, not just its overall shape — e.g. "نبأ ابني آدم بالحق" is 5:27 (the sons of Adam), even though "نبأ … بالحق" echoes elsewhere. Do not snap to a more famous verse that merely shares the skeleton.
+Return the verse being recited as your first match. If the fragment genuinely occurs in more than one place, add those other occurrences too (up to three matches total), best first.
 If the recitation spans several verses, return only the single verse where it begins — never a range.`;
 
-const SCHEMA = {
+const MATCH_SCHEMA = {
   type: "object",
   properties: {
     verseKey: { type: "string", description: 'The verse as "surah:ayah", e.g. "5:6".' },
     surahName: { type: "string", description: "English name of the surah, e.g. Al-Ma'idah." },
     confidence: { type: "number", description: "0 to 1 — how sure you are this is the intended verse." },
-    note: { type: "string", description: "One short sentence on why this verse matches." },
+    note: { type: "string", description: "One short sentence describing the verse, for a layperson." },
   },
   required: ["verseKey", "surahName", "confidence", "note"],
+  additionalProperties: false,
+} as const;
+
+const SCHEMA = {
+  type: "object",
+  properties: {
+    // Anthropic structured outputs reject array minItems/maxItems, so the "at most
+    // three" cap is expressed in the description and prompt, and enforced below.
+    matches: {
+      type: "array",
+      description: "Best-matching verse(s), most relevant first, at most three. Include extras only as real alternatives.",
+      items: MATCH_SCHEMA,
+    },
+  },
+  required: ["matches"],
   additionalProperties: false,
 } as const;
 
@@ -116,30 +138,41 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
   const text = response.content.find((b) => b.type === "text");
   if (!text || text.type !== "text") throw new NavigateError("No response from model.", 502);
 
-  let parsed: { verseKey: string; surahName: string; confidence: number; note: string };
+  type RawMatch = { verseKey: string; surahName: string; confidence: number; note: string };
+  let parsed: { matches: RawMatch[] };
   try {
     parsed = JSON.parse(text.text);
   } catch {
     throw new NavigateError("Could not parse model response.", 502);
   }
 
-  // A multi-verse recitation can still come back as a range ("93:1-2") despite
-  // the prompt; keep the starting verse.
-  parsed.verseKey = parsed.verseKey.replace(/^(\d+:\d+)[-–]\d+$/, "$1");
-
-  if (!verseKeyExists(parsed.verseKey)) {
-    throw new NavigateError(`Model returned an invalid verse (${parsed.verseKey}).`, 422);
+  const seen = new Set<string>();
+  const matches: NavigateMatch[] = [];
+  for (const m of parsed.matches ?? []) {
+    // A multi-verse recitation can still come back as a range ("93:1-2") despite
+    // the prompt; keep the starting verse.
+    const verseKey = m.verseKey.replace(/^(\d+:\d+)[-–]\d+$/, "$1");
+    // Drop hallucinated or duplicate verse keys rather than failing the whole
+    // request — a valid best match shouldn't be lost to a bad alternative.
+    if (!verseKeyExists(verseKey) || seen.has(verseKey)) continue;
+    seen.add(verseKey);
+    const loc = locateVerse(verseKey)!; // exists — verseKeyExists passed
+    matches.push({
+      verseKey,
+      surahName: m.surahName,
+      page: loc.page,
+      line: loc.line,
+      note: m.note,
+      confidence: m.confidence,
+    });
+    if (matches.length === 3) break; // cap: the schema can't enforce maxItems
   }
-  const loc = locateVerse(parsed.verseKey)!; // exists — verseKeyExists passed
 
-  const result: NavigateResult = {
-    verseKey: parsed.verseKey,
-    surahName: parsed.surahName,
-    page: loc.page,
-    line: loc.line,
-    note: parsed.note,
-    confidence: parsed.confidence,
-  };
+  if (matches.length === 0) {
+    throw new NavigateError("Model returned no valid verse.", 422);
+  }
+
+  const result: NavigateResult = { matches };
 
   // Cache with a simple size cap (drop the oldest entry when full).
   if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value!);

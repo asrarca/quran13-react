@@ -1,4 +1,4 @@
-// GET /api/navigate?q=<question>  ->  { verseKey, surahName, page, line, note, confidence }
+// GET /api/navigate?q=<question>  ->  { matches: [{ verseKey, surahName, page, line, note, confidence }, ...] }
 //
 // The natural-language navigation endpoint. GET (not POST) so the response can be
 // cached by the browser and the CDN — the same question always resolves to the

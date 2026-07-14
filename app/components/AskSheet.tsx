@@ -36,13 +36,18 @@ function getSpeechRecognition(): (new () => SpeechRecognitionLike) | null {
   return (w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null) as (new () => SpeechRecognitionLike) | null;
 }
 
-type Resolved = {
+type Match = {
   verseKey: string;
   surahName: string;
   page: number; // app numbering — pass straight to onNavigate
   line: number;
   note: string;
   confidence: number;
+};
+
+// The resolver returns up to three matches (best first); we show all it returns.
+type Resolved = {
+  matches: Match[];
 };
 
 type Props = {
@@ -235,22 +240,28 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
         <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[0.8125rem] text-(--fg2)">{error.message}</div>
       )}
 
-      {result && !isFetching && (
-        <button
-          type="button"
-          onClick={() => onNavigate(result.page, result.line)}
-          className="mt-3 flex w-full flex-col gap-1 rounded-[14px] bg-(--bg2) p-3.5 text-left active:bg-border"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[0.9375rem] font-semibold">
-              {result.surahName} · {result.verseKey}
-            </span>
-            <span className="flex items-center gap-1 text-[0.8125rem] font-medium text-(--fg2)">
-              {t(lang, "ask.pageLabel")} {result.page} <CornerDownLeft className="size-3.5 -scale-x-100" />
-            </span>
-          </div>
-          <span className="text-[0.8125rem] leading-snug text-(--fg2)">{result.note}</span>
-        </button>
+      {result && !isFetching && result.matches.length > 0 && (
+        // Up to three matches; cap the height and scroll if the notes run long.
+        <div className="mt-3 flex max-h-[46vh] flex-col gap-2 overflow-y-auto">
+          {result.matches.map((m) => (
+            <button
+              key={m.verseKey}
+              type="button"
+              onClick={() => onNavigate(m.page, m.line)}
+              className="flex w-full shrink-0 flex-col gap-1 rounded-[14px] bg-(--bg2) p-3.5 text-left active:bg-border"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[0.9375rem] font-semibold">
+                  {m.surahName} · {m.verseKey}
+                </span>
+                <span className="flex items-center gap-1 text-[0.8125rem] font-medium text-(--fg2)">
+                  {t(lang, "ask.pageLabel")} {m.page} <CornerDownLeft className="size-3.5 -scale-x-100" />
+                </span>
+              </div>
+              <span className="text-[0.8125rem] leading-snug text-(--fg2)">{m.note}</span>
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
