@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CornerDownLeft, Loader2, Mic, Search, Sparkles, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t } from "../i18n";
+import { pageToParam } from "../lib/reader-cookies";
 
 // Natural-language navigation: ask a question, jump to the verse's page.
 // Requests go through TanStack Query, so repeating a question in the same session
@@ -85,7 +86,12 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
     voice && getSpeechRecognition() === null ? t(lang, "ask.voiceUnsupported") : null
   );
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const examples = [t(lang, "ask.example1"), t(lang, "ask.example2"), t(lang, "ask.example3")];
+  const examples = [
+    t(lang, "ask.example1"),
+    t(lang, "ask.example2"),
+    t(lang, "ask.example3"),
+    t(lang, "ask.example4"),
+  ];
 
   const { data: result, error, isFetching } = useQuery({
     queryKey: ["navigate", submitted?.q, submitted?.voice],
@@ -255,7 +261,7 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
                   {m.surahName} · {m.verseKey}
                 </span>
                 <span className="flex items-center gap-1 text-[0.8125rem] font-medium text-(--fg2)">
-                  {t(lang, "ask.pageLabel")} {m.page} <CornerDownLeft className="size-3.5 -scale-x-100" />
+                  {t(lang, "ask.pageLabel")} {pageToParam(m.page)} <CornerDownLeft className="size-3.5 -scale-x-100" />
                 </span>
               </div>
               <span className="text-[0.8125rem] leading-snug text-(--fg2)">{m.note}</span>
