@@ -186,6 +186,18 @@
   animation: line-flash 1.5s ease-out forwards;
 }
 
+/* Whole-ayah flash: hold at full strength, then fade over the last ~15% of the
+   run. Total duration is set inline from AYAH_FLASH_MS, so this scales with it. */
+@keyframes ayah-flash {
+  0% { opacity: 0.55; }
+  85% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+.animate-ayah-flash {
+  animation: ayah-flash ease-out forwards;
+}
+
 .font-amiri {
   font-family: var(--font-amiri), serif;
 }

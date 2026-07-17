@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { type Lang, t } from "../i18n";
-import { HIGHLIGHT_COLORS, type HighlightColorKey, type LineBand, type Theme } from "../types";
+import { type AyahFlash, HIGHLIGHT_COLORS, type HighlightColorKey, type LineBand, type Theme } from "../types";
+import { AYAH_FLASH_MS } from "../constants";
 import quranData from "@/data/quran-data.json";
 
 type MushafKey = keyof typeof quranData.mushafs;
@@ -9,6 +10,30 @@ type Mushaf = (typeof quranData.mushafs)[MushafKey];
 function imagePath(page: number, mushaf: Mushaf) {
   const { dir, filePrefix, fileExtension, pageOffset } = mushaf;
   return `${dir}/${filePrefix}${String(page + pageOffset).padStart(3, "0")}.${fileExtension}`;
+}
+
+// Rectangles covering a whole ayah on ONE page, given the verse span. Each line
+// the ayah touches on this page becomes a band-height rectangle whose horizontal
+// extent is clipped by the ayah's start x (on its first line) and end x (on its
+// last line). x's are % from the RIGHT margin, so a normalized page X is
+// `right - (x / 100) * (right - left)`. Lines/pages between start and end are full width.
+function ayahFlashSegments(candidate: number, ayah: AyahFlash, bands: LineBand[]) {
+  if (candidate < ayah.startPage || candidate > ayah.endPage) return [];
+  const firstLine = candidate === ayah.startPage ? ayah.startLine : 1;
+  const lastLine = candidate === ayah.endPage ? ayah.endLine : bands.length;
+  const segs: { line: number; top: number; height: number; left: number; width: number }[] = [];
+  for (let ln = firstLine; ln <= lastLine; ln++) {
+    const band = bands[ln - 1];
+    if (!band) continue;
+    const xStart = candidate === ayah.startPage && ln === ayah.startLine ? ayah.startX : 0;
+    const xEnd = candidate === ayah.endPage && ln === ayah.endLine ? ayah.endX : 100;
+    if (xEnd <= xStart) continue; // e.g. endX 0 → ayah ended on the previous line
+    const w = band.right - band.left;
+    const left = band.right - (xEnd / 100) * w;
+    const right = band.right - (xStart / 100) * w;
+    segs.push({ line: ln, top: band.top, height: band.bottom - band.top, left, width: right - left });
+  }
+  return segs;
 }
 
 type Props = {
@@ -21,6 +46,7 @@ type Props = {
   bands: LineBand[];
   lang: Lang;
   flashLine?: number;
+  flashAyah?: AyahFlash;
   flashKey?: number;
   onPressStart: (e: React.PointerEvent<HTMLDivElement>, candidate: number) => void;
   onPressMove: (e: React.PointerEvent<HTMLDivElement>) => void;
@@ -38,6 +64,7 @@ export function PageCard({
   bands,
   lang,
   flashLine,
+  flashAyah,
   flashKey,
   onPressStart,
   onPressMove,
@@ -48,6 +75,7 @@ export function PageCard({
   const pageHighlights = Object.entries(highlights[candidate] ?? {})
     .map(([lineStr, color]) => ({ line: Number(lineStr), color }))
     .filter(({ line }) => bands[line]);
+  const flashSegments = flashAyah ? ayahFlashSegments(candidate, flashAyah, bands) : [];
 
   return (
     <div
@@ -107,6 +135,20 @@ export function PageCard({
                 }}
               />
             )}
+            {flashSegments.map((seg) => (
+              <div
+                key={`${flashKey}-${seg.line}`}
+                className="pointer-events-none absolute animate-ayah-flash"
+                style={{
+                  backgroundColor: "#dade60",
+                  animationDuration: `${AYAH_FLASH_MS}ms`,
+                  top: `${seg.top * 100}%`,
+                  height: `${seg.height * 100}%`,
+                  left: `${seg.left * 100}%`,
+                  width: `${seg.width * 100}%`,
+                }}
+              />
+            ))}
             {Object.entries(rakatMarkers[candidate] ?? {}).map(([lineStr, rakat]) => {
               const line = Number(lineStr);
               const band = bands[line];

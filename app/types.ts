@@ -29,6 +29,18 @@ export type MushafKey = keyof typeof quranData.mushafs;
 export type LineCoord = { x: number; y: number; w: number };
 export type LineBand = { top: number; bottom: number; left: number; right: number };
 
+// A whole-ayah navigation highlight span. Lines are 1-based; x's are % from the
+// RIGHT margin (RTL line start = 0). The highlight runs from (startLine, startX)
+// to (endLine, endX) — the next ayah's start — across startPage..endPage.
+export type AyahFlash = {
+  startPage: number;
+  startLine: number;
+  startX: number;
+  endPage: number;
+  endLine: number;
+  endX: number;
+};
+
 export const HIGHLIGHT_COLORS = [
   { key: "yellow", hex: "#ffe600" },
   { key: "green",  hex: "#4ade60" },

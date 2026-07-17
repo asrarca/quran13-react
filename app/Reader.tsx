@@ -10,10 +10,11 @@ import "swiper/css";
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/app/components/ui/button";
 import { t, type Lang, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "./i18n";
-import { APP_VERSION, FIRST_PAGE, LAST_PAGE } from "./constants";
+import { APP_VERSION, AYAH_FLASH_MS, FIRST_PAGE, LAST_PAGE } from "./constants";
 import { COOKIE, readCookie, writeCookie, rootFontScale, pageToParam } from "./lib/reader-cookies";
 import {
   type ActiveSheet,
+  type AyahFlash,
   type DragHandlers,
   type HighlightColorKey,
   type Juz,
@@ -111,7 +112,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
   const [highlights, setHighlights] = useState<Record<number, Record<number, HighlightColorKey>>>({});
   const [highlightPicker, setHighlightPicker] = useState<{ page: number; line: number } | null>(null);
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
-  const [navFlash, setNavFlash] = useState<{ page: number; line: number; stamp: number } | null>(null);
+  const [navFlash, setNavFlash] = useState<{ page: number; line: number; stamp: number; ayah?: AyahFlash } | null>(null);
   const [askVoice, setAskVoice] = useState(false);
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
@@ -347,16 +348,19 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
     setPageInput("");
   }, []);
 
-  const goToSection = useCallback((targetPage: number, line: number) => {
+  // `ayah` (from AI search on scan-verified ranges) flashes the whole verse —
+  // partial start line, any full middle lines, partial end line — instead of the
+  // single-line flash used by juz/bookmark jumps.
+  const goToSection = useCallback((targetPage: number, line: number, ayah?: AyahFlash) => {
     setPage(clampPage(targetPage));
     setActiveSheet(null);
     setPageInput("");
     if (navFlashTimer.current !== null) window.clearTimeout(navFlashTimer.current);
-    setNavFlash({ page: clampPage(targetPage), line, stamp: Date.now() });
+    setNavFlash({ page: clampPage(targetPage), line, stamp: Date.now(), ayah });
     navFlashTimer.current = window.setTimeout(() => {
       setNavFlash(null);
       navFlashTimer.current = null;
-    }, 2000);
+    }, ayah ? AYAH_FLASH_MS : 2000);
   }, []);
 
   const setRakatMarker = useCallback((targetPage: number, line: number, rakat: number | null) => {
@@ -615,6 +619,13 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
             {/* RTL: slides run oldest → newest; offset 0 is the active page, centered */}
             {SLIDE_OFFSETS.map((offset) => {
               const candidate = page + offset;
+              // Whole-ayah flash spans startPage..endPage; the single-line flash
+              // (juz/bookmark jumps) lands on one page. Ayah flash supersedes.
+              const flashAyah =
+                navFlash?.ayah && candidate >= navFlash.ayah.startPage && candidate <= navFlash.ayah.endPage
+                  ? navFlash.ayah
+                  : undefined;
+              const flashLine = navFlash && !navFlash.ayah && navFlash.page === candidate ? navFlash.line : undefined;
               return (
                 <SwiperSlide key={offset} style={{ overflowY: "auto" }}>
                   <div className="flex min-h-full flex-col items-center justify-start pb-12 landscape:pb-0">
@@ -623,8 +634,9 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
                         {...pageCardProps}
                         candidate={candidate}
                         bands={bandsForPage(candidate)}
-                        flashLine={navFlash?.page === candidate ? navFlash.line : undefined}
-                        flashKey={navFlash?.page === candidate ? navFlash.stamp : undefined}
+                        flashLine={flashLine}
+                        flashAyah={flashAyah}
+                        flashKey={flashAyah || flashLine !== undefined ? navFlash!.stamp : undefined}
                       />
                     )}
                   </div>

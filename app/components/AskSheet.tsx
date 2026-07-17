@@ -4,6 +4,7 @@ import { CornerDownLeft, Loader2, Mic, Search, Sparkles, X } from "lucide-react"
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t } from "../i18n";
 import { pageToParam } from "../lib/reader-cookies";
+import type { AyahFlash } from "../types";
 
 // Natural-language navigation: ask a question, jump to the verse's page.
 // Requests go through TanStack Query, so repeating a question in the same session
@@ -44,6 +45,8 @@ type Match = {
   line: number;
   note: string;
   confidence: number;
+  // Present only for scan-verified ranges: lets us highlight the whole ayah.
+  span?: { page: number; line: number; xStart: number; endPage: number; endLine: number; endX: number };
 };
 
 // The resolver returns up to five matches (best first); we show all it returns.
@@ -55,13 +58,33 @@ type Props = {
   lang: Lang;
   voice?: boolean; // start listening for a spoken question on open (long-press entry)
   onClose: () => void;
-  onNavigate: (page: number, line: number) => void;
+  onNavigate: (page: number, line: number, ayah?: AyahFlash) => void;
 };
 
 // Normalize so "The Ayah About Wudu" and "the ayah about wudu" share one cache key
 // (matches the server's normalization).
 function normalize(q: string): string {
   return q.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+// A bare "surah:ayah" reference (e.g. "18:75", "24:18") is a direct jump, not a
+// question — resolve it straight to its page and skip the AI search + results list.
+function verseKeyOf(q: string): string | null {
+  const m = q.trim().match(/^(\d{1,3}):(\d{1,3})$/);
+  return m ? `${Number(m[1])}:${Number(m[2])}` : null;
+}
+
+function spanToFlash(span: Match["span"]): AyahFlash | undefined {
+  return span
+    ? {
+        startPage: span.page,
+        startLine: span.line,
+        startX: span.xStart,
+        endPage: span.endPage,
+        endLine: span.endLine,
+        endX: span.endX,
+      }
+    : undefined;
 }
 
 // voice=1 tells the resolver the query is the transcription of an Arabic
@@ -98,6 +121,17 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
     queryFn: () => fetchNavigate(submitted!.q, submitted!.voice),
     enabled: submitted !== null,
   });
+
+  // When the submitted text is a "surah:ayah" reference, the lookup returns a
+  // single match; jump straight to it and close, without ever rendering results.
+  // (An invalid key like "2:999" resolves to an error, shown in the error block.)
+  const directKey = submitted ? verseKeyOf(submitted.q) : null;
+  useEffect(() => {
+    if (!directKey || !result || result.matches.length === 0) return;
+    const m = result.matches[0];
+    onNavigate(m.page, m.line, spanToFlash(m.span));
+    onClose();
+  }, [directKey, result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function submit(q: string, fromVoice = false) {
     const n = normalize(q);
@@ -246,14 +280,14 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
         <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[0.8125rem] text-(--fg2)">{error.message}</div>
       )}
 
-      {result && !isFetching && result.matches.length > 0 && (
+      {result && !isFetching && !directKey && result.matches.length > 0 && (
         // Up to five matches; cap the height and scroll if the notes run long.
         <div className="mt-3 flex max-h-[46vh] flex-col gap-2 overflow-y-auto">
           {result.matches.map((m) => (
             <button
               key={m.verseKey}
               type="button"
-              onClick={() => onNavigate(m.page, m.line)}
+              onClick={() => onNavigate(m.page, m.line, spanToFlash(m.span))}
               className="flex w-full shrink-0 flex-col gap-1 rounded-[14px] bg-(--bg2) p-3.5 text-left active:bg-border"
             >
               <div className="flex items-center justify-between">

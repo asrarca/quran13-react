@@ -9,7 +9,11 @@
 // single constrained call is more reliable than an agent loop for this task.
 
 import Anthropic from "@anthropic-ai/sdk";
-import { locateVerse, verseKeyExists } from "./ayah-map";
+import { locateVerse, locateVerseSpan, verseKeyExists, type VerseSpan } from "./ayah-map";
+import quranData from "@/data/quran-data.json";
+
+// surah number -> English name, for direct "surah:ayah" lookups (no LLM involved).
+const SURAH_NAMES = new Map(quranData.surahs.map((s) => [s.num, s.name]));
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
 
@@ -40,6 +44,9 @@ export type NavigateMatch = {
   line: number; // approximate; page-level nav is what we trust
   note: string;
   confidence: number;
+  // Present only on scan-verified ranges (verse + next verse both have an xPct):
+  // lets the client highlight the whole ayah, not just its start line.
+  span?: VerseSpan;
 };
 
 // The resolver returns up to MAX_MATCHES matches, best first. Extra matches are
@@ -118,6 +125,29 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
   if (!trimmed) throw new NavigateError("Empty query.", 400);
   if (trimmed.length > 500) throw new NavigateError("Query too long.", 400);
 
+  // A bare "surah:ayah" reference is a direct jump — resolve it straight from the
+  // map with no LLM call (works the same in voice mode).
+  const direct = trimmed.match(/^(\d{1,3}):(\d{1,3})$/);
+  if (direct) {
+    const verseKey = `${Number(direct[1])}:${Number(direct[2])}`;
+    if (!verseKeyExists(verseKey)) throw new NavigateError("No such verse.", 404);
+    const loc = locateVerse(verseKey)!;
+    const span = locateVerseSpan(verseKey);
+    return {
+      matches: [
+        {
+          verseKey,
+          surahName: SURAH_NAMES.get(Number(direct[1])) ?? "",
+          page: loc.page,
+          line: loc.line,
+          note: "",
+          confidence: 1,
+          ...(span ? { span } : {}),
+        },
+      ],
+    };
+  }
+
   // Voice queries use a different system prompt, so cache them separately.
   const key = (voice ? "voice:" : "") + normalizeQuery(trimmed);
   const cached = cache.get(key);
@@ -162,6 +192,7 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
     if (!verseKeyExists(verseKey) || seen.has(verseKey)) continue;
     seen.add(verseKey);
     const loc = locateVerse(verseKey)!; // exists — verseKeyExists passed
+    const span = locateVerseSpan(verseKey);
     matches.push({
       verseKey,
       surahName: m.surahName,
@@ -169,6 +200,7 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
       line: loc.line,
       note: m.note,
       confidence: m.confidence,
+      ...(span ? { span } : {}),
     });
     if (matches.length === MAX_MATCHES) break; // cap: the schema can't enforce maxItems
   }
