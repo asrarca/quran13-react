@@ -102,6 +102,45 @@ common source of off-by-one line errors, in both directions.
 
 ## Verified ranges (scanned, not interpolated)
 
+- **27:44 – 28:83** — verified 2026-07-18 (JSON pages 529–549 / images `page-530`–`550`), line only
+  (xPct left as the placeholder `0`). Completes Surah 27 (An-Naml, ends at 27:93) and covers all of
+  Surah 28 (Al-Qasas) through ayah 83. 133 entries corrected. Surah 27's spillover start (`27:44`)
+  confirmed at JSON page 529 line 13, matching the catchword flagged in the previous range's note.
+  Surah 28's anchor page (536) matches `quran-data.json` exactly, and its header+Bismillah occupy
+  lines 1-3 of JSON page 536 before `28:1` ("طسم") starts at line 4. Same misread-glyph issue as the
+  prior range recurred repeatedly (both page-header numerals and ayah-end marker digits) — resolved
+  the same way, via bottom-right Latin numeral + verse-text content, not the glyphs. `28:84` onward
+  (JSON page 549/550) is **not yet corrected**; next pass starts at JSON page 550 (image `page-551.png`),
+  which is also where Surah 29 (Al-Ankabut, anchor page 551 per `quran-data.json`) begins.
+- **25:77 – 27:43** — verified 2026-07-18 (JSON pages 510–529 / images `page-511`–`530`), line only
+  (xPct left as the placeholder `0`). Surah 26 (Ash-Shu'ara, all 227 ayahs) fully verified end-to-end,
+  plus Surah 27 (An-Naml) through ayah 43. 271 entries corrected. Same severe drift pattern as
+  neighboring ranges. Surah 26's anchor page (510) and Surah 27's anchor page (524) both match
+  `quran-data.json` exactly. Header digit glyphs on this batch's page images were frequently
+  misread on a first pass (e.g. a "512" that was actually "514", ayah-end marker digits reading
+  a few off from the true ayah number) — **always cross-check the printed page number via the
+  bottom-right Latin numeral, not the top-center Arabic-Indic numeral, and always verify ayah
+  boundaries against known verse text rather than trusting the small circled marker digit.**
+  `27:44` onward (currently on JSON page 529/530) is **not yet corrected** — the scan stopped
+  mid-ayah-43 at JSON page 529 line 13 (catchword confirms "ما كانت تعبد..." carries onto the
+  next page); next pass starts there, JSON page 530 (image `page-531.png`).
+- **81:1 – 92:21** — verified 2026-07-18 (JSON pages 823–836 / images `page-824`–`837`), line only
+  (xPct left as the placeholder `0`). Surahs 81 (At-Takwir) through 92 (Al-Layl) fully verified
+  end-to-end, 279 entries corrected. **This range had the worst drift found so far** — e.g. surah
+  81's entire 29 ayahs were originally crammed into JSON page 823 lines 1-13, when in reality only
+  81:1-17 are on page 823 (lines 7-13) and 81:18-29 spill onto page 824 (lines 1-6). Surah 82's old
+  data was outright **backwards**: ayah 1 was stored at line 9 and ayah 19 at line 2 on the same
+  page, i.e. line number decreasing as ayah number increased — a corruption, not just drift.
+  **Full-resolution page reads are unreliable for this dense a layout** — an uncropped `Read` of a
+  page image repeatedly miscounted how many short ayahs share one line (e.g. inventing 2 extra
+  lines that don't exist, or missing that 2-3 short ayahs pack onto a single line). Cropping each
+  page into top/bottom halves at 2x with PIL before reading fixed this consistently; use this for
+  any further work on short-surah / high-density pages (juz 30 in general has many short ayahs
+  per line). Confirmed the surah-header+Bismillah-as-line-slot convention holds throughout. Several
+  ayahs start with only a one-letter prefix (e.g. `وَ`) spilling onto the end of the previous line,
+  with the rest of the word/ayah on the next line — treat this the same as a full-word spillover
+  (the ayah's line = wherever its first letter appears). `93:1` onward (currently on JSON page 837)
+  is **not yet verified** — next pass starts at JSON page 837 (image `page-838.png`).
 - **25:3 – 25:76** — verified 2026-07-18 (JSON pages 501–509 / images `page-502`–`510`), line only
   (xPct left as the placeholder `0`). Confirms the prior range's flag: `25:3` does start at JSON
   page 501 line 1 as predicted. All 74 entries in the range corrected — the old interpolated data
