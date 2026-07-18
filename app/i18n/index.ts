@@ -45,7 +45,7 @@ export const SUPPORTED_LANGS: { code: Lang; label: string; rtl?: boolean; scaleF
   { code: 'de', label: 'Deutsch' },
   { code: 'es', label: 'Español' },
   { code: 'fr', label: 'Français' },
-  { code: 'hi', label: 'हिन्दी' },
+  { code: 'hi', label: 'हिन्दी', scaleFont: true },
   { code: 'ur', label: 'اردو', rtl: true, scaleFont: true },
 ];
 

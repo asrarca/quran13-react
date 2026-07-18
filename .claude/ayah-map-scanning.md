@@ -37,6 +37,27 @@ values come from visually scanning the page images — that's what this doc is f
     and read the gridline there — don't anchor on the marker itself. Pages 430-434 (2026-07-16)
     were measured this way; a marker-anchored first pass would read a few % high (too far
     right) on nearly every line.
+  - **Calibrated-ruler method (2026-07-17, verified against hand-measured pages):** draw
+    vertical gridlines directly onto the page image with PIL at exact xPct positions —
+    `pixelX = imgWidth × (0.9215 − pct/100 × 0.845)` (band right/width from the indopak
+    `lineCoordinates`: x=0.499, w=0.845) — then cut per-line strips (band tops/bottoms midway
+    between the `y` centers), 3× upscale, labels every 5%. Reading marker + first-letter
+    positions off this ruler matched the user's hand-fixed values on JSON pages 435-436
+    within ~1-2% on all 25 nonzero entries, so this method is trusted for xPct (the earlier
+    "way off" eyeball estimates were unguided, without a drawn ruler). JSON page 437 was
+    measured this way. For ambiguous marker/letter boundaries, re-crop that line at 5× over
+    a ±15% window.
+  - **Mushaf switch (2026-07-17): xPct is now measured on the ORIGINAL mushaf, not indopak.**
+    The user viewed page 438 rendered on `original` (`public/quran-pages/original/P-NNN.gif`,
+    +1 file offset like indopak) and said indopak-based readings were "mixed" as a result.
+    From JSON page 438 onward, xPct uses the **original** mushaf's own band geometry:
+    `x=0.499, w=0.84` → right border (0%) at `0.919×W`, left border (100%) at `0.079×W`,
+    fixed `lineHeight=0.068` (not derived from neighboring `y`s like indopak). Page/line
+    values are unaffected — pagination matches indopak on every page checked so far — only
+    the xPct ruler/frame changed. Pages ≤437 were xPct-measured against indopak and may read
+    a few % off if re-checked against original; not yet revisited, only touch if asked.
+    JSON pages 438-440 (images `P-439.gif`–`P-441.gif`) verified this way, user confirmed
+    438 was "great" before continuing to 439-440.
 
 ## The +1 image-file offset (critical)
 
@@ -81,6 +102,69 @@ common source of off-by-one line errors, in both directions.
 
 ## Verified ranges (scanned, not interpolated)
 
+- **25:3 – 25:76** — verified 2026-07-18 (JSON pages 501–509 / images `page-502`–`510`), line only
+  (xPct left as the placeholder `0`). Confirms the prior range's flag: `25:3` does start at JSON
+  page 501 line 1 as predicted. All 74 entries in the range corrected — the old interpolated data
+  was off by roughly one page throughout (e.g. `25:6` was stored `[501,2,0]`, actually `[501,8,0]`).
+  Several short ayahs share a line with the next ayah's start (e.g. `25:22`/`25:23` both start on
+  JSON page 504 — `25:23` on line 4 right after `25:22`'s end-marker on the same line; similarly
+  `25:24`+`25:25`, `25:39`+`25:40` land close together). **`25:77` is NOT yet corrected** — the old
+  value `[509,12,0]` is left in place but is wrong; per this scan `25:76` starts on JSON page 509
+  line 13 and doesn't finish there (page 509 row 13 ends mid-76, catchword confirms carry-over), so
+  `25:77` must start on JSON page 510 (image `page-511.png`), the next range to scan — along with
+  confirming `26:1`'s existing `[510,5,0]` (Surah 26/Ash-Shu'ara's anchor page matches
+  `quran-data.json` exactly at JSON 510).
+- **23:52 – 25:2** — verified 2026-07-18 (JSON pages 481–500 / images `page-482`–`501`), line only
+  (xPct left as the placeholder `0`). Same severe drift pattern as 21:109-23:51 — 124 of 133
+  entries changed, often by a full page. Notably **`25:1` does not start at JSON page 500 line 1**
+  as the old data assumed — Surah 25 (Al-Furqan)'s header ornament + Bismillah occupy lines 8-9
+  of that page (Surah 24/An-Nur's tail, `24:63`-`24:64`, fills lines 1-7), so `25:1` actually
+  starts line 10 and `25:2` line 11. **`25:3` is NOT yet corrected** — the old value `[500,6,0]`
+  is left in place but is wrong; per this scan `25:2` already runs through JSON500 line 13, so
+  `25:3` must actually start on JSON page 501 (image `page-502.png`), the next range to scan.
+- **21:109 – 23:51** — verified 2026-07-18 (JSON pages 461–480 / images `page-462`–`481`), line only
+  (xPct left as the placeholder `0`). **The original interpolated data here was badly wrong** —
+  from roughly 22:5 onward it drifted by up to a full page, with only scattered ayahs matching
+  by coincidence (e.g. 22:43-44, 22:62-70 were mostly already correct; nearly everything else
+  wasn't). 110 of 133 entries changed. Root-caused by careful verse-text segmentation (knowing
+  where each ayah actually ends grammatically) rather than trusting line-count assumptions —
+  the original data was likely a straight interpolation that never got corrected for this stretch.
+  Also fixed `21:109`–`21:112` (tail of Al-Anbiya), which were previously misplaced on JSON page
+  460 instead of 461. `23:52` onward is NOT yet re-verified — treat the existing data for it with
+  the same suspicion as everything found wrong in this pass.
+- **21:27 – 21:108** — verified 2026-07-17 (JSON pages 451–460 / images `page-452`–`461`), line only
+  (xPct left as the placeholder `0`). Scanned with a faster 2-crop-per-page (top/bottom half)
+  method instead of 4 quadrants, batching multiple pages per read — cut wall-clock time
+  significantly without dropping the marker-vs-grammar check. Several short ayahs land multiple
+  ayah-starts on the same line (e.g. `21:106`/`21:107` both on JSON page 460 line 11;
+  `21:74`/`21:75` both effectively resolve on page 456 line 10) — don't assume one ayah-start per
+  line. `21:109` onward (currently on JSON page 461) is **not yet scanned** — next pass starts at
+  JSON page 461 (image `page-462.png`).
+- **20:123 – 21:26** — verified 2026-07-17 (JSON pages 446–450 / images `page-447`–`451`), line only
+  (xPct left as the placeholder `0`). Confirms `20:123` does start at JSON page 446 line 1 as
+  flagged. Surah 20 (Ta-Ha) ends at `20:135` on JSON page 447 line 13; Surah 21 (Al-Anbiya) begins
+  JSON page 448 — header ornament = line 1, Bismillah = line 2, `21:1` starts **line 3**. One
+  ambiguous marker worth noting: on JSON page 449 line 4, a circled `10` marker sits right after
+  `ذكركم` and before `أفلا تعقلون`, which at first glance looks like it splits ayah 10 mid-sentence
+  (both `... ذكركم` and `أفلا تعقلون ...` read as grammatically complete on their own). Resolved by
+  checking the *next* marker (11) landed exactly at `... قوما آخرين` with nothing left over — i.e.
+  the marker-implied split is internally consistent across the whole page (no leftover fragments,
+  no impossible boundaries), so both markers were trusted as printed rather than overridden by a
+  plausible-sounding alternate reading. **`21:27` onward (currently on JSON page 451) is now
+  known-wrong** — page 450 (image 451) ends mid-26 (catchword `ولدا سبحنه`), so `21:27`+ needs
+  re-scanning starting at JSON page 451 (image `page-452.png`) in the next pass.
+- **20:80 – 20:122** — verified 2026-07-17 (JSON pages 441–445 / images `page-442`–`446`), line only
+  (xPct left as the placeholder `0`). Confirms the prior range's flag: `20:80` does start at JSON
+  page 441 line 1 as predicted. Found one same-line multi-start case worth flagging: `20:106` and
+  `20:107` **both start on JSON page 444 line 4** — `20:106` (`فَيَذَرُهَا قَاعًا صَفْصَفًا`) is a short
+  ayah that fits entirely before its end-marker, and `20:107` begins immediately after on the same
+  line (not a one-word spillover, but most of the ayah's words fit on the line with only the last
+  word `امتا` spilling to line 5) — don't assume the next ayah always starts on the *following*
+  line just because the previous one had a lot of text; check where the marker actually falls
+  first. `20:87` onward runs to a full page/line drift similar to the previous range's severity.
+  **`20:123` (currently on JSON page 445) is now known-wrong** — page 445 (image 446) ends mid-122
+  (spillover word `ثم`), so `20:123`+ needs re-scanning starting at JSON page 446 (image
+  `page-447.png`) in the next pass.
 - **20:14 – 20:79** — verified 2026-07-17 (JSON pages 435–440 / images `page-436`–`441`), line only
   (no xPct — see note above about not scanning xPct visually). Drift here was severe and
   worsened steadily through the range: early entries were off by 1 line, by 20:73 the stored
