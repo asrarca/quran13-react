@@ -102,6 +102,142 @@ common source of off-by-one line errors, in both directions.
 
 ## Verified ranges (scanned, not interpolated)
 
+- **58:19 – 68:5** — verified 2026-07-18 (JSON pages 760–789 / images `page-761`–`790`), line only
+  (xPct left as the placeholder `0`). Completes Surah 58 (Al-Mujadilah, from 58:19), all of Surah 59
+  (Al-Hashr, 24 ayahs), all of Surah 60 (Al-Mumtahanah, 13 ayahs), all of Surah 61 (As-Saff, 14
+  ayahs), all of Surah 62 (Al-Jumu'ah, 11 ayahs), all of Surah 63 (Al-Munafiqun, 11 ayahs), all of
+  Surah 64 (At-Taghabun, 18 ayahs), all of Surah 65 (At-Talaq, 12 ayahs), all of Surah 66
+  (At-Tahrim, 12 ayahs), all of Surah 67 (Al-Mulk, 30 ayahs), and Surah 68 (Al-Qalam) through
+  ayah 5. 154 entries corrected across 7 apply-batches, each verified with 0 mismatches; a final
+  comprehensive check across the full 58:19–68:5 range (154 entries) confirmed monotonic ordering.
+  Anchor pages confirmed exactly against `quran-data.json` for Surah 59 (760), Surah 60 (765),
+  Surah 61 (769), Surah 62 (772), Surah 63 (774), Surah 64 (776), Surah 65 (779), Surah 66 (782),
+  Surah 67 (786), and Surah 68 (789) — all matched with no adjustment needed. One transcription
+  slip was self-caught mid-session: on JSON page 777 a one-word spillover ("ما اصاب", the first
+  word of 64:11) was initially missed off the end of the line and had to be folded back in before
+  the batch was applied — same page-boundary spillover risk noted for 56:94 in the prior range.
+  **Next to scan: `68:6` onward**, JSON page 789/790 (image `page-791.png`).
+
+- **52:27 – 58:18** — verified 2026-07-18 (JSON pages 730–759 / images `page-731`–`760`), line only
+  (xPct left as the placeholder `0`). Completes Surah 52 (At-Tur, ends 52:49), all of Surah 53
+  (An-Najm, 62 ayahs), all of Surah 54 (Al-Qamar, 55 ayahs), all of Surah 55 (Ar-Rahman, 78 ayahs —
+  the repeated refrain "فبأي آلاء ربكما تكذبان" made line-counting error-prone; verified each
+  occurrence against the standard ayah sequence rather than trusting marker glyphs), all of Surah 56
+  (Al-Waqi'ah, 96 ayahs), all of Surah 57 (Al-Hadid, 29 ayahs), and Surah 58 (Al-Mujadilah) through
+  ayah 18. 361 entries corrected across 14 apply-batches, each verified with 0 mismatches and
+  monotonic ordering. Anchor pages confirmed exactly against `quran-data.json` for Surah 53 (731),
+  Surah 54 (735), Surah 55 (739), Surah 56 (744), Surah 57 (749), and Surah 58 (756) — all matched
+  with no adjustment needed. One apply-batch omission was self-caught before the next batch: 56:94
+  was skipped when transcribing the JSON-748/749 page boundary (spillover word landed at the very
+  end of a line and got missed) — caught by rechecking JSON page 749's opening word against the
+  prior page's last transcribed ayah, and fixed in the following batch. **Next to scan: `58:19`
+  onward**, JSON page 759/760 (image `page-761.png`).
+
+- **46:21 – 52:26** — verified 2026-07-18 (JSON pages 700–729 / images `page-701`–`730`), line only
+  (xPct left as the placeholder `0`). Completes Surah 46 (Al-Ahqaf, ends 46:35), all of Surah 47
+  (Muhammad, 38 ayahs), all of Surah 48 (Al-Fath, 29 ayahs), all of Surah 49 (Al-Hujurat, 18 ayahs),
+  all of Surah 50 (Qaf, 45 ayahs), all of Surah 51 (Adh-Dhariyat, 60 ayahs), and Surah 52 (At-Tur)
+  through ayah 26. 231 entries corrected across 6 apply-batches, each verified with 0 mismatches and
+  monotonic ordering. Anchor pages confirmed exactly against `quran-data.json` for Surah 47 (703),
+  Surah 48 (709), Surah 49 (715), Surah 50 (720), Surah 51 (724), and Surah 52 (728) — all matched
+  with no adjustment needed. Standard header+Bismillah+text layout held throughout, with the usual
+  later-line shift when a previous surah's tail filled earlier lines (e.g. Surah 49's header/Bismillah
+  landed at lines 11-12 of JSON page 715 since Surah 48's tail filled lines 1-10). Surah 50 (Qaf) and
+  Surah 52 (At-Tur) both pack very short ayahs 2-3 per line extremely densely — the page header's
+  stated ayah count for Surah 50 was misread as "35" on a first pass (actually 45; content continued
+  well past the apparent completion point, caught because Surah 51's anchor page didn't match until
+  the extra ayahs were accounted for). Same misread-glyph pattern recurred on both header numerals and
+  ayah-end markers throughout — bottom-right Latin footer numeral and verse-text content remained the
+  reliable checks, cross-checked on every page. **Next to scan: `52:27` onward**, JSON page 729/730
+  (image `page-731.png`).
+
+- **41:11 – 46:20** — verified 2026-07-18 (JSON pages 660–699 / images `page-661`–`700`), line only
+  (xPct left as the placeholder `0`). Completes Surah 41 (Fussilat, ends 41:54), all of Surah 42
+  (Ash-Shura, 53 ayahs), all of Surah 43 (Az-Zukhruf, 89 ayahs), all of Surah 44 (Ad-Dukhan, 59 ayahs),
+  all of Surah 45 (Al-Jathiyah, 37 ayahs), and Surah 46 (Al-Ahqaf) through ayah 20. 301 entries
+  corrected across 8 apply-batches, each verified with 0 mismatches and monotonic ordering. Anchor
+  pages confirmed exactly against `quran-data.json` for Surah 42 (667), Surah 43 (676), Surah 44 (685),
+  Surah 45 (690), and Surah 46 (696) — all matched with no adjustment needed. Standard
+  header+Bismillah+text layout held throughout, with the usual later-line shift when a previous
+  surah's tail filled earlier lines (e.g. Surah 42's header/Bismillah landed at lines 9 of JSON page
+  667 since Surah 41's tail filled lines 1-8; Surah 44's at line 13 of page 685; Surah 45's at line 4
+  of page 690 after a short Surah 44 tail). Many ayahs pack 2-3 starts per line throughout, especially
+  in Surah 43 and 44 where short ayat are common — several 1-word ayahs (e.g. `44:44` "طعام الأثيم")
+  fully occupy less than half a line, sharing it with the ayah before and after. **Caught and corrected
+  a self-introduced verse-numbering slip mid-session**: while transcribing Surah 45 (Al-Jathiyah)
+  ayahs 6-16, an initial pass mislabeled which marker belonged to which ayah (conflated ayah 7/8 and
+  13/14/15/16 boundaries) — re-derived the whole stretch a second time directly against known Al-
+  Jathiyah verse text before applying, so no bad data reached the file. This is the same class of
+  error as the recurring marker-glyph misreads, but self-inflicted during transcription rather than
+  an artifact of the scan — worth double-checking ayah-number continuity (n, n+1, n+2...) against the
+  real verse sequence before finalizing a batch, not just trusting the marker glyph in the image. The
+  page-header Arabic-Indic numeral misread issue did not surface this pass; bottom-right Latin footer
+  numeral was still cross-checked on every page. **Next to scan: `46:21` onward**, JSON page 699/700
+  (image `page-701.png`).
+
+- **38:27 – 41:10** — verified 2026-07-18 (JSON pages 630–659 / images `page-631`–`660`), line only
+  (xPct left as the placeholder `0`). Completes Surah 38 (Sad, ends 38:88), all of Surah 39 (Az-Zumar,
+  75 ayahs), all of Surah 40 (Ghaafir/Al-Mu'min, 85 ayahs), and Surah 41 (Fussilat) through ayah 10.
+  229 entries corrected across 6 apply-batches, each verified with 0 mismatches and monotonic ordering.
+  Anchor pages confirmed exactly against `quran-data.json` for Surah 39 (634), Surah 40 (646), and
+  Surah 41 (658) — all matched with no adjustment needed. The re-derived line values for `38:27`
+  onward were a significant correction from the old interpolated data (e.g. old `38:27` was
+  `[630,7]`, actually `[630,2]` — nearly a full-line-block drift), caught by cross-referencing known
+  Surah Sad verse text rather than trusting the stored page/line. Standard header+Bismillah+text
+  layout held for the Surah 39, 40, and 41 openings (Surah 39's header/Bismillah landed at lines 3-4
+  of JSON page 634 since Surah 38's tail filled lines 1-2; Surah 40's at lines 3-4 of page 646;
+  Surah 41's at lines 10-11 of page 658). Many ayahs throughout this stretch end and the next start
+  on the same line with only a short spillover word/phrase at the line's end — don't assume a new
+  ayah always starts on the following line. The page-header Arabic-Indic numeral misread issue did
+  not recur as severely this pass, but the bottom-right Latin footer numeral was still cross-checked
+  on every page as the reliable source. **Next to scan: `41:11` onward**, JSON page 659/660 (image
+  `page-661.png`).
+
+- **34:38 – 38:26** — verified 2026-07-18 (JSON pages 600–629 / images `page-601`–`630`), line only
+  (xPct left as the placeholder `0`). Completes Surah 34 (Saba, ends 34:54), all of Surah 35 (Fatir,
+  45 ayahs), all of Surah 36 (Ya-Sin, 83 ayahs), all of Surah 37 (As-Saffat, 182 ayahs), and Surah 38
+  (Sad) through ayah 26. 353 entries corrected across 6 apply-batches, each verified with 0 mismatches
+  and monotonic ordering. Anchor pages confirmed exactly against `quran-data.json` for Surah 35 (602),
+  Surah 36 (610), Surah 37 (617), and Surah 38 (627) — all matched with no adjustment needed. Standard
+  header+Bismillah+text layout held throughout, with the two-slot offset shifting later on a page when
+  the previous surah's tail occupied earlier lines (e.g. Surah 35's info-box/Bismillah landed at lines
+  6–7 of JSON page 602 since Surah 34's tail filled lines 1–5; Surah 38's landed at lines 4–5 of JSON
+  page 627). Very short ayahs in Surah 37 (many single-clause verses) routinely pack 2-3 ayah starts
+  and ends onto one line — don't assume one ayah per line, especially in As-Saffat. The page-header
+  Arabic-Indic numeral misread issue recurred repeatedly (e.g. images that read "612" or "622" via the
+  header glyph were actually 614/624 by the reliable bottom-right Latin footer numeral) — always trust
+  the footer over the header. Ayah-end marker digits were frequently ambiguous on close reads (e.g.
+  30:34/37 markers on JSON 600-601, 36:13/14 markers, 38:23/24 marker) — resolved by counting from known
+  verse text rather than the glyph. **Next to scan: `38:27` onward**, JSON page 629/630 (image
+  `page-631.png`).
+
+- **30:58 – 34:37** — verified 2026-07-18 (JSON pages 570–599 / images `page-571`–`600`), line only
+  (xPct left as the placeholder `0`). Completes Surah 30 (Ar-Rum, ends 30:60), all of Surah 31
+  (Luqman, 34 ayahs), all of Surah 32 (As-Sajdah, 30 ayahs), all of Surah 33 (Al-Ahzab, 73 ayahs),
+  and Surah 34 (Saba) through ayah 37. 213 entries corrected across 6 apply-batches, each verified
+  with 0 mismatches and monotonic ordering. Anchor pages confirmed exactly against `quran-data.json`
+  for Surah 31 (570), Surah 32 (576), Surah 33 (580), and Surah 34 (594) — all matched with no
+  adjustment needed. Standard header(line1)+Bismillah(line2)+text(line3) layout held for all four
+  surah openings except where a previous surah's tail pushed it later on the same page (e.g. Surah 30's
+  header/Bismillah landed at lines 6–7 of JSON page 570 since Surah 29's tail filled lines 1–5).
+  Several ayahs pack 2-3 starts onto one line (e.g. `31:1`/`31:2`/`31:3` all start on JSON-570 line 8).
+  One very long ayah (33:19, and separately 33:37) spans 4+ lines on its own. The page-header
+  Arabic-Indic numeral misread issue recurred again (e.g. image `page-571.png`'s top-center numeral
+  looked like "581" — bottom-right Latin numeral, which read correctly as "571", is what was trusted
+  throughout). Ayah-end marker digits were occasionally ambiguous on close reads (e.g. 30:58/59/60
+  markers, 33:12's marker) — resolved by counting from known verse text rather than trusting the
+  glyph. **Next to scan: `34:38` onward**, JSON page 599/600 (image `page-601.png`).
+
+- **28:84 – 30:57** — verified 2026-07-18 (JSON pages 550–569 / images `page-551`–`570`), line only
+  (xPct left as the placeholder `0`). Completes Surah 28 (Al-Qasas, ends at 28:88), all of Surah 29
+  (Al-Ankabut, 69 ayahs, fully verified end-to-end), and Surah 30 (Ar-Rum) through ayah 57. 131
+  entries corrected. Surah 29's anchor page (551) and Surah 30's anchor page (561) both match
+  `quran-data.json` exactly. Both surahs follow the standard header(line1)+Bismillah(line2)+text(line3)
+  layout. Several ayahs in this range are very short (e.g. `29:1` "الم", `30:1` "الم", `30:2` "غلبت
+  الروم") and pack 2-3 ayah-starts onto a single line — don't assume one ayah-start per line. Same
+  misread-glyph issue recurred (a page's top-center numeral read as "552" via the header glyph but
+  the reliable bottom-right Latin numeral confirmed "554") — always trust the bottom-right numeral.
+  `30:58` onward is **not yet corrected**; next pass starts at JSON page 569/570 (image `page-571.png`).
 - **27:44 – 28:83** — verified 2026-07-18 (JSON pages 529–549 / images `page-530`–`550`), line only
   (xPct left as the placeholder `0`). Completes Surah 27 (An-Naml, ends at 27:93) and covers all of
   Surah 28 (Al-Qasas) through ayah 83. 133 entries corrected. Surah 27's spillover start (`27:44`)
