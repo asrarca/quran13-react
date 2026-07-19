@@ -102,6 +102,50 @@ common source of off-by-one line errors, in both directions.
 
 ## Verified ranges (scanned, not interpolated)
 
+- **80:4 – 97:5** — verified 2026-07-18 (JSON pages 822–839 / images `page-823`–`840`), line only
+  (xPct left as the placeholder `0`). **Note: does NOT connect to the 68:6–78:24 range below —
+  there is an unscanned gap at 78:25–80:3 (JSON pages 819–821 / images `page-820`–`822`),
+  covering the rest of Surah 78 (An-Naba, ayahs 25–40), all of Surah 79 (An-Nazi'at, 46 ayahs),
+  and Surah 80 (Abasa) through ayah 3 — still interpolated, scan next if continuing backward.**
+  Completes Surah 80 (Abasa, from 80:4), all of Surah 81 (At-Takwir, 29 ayahs), all of Surah 82
+  (Al-Infitar, 19 ayahs), all of Surah 83 (Al-Mutaffifin, 36 ayahs), all of Surah 84 (Al-Inshiqaq,
+  25 ayahs), all of Surah 85 (Al-Buruj, 22 ayahs), all of Surah 86 (At-Tariq, 17 ayahs), all of
+  Surah 87 (Al-A'la, 19 ayahs), all of Surah 88 (Al-Ghashiyah, 26 ayahs), all of Surah 89 (Al-Fajr,
+  30 ayahs), all of Surah 90 (Al-Balad, 20 ayahs), all of Surah 91 (Ash-Shams, 15 ayahs), all of
+  Surah 92 (Al-Layl, 21 ayahs), all of Surah 93 (Ad-Duha, 11 ayahs), all of Surah 94 (Ash-Sharh,
+  8 ayahs), all of Surah 95 (At-Tin, 8 ayahs), all of Surah 96 (Al-Alaq, 19 ayahs), and Surah 97
+  (Al-Qadr) through ayah 5 (all 5 ayahs — Al-Qadr ends exactly at the JSON-839/840 page boundary).
+  369 entries corrected across 4 apply-batches, each verified with 0 mismatches; a final
+  comprehensive check across the full 80:4–97:5 range (369 entries, dynamically built from
+  `quran-data.json` ayah counts) confirmed 0 missing keys and monotonic ordering. Anchor pages
+  confirmed exactly against `quran-data.json` for Surah 81 (823), 82 (824), 83 (825), 84 (827),
+  85 (828), 86 (829), 87 (830), 88 (831), 89 (832), 90 (834), 91 (835), 92 (836) — all matched
+  with no adjustment needed. Several short/spillover words split across a line boundary (e.g. a
+  lone "و" ending one line with the rest of the word starting the next) were recorded on the line
+  where the first stroke actually appears, consistent with the spillover-word convention. Several
+  ayah-end marker digits were misread at small size (notably around Surah 80 and Surah 83); as
+  always, boundaries were resolved from matching the known verse sequence, not the printed
+  numerals. **Next to scan (if going forward): `98:1` onward**, JSON page 839/840 (image
+  `page-840`/`841`, Surah 98 Al-Bayyinah title+Bismillah occupy the last 2 line-slots of JSON
+  page 839, so 98:1 itself starts on JSON page 840).
+
+- **68:6 – 78:24** — verified 2026-07-18 (JSON pages 790–818 / images `page-791`–`819`), line only
+  (xPct left as the placeholder `0`). Completes Surah 68 (Al-Qalam, from 68:6), all of Surah 69
+  (Al-Haqqah, 52 ayahs), all of Surah 70 (Al-Ma'arij, 44 ayahs), all of Surah 71 (Nuh, 28 ayahs),
+  all of Surah 72 (Al-Jinn, 28 ayahs), all of Surah 73 (Al-Muzzammil, 20 ayahs), all of Surah 74
+  (Al-Muddaththir, 56 ayahs), all of Surah 75 (Al-Qiyamah, 40 ayahs), all of Surah 76 (Al-Insan,
+  31 ayahs), all of Surah 77 (Al-Mursalat, 50 ayahs), and Surah 78 (An-Naba) through ayah 24.
+  420 entries corrected across 6 apply-batches, each verified with 0 mismatches; a final
+  comprehensive check across the full 68:6–78:24 range (420 entries) confirmed monotonic ordering.
+  Anchor pages confirmed exactly against `quran-data.json` for Surah 69 (793), Surah 70 (796),
+  Surah 71 (799), Surah 72 (802), Surah 73 (805), Surah 74 (807), Surah 75 (810), Surah 76 (812),
+  Surah 77 (815), and Surah 78 (818) — all matched with no adjustment needed. Several short verses
+  in Surah 77 (Al-Mursalat) share a repeated refrain ("ويل يومئذ للمكذبين") whose printed marker
+  digits proved unreliable at small size; ayah boundaries there were determined purely from
+  matching the known verse sequence rather than trusting the circled numerals, per the standing
+  marker-unreliability rule. **Next to scan: `78:25` onward**, JSON page 819/820 (image
+  `page-820.png`).
+
 - **58:19 – 68:5** — verified 2026-07-18 (JSON pages 760–789 / images `page-761`–`790`), line only
   (xPct left as the placeholder `0`). Completes Surah 58 (Al-Mujadilah, from 58:19), all of Surah 59
   (Al-Hashr, 24 ayahs), all of Surah 60 (Al-Mumtahanah, 13 ayahs), all of Surah 61 (As-Saff, 14
@@ -260,23 +304,6 @@ common source of off-by-one line errors, in both directions.
   `27:44` onward (currently on JSON page 529/530) is **not yet corrected** — the scan stopped
   mid-ayah-43 at JSON page 529 line 13 (catchword confirms "ما كانت تعبد..." carries onto the
   next page); next pass starts there, JSON page 530 (image `page-531.png`).
-- **81:1 – 92:21** — verified 2026-07-18 (JSON pages 823–836 / images `page-824`–`837`), line only
-  (xPct left as the placeholder `0`). Surahs 81 (At-Takwir) through 92 (Al-Layl) fully verified
-  end-to-end, 279 entries corrected. **This range had the worst drift found so far** — e.g. surah
-  81's entire 29 ayahs were originally crammed into JSON page 823 lines 1-13, when in reality only
-  81:1-17 are on page 823 (lines 7-13) and 81:18-29 spill onto page 824 (lines 1-6). Surah 82's old
-  data was outright **backwards**: ayah 1 was stored at line 9 and ayah 19 at line 2 on the same
-  page, i.e. line number decreasing as ayah number increased — a corruption, not just drift.
-  **Full-resolution page reads are unreliable for this dense a layout** — an uncropped `Read` of a
-  page image repeatedly miscounted how many short ayahs share one line (e.g. inventing 2 extra
-  lines that don't exist, or missing that 2-3 short ayahs pack onto a single line). Cropping each
-  page into top/bottom halves at 2x with PIL before reading fixed this consistently; use this for
-  any further work on short-surah / high-density pages (juz 30 in general has many short ayahs
-  per line). Confirmed the surah-header+Bismillah-as-line-slot convention holds throughout. Several
-  ayahs start with only a one-letter prefix (e.g. `وَ`) spilling onto the end of the previous line,
-  with the rest of the word/ayah on the next line — treat this the same as a full-word spillover
-  (the ayah's line = wherever its first letter appears). `93:1` onward (currently on JSON page 837)
-  is **not yet verified** — next pass starts at JSON page 837 (image `page-838.png`).
 - **25:3 – 25:76** — verified 2026-07-18 (JSON pages 501–509 / images `page-502`–`510`), line only
   (xPct left as the placeholder `0`). Confirms the prior range's flag: `25:3` does start at JSON
   page 501 line 1 as predicted. All 74 entries in the range corrected — the old interpolated data
