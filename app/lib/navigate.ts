@@ -28,10 +28,14 @@ const MODELS = {
   opus: { id: "claude-opus-4-8", supportsEffort: true }, // most capable ($5/$25)
 } as const;
 
-// July 2026: Keep Sonnet for now to get better results, since it is
-// just friends and family using the app. If this app becomes popular,
-// switch to Haiku.
-const MODEL = MODELS.haiku;
+// Model per query mode. Typed "surah:ayah"-style lookups are easy, so Haiku
+// (cheapest) handles them fine. Voice queries are the hard case: matching a
+// fuzzy speech-to-text transcription against recall of the whole Quran. Haiku
+// gets these wrong (e.g. "قل هذه سبي" → 8:1 instead of 12:108) AND can't take
+// the `effort` param the voice path relies on, so voice uses Sonnet, which
+// supports effort:"medium" and has the stronger Quran recall the match needs.
+const TYPED_MODEL = MODELS.haiku;
+const VOICE_MODEL = MODELS.sonnet;
 
 // Most matches the resolver will return (best first). The schema can't enforce a
 // maxItems cap, so this is applied in the prompt copy and the parse loop below.
@@ -153,8 +157,9 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
   const cached = cache.get(key);
   if (cached) return cached;
 
+  const model = voice ? VOICE_MODEL : TYPED_MODEL;
   const response = await client.messages.create({
-    model: MODEL.id,
+    model: model.id,
     max_tokens: 1024,
     system: voice ? VOICE_SYSTEM : SYSTEM,
     // Disable thinking (Sonnet 5 would otherwise run adaptive thinking by default).
@@ -164,7 +169,7 @@ export async function resolveQuery(query: string, voice = false): Promise<Naviga
     // wrong verse (e.g. 5:27 "نبأ ابني آدم بالحق" mis-resolved to 18:13).
     thinking: { type: "disabled" },
     output_config: {
-      ...(MODEL.supportsEffort ? { effort: voice ? ("medium" as const) : ("low" as const) } : {}),
+      ...(model.supportsEffort ? { effort: voice ? ("medium" as const) : ("low" as const) } : {}),
       format: { type: "json_schema", schema: SCHEMA },
     },
     messages: [{ role: "user", content: trimmed }],
