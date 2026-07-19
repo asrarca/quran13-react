@@ -84,7 +84,9 @@
     "themeDesc": "Ouvrez Réglages › Affichage pour choisir entre trois modes : Clair, Sombre et Sombre inversé (texte blanc sur image de page noire).",
     "aiSection": "IA et traduction",
     "askFeature": "Demander",
-    "askFeatureDesc": "Appuyez sur l’icône étoile dans l’en-tête et décrivez un verset avec vos propres mots — par exemple « le verset sur les ablutions ». L’application le trouve et ouvre sa page. Appuyez longuement sur l’icône et récitez un verset en arabe pour y accéder.",
+    "askFeatureDesc": "Appuyez sur l’icône étoile dans l’en-tête et décrivez un verset avec vos propres mots — par exemple « le verset sur les ablutions ». L’application le trouve et ouvre sa page.",
+    "reciteFeature": "Réciter",
+    "reciteFeatureDesc": "Appuyez longuement sur l’icône étoile et récitez un verset en arabe pour y accéder.",
     "translateFeature": "Traduction",
     "translateFeatureDesc": "Appuyez sur l’icône des langues pour lire le sens de chaque verset de la page actuelle, dans la langue choisie. Les traductions fonctionnent hors ligne une fois chargées."
   },

@@ -344,6 +344,10 @@ export function SettingsSheet({
                     <p className="mt-0.5 text-[0.9375rem] text-(--fg2)">{t(lang, "about.askFeatureDesc")}</p>
                   </div>
                   <div>
+                    <p className="text-[1.0625rem] font-medium text-(--fg)">{t(lang, "about.reciteFeature")}</p>
+                    <p className="mt-0.5 text-[0.9375rem] text-(--fg2)">{t(lang, "about.reciteFeatureDesc")}</p>
+                  </div>
+                  <div>
                     <p className="text-[1.0625rem] font-medium text-(--fg)">{t(lang, "about.translateFeature")}</p>
                     <p className="mt-0.5 text-[0.9375rem] text-(--fg2)">{t(lang, "about.translateFeatureDesc")}</p>
                   </div>

@@ -84,7 +84,9 @@
     "themeDesc": "Öffne Einstellungen › Anzeige, um zwischen drei Modi zu wechseln: Hell, Dunkel und Dunkel invertiert (weißer Text auf schwarzem Seitenbild).",
     "aiSection": "KI & Übersetzung",
     "askFeature": "Fragen",
-    "askFeatureDesc": "Tippe auf das Funkel-Symbol in der Kopfzeile und beschreibe einen Vers mit eigenen Worten — zum Beispiel „der Vers über die Gebetswaschung“. Die App findet ihn und öffnet seine Seite. Halte das Symbol gedrückt und rezitiere einen Vers auf Arabisch, um zu ihm zu springen.",
+    "askFeatureDesc": "Tippe auf das Funkel-Symbol in der Kopfzeile und beschreibe einen Vers mit eigenen Worten — zum Beispiel „der Vers über die Gebetswaschung“. Die App findet ihn und öffnet seine Seite.",
+    "reciteFeature": "Rezitieren",
+    "reciteFeatureDesc": "Halte das Funkel-Symbol gedrückt und rezitiere einen Vers auf Arabisch, um zu ihm zu springen.",
     "translateFeature": "Übersetzung",
     "translateFeatureDesc": "Tippe auf das Sprachen-Symbol, um die Bedeutung jedes Verses auf der aktuellen Seite in der gewählten Sprache zu lesen. Übersetzungen funktionieren offline, sobald sie geladen sind."
   },
