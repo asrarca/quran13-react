@@ -654,7 +654,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
       </section>
 
       <div className={`fixed inset-x-0 bottom-0 z-30 transition-opacity duration-300 ${navVisible ? "opacity-99" : "opacity-0 pointer-events-none"}`}>
-        <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-2 pt-2 backdrop-blur-[14px]">
+        <nav className="grid grid-cols-5 border-t border-border bg-(--nav) px-2 pb-5 pt-2 backdrop-blur-[14px]">
           <button type="button" onClick={() => setActiveSheet("surah")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <BookOpen className="size-5.5" />
             <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.surah")}</span>
