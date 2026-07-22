@@ -122,8 +122,13 @@ export function locateVerseSpan(key: string): VerseSpan | null {
  * exists. Whole ayahs (translation is per-ayah), so page splits don't matter.
  *
  * The carry-over is only included when the first ayah starting on the page begins
- * below line 1: if the page opens at line 1, the previous ayah ended cleanly on
- * the prior page and there's nothing carried over.
+ * below the lines any previous text could occupy: if the page opens at line 1,
+ * the previous ayah ended cleanly on the prior page and there's nothing carried
+ * over. When the page opens with a NEW surah, the lines above its first ayah are
+ * the header ornament + Bismillah (not carried-over text), so those are
+ * discounted before deciding whether the previous ayah really spills onto the
+ * page — otherwise a page that simply starts with a surah wrongly pulls in the
+ * last ayah of the previous surah.
  */
 export function ayahsOnPage(page: number): string[] {
   const starters: number[] = [];
@@ -138,7 +143,14 @@ export function ayahsOnPage(page: number): string[] {
   const out: string[] = [];
   if (starters.length) {
     const prev = first - 1;
-    if (prev >= 0 && ORDERED[prev].startPage < page && ORDERED[first].line > 1) out.push(ORDERED[prev].key);
+    if (prev >= 0 && ORDERED[prev].startPage < page) {
+      const prevSurah = Number(ORDERED[prev].key.slice(0, ORDERED[prev].key.indexOf(":")));
+      const firstSurah = Number(ORDERED[first].key.slice(0, ORDERED[first].key.indexOf(":")));
+      // Lines the previous ayah cannot occupy above `first`: the new-surah
+      // ornament (+ Bismillah unless At-Taubah, surah 9). Same-surah = 0.
+      const headerLines = firstSurah !== prevSurah ? (firstSurah === 9 ? 1 : 2) : 0;
+      if (ORDERED[first].line > headerLines + 1) out.push(ORDERED[prev].key);
+    }
     for (const i of starters) out.push(ORDERED[i].key);
   } else {
     // No ayah starts on this page: a single long ayah spans it entirely.
