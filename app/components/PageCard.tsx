@@ -45,6 +45,7 @@ type Props = {
   missingImages: Record<number, true>;
   bands: LineBand[];
   lang: Lang;
+  showGrid: boolean;
   flashLine?: number;
   flashAyah?: AyahFlash;
   flashKey?: number;
@@ -63,6 +64,7 @@ export function PageCard({
   missingImages,
   bands,
   lang,
+  showGrid,
   flashLine,
   flashAyah,
   flashKey,
@@ -76,6 +78,15 @@ export function PageCard({
     .map(([lineStr, color]) => ({ line: Number(lineStr), color }))
     .filter(({ line }) => bands[line]);
   const flashSegments = flashAyah ? ayahFlashSegments(candidate, flashAyah, bands) : [];
+
+  // Debug grid: vertical lines across the readable width, at xPct 0 (right margin)
+  // → 100 (left), for reading off ayah-map xPct values. Uses the page bands' own
+  // horizontal extent (same right/width the xPct convention uses), falling back
+  // to a centered 0.84-wide band if this page has no coordinates.
+  const gridRef = bands[0] ?? { left: 0.08, right: 0.92, top: 0.06, bottom: 0.96 };
+  const gridBottom = (bands[bands.length - 1] ?? gridRef).bottom;
+  const gridW = gridRef.right - gridRef.left;
+  const gridValues = Array.from({ length: 21 }, (_, i) => i * 5); // 0,5,…,100
 
   return (
     <div
@@ -166,6 +177,30 @@ export function PageCard({
                   }}
                 >
                   {rakat}
+                </div>
+              );
+            })}
+            {showGrid && gridValues.map((v) => {
+              const nx = gridRef.right - (v / 100) * gridW; // normalized page X
+              const major = v % 10 === 0;
+              return (
+                <div
+                  key={`grid-${v}`}
+                  title={String(v)}
+                  className="absolute flex justify-center"
+                  style={{
+                    left: `${nx * 100}%`,
+                    top: `${gridRef.top * 100}%`,
+                    height: `${(gridBottom - gridRef.top) * 100}%`,
+                    width: 12,
+                    transform: "translateX(-50%)",
+                  }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  <div style={{ width: 1, height: "100%", backgroundColor: major ? "rgba(220,20,60,0.9)" : "rgba(220,20,60,0.35)" }} />
+                  {major && (
+                    <span className="absolute -top-3.5 text-[10px] font-bold leading-none text-red-600">{v}</span>
+                  )}
                 </div>
               );
             })}

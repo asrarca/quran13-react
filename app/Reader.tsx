@@ -46,7 +46,7 @@ const SLIDE_OFFSETS = Array.from({ length: 2 * SLIDE_RADIUS + 1 }, (_, i) => i -
 // Debug aid: when true, overlays thin vertical grid lines across each page's
 // readable width (from lineCoordinates), labeled 0 (right margin) → 100 (left)
 // to read off ayah-map xPct values by eye. Keep false in production.
-const SHOW_GRID = false;
+const SHOW_GRID = true;
 
 function clampPage(value: number) {
   return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, value));
