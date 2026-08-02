@@ -3,9 +3,10 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { type Lang, t, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "../i18n";
 import { type MushafKey, type Theme, type FontSize, type DragHandlers } from "../types";
+import { editionsForLang, getEdition } from "../lib/translation-editions";
 import quranData from "@/data/quran-data.json";
 
-type SettingsSubView = "display" | "fontsize" | "mushaf" | "about" | "language" | "install" | null;
+type SettingsSubView = "display" | "fontsize" | "mushaf" | "about" | "language" | "install" | "translation" | null;
 
 type Props = {
   lang: Lang;
@@ -14,12 +15,14 @@ type Props = {
   activeMushafKey: MushafKey;
   theme: Theme;
   fontSize: FontSize;
+  translationEdition: string;
   isStandalone: boolean;
   appVersion: string;
   onClose: () => void;
   onMushafChange: (key: MushafKey) => void;
   onThemeChange: (theme: Theme) => void;
   onFontSizeChange: (size: FontSize) => void;
+  onTranslationEditionChange: (id: string) => void;
   onShowTajweedRules: () => void;
   onLangChange: (lang: Lang) => void;
   dragHandlers: DragHandlers;
@@ -28,7 +31,7 @@ type Props = {
 // The panels are laid out left-to-right; each occupies 1/PANEL_COUNT of the
 // container. translateX shifts the strip so the chosen panel fills the viewport.
 // The PANEL_INDEX values must match each panel's DOM order below.
-const PANEL_COUNT = 7;
+const PANEL_COUNT = 8;
 const PANEL_INDEX: Record<NonNullable<SettingsSubView>, number> = {
   display: 1,
   fontsize: 2,
@@ -36,6 +39,7 @@ const PANEL_INDEX: Record<NonNullable<SettingsSubView>, number> = {
   about: 4,
   language: 5,
   install: 6,
+  translation: 7,
 };
 
 const THEMES: Theme[] = ["light", "dark", "dark-invert"];
@@ -65,17 +69,22 @@ export function SettingsSheet({
   activeMushafKey,
   theme,
   fontSize,
+  translationEdition,
   isStandalone,
   appVersion,
   onClose,
   onMushafChange,
   onThemeChange,
   onFontSizeChange,
+  onTranslationEditionChange,
   onShowTajweedRules,
   onLangChange,
   dragHandlers,
 }: Props) {
   const activeMushaf = quranData.mushafs[activeMushafKey];
+  // Editions for the current language. Only languages with more than one (today:
+  // English) surface a Translation row + picker; others read their sole edition.
+  const translationEditions = editionsForLang(lang);
   const isRtl = isRtlLang(lang);
   const scaleFont = needsFontScale(lang);
   const ForwardChevron = isRtl ? ChevronLeft : ChevronRight;
@@ -84,7 +93,7 @@ export function SettingsSheet({
   // Only the active panel is opaque; the others stay transparent so the sliding
   // strip never flashes the panels it passes over (main is active when null).
   const panelCls = (active: boolean) =>
-    `flex h-full w-[calc(100%/7)] flex-col transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0 pointer-events-none"}`;
+    `flex h-full w-[calc(100%/8)] flex-col transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0 pointer-events-none"}`;
 
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
@@ -179,6 +188,19 @@ export function SettingsSheet({
                   <ForwardChevron className="size-4" />
                 </div>
               </button>
+              {translationEditions.length > 1 && (
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
+                  onClick={() => setSettingsSubView("translation")}
+                >
+                  <span className="text-base text-(--fg)">{t(lang, "settings.translation")}</span>
+                  <div className="flex items-center gap-1.5 text-(--fg2)">
+                    <span className="text-sm">{getEdition(translationEdition)?.label}</span>
+                    <ForwardChevron className="size-4" />
+                  </div>
+                </button>
+              )}
               <button
                 type="button"
                 className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
@@ -464,6 +486,42 @@ export function SettingsSheet({
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Panel 6: translation edition picker (multi-edition languages only) */}
+          <div className={panelCls(settingsSubView === "translation")}>
+            <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+              <div className="flex items-center gap-2">
+                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                  <BackChevron className="size-4" />
+                </Button>
+                <span className={`${scaleFont ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.translation")}</span>
+              </div>
+              <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
+                <X className="size-4" />
+              </Button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {translationEditions.map((edition) => {
+                const selected = translationEdition === edition.id;
+                return (
+                  <button
+                    key={edition.id}
+                    type="button"
+                    className="flex w-full items-start gap-3.5 border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
+                    onClick={() => { onTranslationEditionChange(edition.id); setSettingsSubView(null); }}
+                  >
+                    <div className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${selected ? "border-(--fg) bg-(--fg)" : "border-(--fg3)"}`}>
+                      {selected && <div className="size-2 rounded-full bg-(--bg)" />}
+                    </div>
+                    <div className="min-w-0">
+                      <div className={`text-base ${selected ? "font-semibold text-(--fg)" : "text-(--fg)"}`}>{edition.label}</div>
+                      <div className="mt-0.5 text-sm text-(--fg2)">{edition.source}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

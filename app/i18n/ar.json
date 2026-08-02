@@ -50,7 +50,8 @@
     "about": "حول التطبيق",
     "footer": "طوّره أسرار عباسي",
     "theme": "المظهر",
-    "fontSize": "حجم الخط"
+    "fontSize": "حجم الخط",
+    "translation": "الترجمة"
   },
   "installApp": {
     "title": "تثبيت التطبيق",

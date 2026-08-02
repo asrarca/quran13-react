@@ -50,7 +50,8 @@
     "about": "परिचय",
     "footer": "असरार अब्बासी द्वारा विकसित",
     "theme": "थीम",
-    "fontSize": "फ़ॉन्ट आकार"
+    "fontSize": "फ़ॉन्ट आकार",
+    "translation": "अनुवाद"
   },
   "installApp": {
     "title": "ऐप इंस्टॉल करें",

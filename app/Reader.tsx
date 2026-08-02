@@ -12,6 +12,7 @@ import { Button } from "@/app/components/ui/button";
 import { t, type Lang, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "./i18n";
 import { APP_VERSION, AYAH_FLASH_MS, FIRST_PAGE, LAST_PAGE } from "./constants";
 import { COOKIE, readCookie, writeCookie, rootFontScale, pageToParam } from "./lib/reader-cookies";
+import { defaultEditionId, editionsForLang, readEditionMap, saveSelectedEdition } from "./lib/translation-editions";
 import {
   type ActiveSheet,
   type AyahFlash,
@@ -41,6 +42,11 @@ import { TranslationSheet } from "./components/TranslationSheet";
 const SLIDE_RADIUS = 10;
 const CENTER_SLIDE = SLIDE_RADIUS;
 const SLIDE_OFFSETS = Array.from({ length: 2 * SLIDE_RADIUS + 1 }, (_, i) => i - SLIDE_RADIUS);
+
+// Debug aid: when true, overlays thin vertical grid lines across each page's
+// readable width (from lineCoordinates), labeled 0 (right margin) → 100 (left)
+// to read off ayah-map xPct values by eye. Keep false in production.
+const SHOW_GRID = false;
 
 function clampPage(value: number) {
   return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, value));
@@ -101,10 +107,13 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>(initialMushafKey);
-  const [settingsSubView, setSettingsSubView] = useState<"display" | "fontsize" | "mushaf" | "about" | "language" | "install" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"display" | "fontsize" | "mushaf" | "about" | "language" | "install" | "translation" | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
   const [lang, setLang] = useState<Lang>(initialLang);
+  // Chosen translation edition per language ({ [lang]: editionId }). Loaded from
+  // localStorage on mount; the active edition is derived from it below.
+  const [translationEditions, setTranslationEditions] = useState<Record<string, string>>({});
   const [bookmarks, setBookmarks] = useState<Record<number, string>>({});
   const [missingImages, setMissingImages] = useState<Record<number, true>>({});
   const [navVisible, setNavVisible] = useState(true);
@@ -254,6 +263,9 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
       try { setRakatMarkers(JSON.parse(rawRakat)); } catch { setRakatMarkers({}); }
     }
 
+    const savedEditions = readEditionMap();
+    if (Object.keys(savedEditions).length) setTranslationEditions(savedEditions);
+
     // Mushaf and font size are cookie-backed too (they change the first frame:
     // the image set and the root font scale). Migrate legacy localStorage once.
     if (readCookie(COOKIE.mushaf) === undefined) {
@@ -298,6 +310,16 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
     document.documentElement.dir = isRtlLang(lang) ? "rtl" : "ltr";
     writeCookie(COOKIE.lang, lang);
   }, [mounted, lang]);
+
+  // Active translation edition for the current language: the saved choice if it's
+  // still a valid edition for this language (English is the only one with more
+  // than one today), else the language default. Persistence is localStorage-only
+  // — the edition never affects first paint (the translation sheet opens on
+  // demand). See lib/translation-editions.ts.
+  const translationEdition = useMemo(() => {
+    const saved = translationEditions[lang];
+    return editionsForLang(lang).some((e) => e.id === saved) ? saved : defaultEditionId(lang);
+  }, [translationEditions, lang]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -347,6 +369,11 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
     setActiveSheet(null);
     setPageInput("");
   }, []);
+
+  const changeTranslationEdition = useCallback((id: string) => {
+    setTranslationEditions((prev) => ({ ...prev, [lang]: id }));
+    saveSelectedEdition(lang, id);
+  }, [lang]);
 
   // `ayah` (from AI search on scan-verified ranges) flashes the whole verse —
   // partial start line, any full middle lines, partial end line — instead of the
@@ -524,6 +551,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
     rakatMarkers,
     missingImages,
     lang,
+    showGrid: SHOW_GRID,
     onPressStart: handlePressStart,
     onPressMove: handlePressMove,
     onPressEnd: cancelPress,
@@ -725,7 +753,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
             />
           )}
           {activeSheet === "translate" && (
-            <TranslationSheet lang={lang} page={page} surahs={surahs} onClose={() => setActiveSheet(null)} dragHandlers={dragHandlers} />
+            <TranslationSheet lang={lang} page={page} surahs={surahs} edition={translationEdition} onClose={() => setActiveSheet(null)} dragHandlers={dragHandlers} />
           )}
           {activeSheet === "ask" && (
             <AskSheet lang={lang} voice={askVoice} onClose={() => setActiveSheet(null)} onNavigate={goToSection} />
@@ -767,12 +795,14 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
               activeMushafKey={activeMushafKey}
               theme={theme}
               fontSize={fontSize}
+              translationEdition={translationEdition}
               isStandalone={isStandalone}
               appVersion={APP_VERSION}
               onClose={() => setActiveSheet(null)}
               onMushafChange={(key) => { setActiveMushafKey(key); setMissingImages({}); }}
               onThemeChange={setTheme}
               onFontSizeChange={setFontSize}
+              onTranslationEditionChange={changeTranslationEdition}
               onShowTajweedRules={() => setShowTajweedRules(true)}
               onLangChange={setLang}
               dragHandlers={dragHandlers}

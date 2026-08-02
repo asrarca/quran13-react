@@ -7,16 +7,18 @@ import { type Surah, type DragHandlers } from "../types";
 import { FIRST_PAGE, LAST_PAGE } from "../constants";
 import { ayahsOnPage } from "../lib/ayah-map";
 import { loadTranslation } from "../lib/translations";
+import { getEdition } from "../lib/translation-editions";
 
 type Props = {
   lang: Lang;
   page: number;
   surahs: Surah[];
+  edition: string; // active translation-edition id (chosen in Settings)
   onClose: () => void;
   dragHandlers: DragHandlers;
 };
 
-export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: Props) {
+export function TranslationSheet({ lang, page, surahs, edition, onClose, dragHandlers }: Props) {
   const rtl = isRtlLang(lang);
   const scale = needsFontScale(lang);
 
@@ -28,10 +30,14 @@ export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: 
   const ayahs = useMemo(() => ayahsOnPage(viewPage), [viewPage]);
   const surahByNum = useMemo(() => new Map(surahs.map((s) => [s.num, s])), [surahs]);
 
+  // The edition is chosen in Settings (only English currently offers a choice);
+  // this sheet just loads whichever id it's handed.
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["translation", lang],
-    queryFn: () => loadTranslation(lang),
+    queryKey: ["translation", edition],
+    queryFn: () => loadTranslation(edition),
   });
+
+  const activeSource = getEdition(edition)?.source ?? data?.source;
 
   // Jump back to the top of the list whenever the browsed page changes.
   useEffect(() => {
@@ -58,7 +64,7 @@ export function TranslationSheet({ lang, page, surahs, onClose, dragHandlers }: 
           <div className={`${scale ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>
             {t(lang, "translation.title")}
           </div>
-          {data?.source && <div className="mt-0.5 truncate text-sm text-(--fg2)">{data.source}</div>}
+          {activeSource && <div className="mt-0.5 truncate text-sm text-(--fg2)">{activeSource}</div>}
         </div>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />

@@ -50,7 +50,8 @@
     "about": "About",
     "footer": "Developed by Asrar Abbasi",
     "theme": "Theme",
-    "fontSize": "Font Size"
+    "fontSize": "Font Size",
+    "translation": "Translation"
   },
   "installApp": {
     "title": "Install App",
