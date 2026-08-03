@@ -183,11 +183,17 @@ export function PageCard({
             {showGrid && gridValues.map((v) => {
               const nx = gridRef.right - (v / 100) * gridW; // normalized page X
               const major = v % 10 === 0;
+              const quarter = v === 25 || v === 50 || v === 75; // blue landmarks
+              const lineColor = quarter
+                ? "rgba(96,165,250,0.9)"
+                : major
+                  ? "rgba(220,20,60,0.9)"
+                  : "rgba(220,20,60,0.35)";
               return (
                 <div
                   key={`grid-${v}`}
                   title={String(v)}
-                  className="absolute flex justify-center"
+                  className="absolute"
                   style={{
                     left: `${nx * 100}%`,
                     top: `${gridRef.top * 100}%`,
@@ -197,10 +203,20 @@ export function PageCard({
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
                 >
-                  <div style={{ width: 1, height: "100%", backgroundColor: major ? "rgba(220,20,60,0.9)" : "rgba(220,20,60,0.35)" }} />
-                  {major && (
-                    <span className="absolute -top-3.5 text-[10px] font-bold leading-none text-red-600">{v}</span>
-                  )}
+                  <div
+                    className="absolute left-1/2 top-0 h-full -translate-x-1/2"
+                    style={{ width: quarter ? 2 : 1, backgroundColor: lineColor }}
+                  />
+                  {(major || quarter) &&
+                    bands.map((band, i) => (
+                      <span
+                        key={i}
+                        className={`absolute left-1/2 z-10 block -translate-x-1/2 -translate-y-full whitespace-nowrap text-center text-[11px] font-black leading-none ${quarter ? "text-blue-400" : "text-red-600"}`}
+                        style={{ top: `${(band.bottom - gridRef.top) * (100 / (gridBottom - gridRef.top))}%` }}
+                      >
+                        {v}
+                      </span>
+                    ))}
                 </div>
               );
             })}
