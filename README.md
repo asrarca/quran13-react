@@ -1,10 +1,12 @@
 # Quran 13
 
-A Quran reader PWA built with Next.js. Displays high-quality Quran page images with swipe navigation and annotation tools.
+A Quran reader PWA built with Next.js. Displays high-quality Quran page images with AI search, easy swipe navigation, transations, highlights, bookmarks and annotation tools.
 
 ## Features
 
-- **Swipe navigation** between pages (RTL, preloads ±2 pages)
+- **AI search** — describe a verse in plain language ("the ayah about wudu") or give a reference ("24:35") to jump straight to its page, with the matched ayah highlighted in place
+- **Voice search** — long-press the Ask button and recite; the recitation is transcribed in Arabic and resolved to a page the same way
+- **Swipe navigation** between pages (RTL)
 - **Multiple mushaf styles** selectable from settings
 - **Highlights** — long-press any text line to color it (yellow, green, red, blue)
 - **Rakat markers** — number annotations on lines, useful for Taraweh tracking
