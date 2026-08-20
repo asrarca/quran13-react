@@ -10,8 +10,9 @@ import "swiper/css";
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/app/components/ui/button";
 import { t, type Lang, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "./i18n";
-import { APP_VERSION, AYAH_FLASH_MS, FIRST_PAGE, LAST_PAGE } from "./constants";
+import { APP_VERSION, AYAH_FLASH_MS, FIRST_PAGE, LAST_PAGE, WAKE_LOCK_MS } from "./constants";
 import { COOKIE, readCookie, writeCookie, rootFontScale, pageToParam } from "./lib/reader-cookies";
+import { useWakeLock } from "./lib/use-wake-lock";
 import { defaultEditionId, editionsForLang, readEditionMap, saveSelectedEdition } from "./lib/translation-editions";
 import {
   type ActiveSheet,
@@ -43,10 +44,15 @@ const SLIDE_RADIUS = 10;
 const CENTER_SLIDE = SLIDE_RADIUS;
 const SLIDE_OFFSETS = Array.from({ length: 2 * SLIDE_RADIUS + 1 }, (_, i) => i - SLIDE_RADIUS);
 
-// Debug aid: when true, overlays thin vertical grid lines across each page's
-// readable width (from lineCoordinates), labeled 0 (right margin) → 100 (left)
-// to read off ayah-map xPct values by eye. Keep false in production.
-const SHOW_GRID = true;
+// Debug aid: overlays thin vertical grid lines across each page's readable width
+// (from lineCoordinates), labeled 0 (right margin) → 100 (left) to read off
+// ayah-map xPct values by eye. On when served from localhost, off everywhere
+// else, so it can never reach production. Evaluated once per module load;
+// undefined `window` on the server makes it false there, and the render site
+// pairs it with `mounted` so the server and the first client pass agree.
+const IS_LOCALHOST =
+  typeof window !== "undefined" &&
+  ["localhost", "127.0.0.1", "::1", "[::1]"].includes(window.location.hostname);
 
 function clampPage(value: number) {
   return Math.max(FIRST_PAGE, Math.min(LAST_PAGE, value));
@@ -125,6 +131,9 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
   const [askVoice, setAskVoice] = useState(false);
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
+
+  // Keep the screen lit for 2 minutes after the last touch instead of iOS's ~30s.
+  useWakeLock(WAKE_LOCK_MS);
 
   const lineBandsMap = useMemo<Record<string, LineBand[]>>(() => {
     const coordsMap = activeMushaf.lineCoordinates as Record<string, LineCoord[]>;
@@ -551,7 +560,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
     rakatMarkers,
     missingImages,
     lang,
-    showGrid: SHOW_GRID,
+    showGrid: mounted && IS_LOCALHOST,
     onPressStart: handlePressStart,
     onPressMove: handlePressMove,
     onPressEnd: cancelPress,
