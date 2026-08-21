@@ -109,6 +109,11 @@
     "title": "Traduction",
     "unavailable": "Traduction indisponible."
   },
+  "desktopNotice": {
+    "title": "Idéal sur téléphone",
+    "body": "Quran 13 est conçu pour les appareils mobiles. Ouvrez-le sur votre téléphone pour une expérience de lecture optimale.",
+    "dismiss": "Continuer quand même"
+  },
   "misc": {
     "imageUnavailable": "Image de la page {page} indisponible",
     "langName": "Français",

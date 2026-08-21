@@ -11,3 +11,8 @@ export const AYAH_FLASH_MS = 6000;
 // How long the screen is held awake after the last interaction, so reading a
 // page isn't cut short by iOS's ~30s dim-then-lock. See lib/use-wake-lock.ts.
 export const WAKE_LOCK_MS = 2 * 60 * 1000;
+
+// How often the "best on your phone" notice appears on desktop browsers:
+//   "once"   — shown a single time, then never again (dismissal persisted).
+//   "always" — shown on every page load, dismissable per load.
+export const DESKTOP_NOTICE_FREQUENCY: "once" | "always" = "always";

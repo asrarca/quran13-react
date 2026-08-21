@@ -10,7 +10,7 @@ import "swiper/css";
 import quranData from "@/data/quran-data.json";
 import { Button } from "@/app/components/ui/button";
 import { t, type Lang, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "./i18n";
-import { APP_VERSION, AYAH_FLASH_MS, FIRST_PAGE, LAST_PAGE, WAKE_LOCK_MS } from "./constants";
+import { APP_VERSION, AYAH_FLASH_MS, DESKTOP_NOTICE_FREQUENCY, FIRST_PAGE, LAST_PAGE, WAKE_LOCK_MS } from "./constants";
 import { COOKIE, readCookie, writeCookie, rootFontScale, pageToParam } from "./lib/reader-cookies";
 import { useWakeLock } from "./lib/use-wake-lock";
 import { defaultEditionId, editionsForLang, readEditionMap, saveSelectedEdition } from "./lib/translation-editions";
@@ -36,6 +36,7 @@ import { BookmarksSheet } from "./components/BookmarksSheet";
 import { SettingsSheet } from "./components/SettingsSheet";
 import { AskSheet, VOICE_LONG_PRESS_ENABLED } from "./components/AskSheet";
 import { TranslationSheet } from "./components/TranslationSheet";
+import { DesktopNotice } from "./components/DesktopNotice";
 
 // Number of pages pre-rendered on each side of the active page. The Swiper
 // holds 2 * SLIDE_RADIUS + 1 slides with the active page centered, so the user
@@ -94,6 +95,16 @@ function lineAtFraction(frac: number, bands: LineBand[]) {
 const LONG_PRESS_MS = 600;
 const LONG_PRESS_MOVE_TOLERANCE = 10;
 
+// "You're on a desktop, this is built for phones" notice. Desktop-class means a
+// precise pointer that can hover (mouse/trackpad) on a wide viewport — phones
+// and tablets report a coarse pointer and never match. DESKTOP_NOTICE_FREQUENCY
+// decides whether dismissing it is remembered across loads.
+const DESKTOP_NOTICE_KEY = "quran13-desktop-notice";
+
+function isDesktopBrowser() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches && window.innerWidth >= 768;
+}
+
 // initial* come from cookies read on the server (page.tsx), so the first
 // server-rendered frame already has the right theme, language, and page — the
 // client seeds its state from them and there's no post-mount correction flash.
@@ -129,6 +140,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
   const [rakatMarkers, setRakatMarkers] = useState<Record<number, Record<number, number>>>({});
   const [navFlash, setNavFlash] = useState<{ page: number; line: number; stamp: number; ayah?: AyahFlash } | null>(null);
   const [askVoice, setAskVoice] = useState(false);
+  const [showDesktopNotice, setShowDesktopNotice] = useState(false);
 
   const activeMushaf = quranData.mushafs[activeMushafKey];
 
@@ -303,6 +315,15 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true
     );
+
+    const alreadyDismissed =
+      DESKTOP_NOTICE_FREQUENCY === "once" && localStorage.getItem(DESKTOP_NOTICE_KEY) !== null;
+    if (!alreadyDismissed && isDesktopBrowser()) setShowDesktopNotice(true);
+  }, []);
+
+  const dismissDesktopNotice = useCallback(() => {
+    if (DESKTOP_NOTICE_FREQUENCY === "once") localStorage.setItem(DESKTOP_NOTICE_KEY, "dismissed");
+    setShowDesktopNotice(false);
   }, []);
 
   useEffect(() => {
@@ -819,6 +840,8 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
           )}
         </div>
       )}
+
+      {showDesktopNotice && <DesktopNotice lang={lang} onDismiss={dismissDesktopNotice} />}
 
       {showTajweedRules && (
         <div

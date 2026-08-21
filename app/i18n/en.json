@@ -109,6 +109,11 @@
     "title": "Translation",
     "unavailable": "Translation unavailable."
   },
+  "desktopNotice": {
+    "title": "Best on your phone",
+    "body": "Quran 13 is designed for mobile devices. Open it on your phone for the best reading experience.",
+    "dismiss": "Continue anyway"
+  },
   "misc": {
     "imageUnavailable": "Page {page} image is unavailable",
     "langName": "English",

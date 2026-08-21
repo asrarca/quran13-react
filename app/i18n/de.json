@@ -109,6 +109,11 @@
     "title": "Übersetzung",
     "unavailable": "Übersetzung nicht verfügbar."
   },
+  "desktopNotice": {
+    "title": "Am besten auf dem Handy",
+    "body": "Quran 13 ist für Mobilgeräte gemacht. Öffne die App auf deinem Handy für das beste Leseerlebnis.",
+    "dismiss": "Trotzdem fortfahren"
+  },
   "misc": {
     "imageUnavailable": "Bild für Seite {page} nicht verfügbar",
     "langName": "Deutsch",
