@@ -128,5 +128,28 @@
     "small": "Small",
     "medium": "Medium",
     "large": "Large"
+  },
+  "sync": {
+    "title": "Sync",
+    "row": "Sync across devices",
+    "on": "On",
+    "off": "Off",
+    "offDescription": "Your bookmarks, highlights and settings are saved on this device only. Sign in to keep them on all your devices.",
+    "onDescription": "Your bookmarks, highlights and settings are saved to your account and kept up to date on every device you sign in on.",
+    "google": "Continue with Google",
+    "or": "or",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "sendCode": "Email me a code",
+    "codeSent": "We sent a sign-in code to {email}.",
+    "codeLabel": "Enter the code",
+    "verify": "Verify",
+    "changeEmail": "Use a different email",
+    "signedIn": "Signed in",
+    "signOut": "Sign out",
+    "signOutNote": "Your saved pages stay on this device.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorSend": "Could not send the code. Check the address and try again.",
+    "errorCode": "That code is not valid or has expired."
   }
 }

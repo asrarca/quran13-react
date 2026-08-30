@@ -128,5 +128,28 @@
     "small": "Klein",
     "medium": "Mittel",
     "large": "Groß"
+  },
+  "sync": {
+    "title": "Synchronisierung",
+    "row": "Geräteübergreifend synchronisieren",
+    "on": "Ein",
+    "off": "Aus",
+    "offDescription": "Deine Lesezeichen, Markierungen und Einstellungen werden nur auf diesem Gerät gespeichert. Melde dich an, um sie auf allen Geräten zu haben.",
+    "onDescription": "Deine Lesezeichen, Markierungen und Einstellungen werden in deinem Konto gespeichert und auf allen Geräten aktuell gehalten.",
+    "google": "Mit Google fortfahren",
+    "or": "oder",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.com",
+    "sendCode": "Code per E-Mail senden",
+    "codeSent": "Wir haben einen Anmeldecode an {email} gesendet.",
+    "codeLabel": "Code eingeben",
+    "verify": "Bestätigen",
+    "changeEmail": "Andere E-Mail-Adresse verwenden",
+    "signedIn": "Angemeldet",
+    "signOut": "Abmelden",
+    "signOutNote": "Deine gespeicherten Seiten bleiben auf diesem Gerät.",
+    "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "errorSend": "Code konnte nicht gesendet werden. Prüfe die Adresse und versuche es erneut.",
+    "errorCode": "Dieser Code ist ungültig oder abgelaufen."
   }
 }

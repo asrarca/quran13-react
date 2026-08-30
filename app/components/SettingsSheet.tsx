@@ -4,9 +4,10 @@ import { Button } from "@/app/components/ui/button";
 import { type Lang, t, SUPPORTED_LANGS, isRtlLang, needsFontScale } from "../i18n";
 import { type MushafKey, type Theme, type FontSize, type DragHandlers } from "../types";
 import { editionsForLang, getEdition } from "../lib/translation-editions";
+import { AccountPanel } from "./AccountPanel";
 import quranData from "@/data/quran-data.json";
 
-type SettingsSubView = "display" | "fontsize" | "mushaf" | "about" | "language" | "install" | "translation" | null;
+type SettingsSubView = "display" | "fontsize" | "mushaf" | "about" | "language" | "install" | "translation" | "sync" | null;
 
 type Props = {
   lang: Lang;
@@ -18,6 +19,9 @@ type Props = {
   translationEdition: string;
   isStandalone: boolean;
   appVersion: string;
+  syncAvailable: boolean;
+  syncSignedIn: boolean;
+  syncEmail: string | null;
   onClose: () => void;
   onMushafChange: (key: MushafKey) => void;
   onThemeChange: (theme: Theme) => void;
@@ -25,13 +29,13 @@ type Props = {
   onTranslationEditionChange: (id: string) => void;
   onShowTajweedRules: () => void;
   onLangChange: (lang: Lang) => void;
+  onSignOut: () => void;
   dragHandlers: DragHandlers;
 };
 
 // The panels are laid out left-to-right; each occupies 1/PANEL_COUNT of the
 // container. translateX shifts the strip so the chosen panel fills the viewport.
 // The PANEL_INDEX values must match each panel's DOM order below.
-const PANEL_COUNT = 8;
 const PANEL_INDEX: Record<NonNullable<SettingsSubView>, number> = {
   display: 1,
   fontsize: 2,
@@ -40,7 +44,12 @@ const PANEL_INDEX: Record<NonNullable<SettingsSubView>, number> = {
   language: 5,
   install: 6,
   translation: 7,
+  sync: 8,
 };
+// Derived, not hand-maintained: adding a panel above used to require editing a
+// separate count and a hardcoded Tailwind width, which is one edit too many to
+// remember.
+const PANEL_COUNT = Object.keys(PANEL_INDEX).length + 1; // + the main list
 
 const THEMES: Theme[] = ["light", "dark", "dark-invert"];
 const THEME_LABEL_KEY: Record<Theme, string> = {
@@ -72,6 +81,9 @@ export function SettingsSheet({
   translationEdition,
   isStandalone,
   appVersion,
+  syncAvailable,
+  syncSignedIn,
+  syncEmail,
   onClose,
   onMushafChange,
   onThemeChange,
@@ -79,6 +91,7 @@ export function SettingsSheet({
   onTranslationEditionChange,
   onShowTajweedRules,
   onLangChange,
+  onSignOut,
   dragHandlers,
 }: Props) {
   const activeMushaf = quranData.mushafs[activeMushafKey];
@@ -92,8 +105,11 @@ export function SettingsSheet({
 
   // Only the active panel is opaque; the others stay transparent so the sliding
   // strip never flashes the panels it passes over (main is active when null).
+  // Width comes from PANEL_COUNT via inline style rather than a Tailwind class,
+  // since the class would have to be a literal and could drift out of sync.
   const panelCls = (active: boolean) =>
-    `flex h-full w-[calc(100%/8)] flex-col transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0 pointer-events-none"}`;
+    `flex h-full shrink-0 flex-col transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0 pointer-events-none"}`;
+  const panelStyle = { width: `${100 / PANEL_COUNT}%` };
 
   return (
     <div className="animate-sheet-up absolute inset-x-0 bottom-0 z-50 flex h-[90%] flex-col overflow-hidden rounded-t-3xl bg-(--bg) shadow-[0_-8px_40px_rgba(0,0,0,0.22)]">
@@ -116,7 +132,7 @@ export function SettingsSheet({
           }}
         >
           {/* Panel 1: main settings */}
-          <div className={panelCls(settingsSubView === null)}>
+          <div className={panelCls(settingsSubView === null)} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <span className={`${scaleFont ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "settings.title")}</span>
               <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
@@ -132,6 +148,19 @@ export function SettingsSheet({
                 >
                   <span className="text-base font-bold text-(--fg)">{t(lang, "settings.installApp")}</span>
                   <ForwardChevron className="size-4 text-(--fg2)" />
+                </button>
+              )}
+              {syncAvailable && (
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between border-b border-border px-5 py-4 text-start active:bg-(--bg2)"
+                  onClick={() => setSettingsSubView("sync")}
+                >
+                  <span className="text-base text-(--fg)">{t(lang, "sync.row")}</span>
+                  <div className="flex items-center gap-1.5 text-(--fg2)">
+                    <span className="text-sm">{t(lang, syncSignedIn ? "sync.on" : "sync.off")}</span>
+                    <ForwardChevron className="size-4" />
+                  </div>
                 </button>
               )}
               <button
@@ -219,7 +248,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel: display / theme picker */}
-          <div className={panelCls(settingsSubView === "display")}>
+          <div className={panelCls(settingsSubView === "display")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -254,7 +283,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel: font size picker */}
-          <div className={panelCls(settingsSubView === "fontsize")}>
+          <div className={panelCls(settingsSubView === "fontsize")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -289,7 +318,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel 2: mushaf picker */}
-          <div className={panelCls(settingsSubView === "mushaf")}>
+          <div className={panelCls(settingsSubView === "mushaf")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -325,7 +354,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel 3: about */}
-          <div className={panelCls(settingsSubView === "about")}>
+          <div className={panelCls(settingsSubView === "about")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -418,7 +447,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel 4: language picker */}
-          <div className={panelCls(settingsSubView === "language")}>
+          <div className={panelCls(settingsSubView === "language")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -453,7 +482,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel 5: install app */}
-          <div className={panelCls(settingsSubView === "install")}>
+          <div className={panelCls(settingsSubView === "install")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -490,7 +519,7 @@ export function SettingsSheet({
           </div>
 
           {/* Panel 6: translation edition picker (multi-edition languages only) */}
-          <div className={panelCls(settingsSubView === "translation")}>
+          <div className={panelCls(settingsSubView === "translation")} style={panelStyle}>
             <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
               <div className="flex items-center gap-2">
                 <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
@@ -523,6 +552,22 @@ export function SettingsSheet({
                 );
               })}
             </div>
+          </div>
+
+          {/* Panel 8: sync / account */}
+          <div className={panelCls(settingsSubView === "sync")} style={panelStyle}>
+            <div className="flex items-center justify-between border-b border-border px-5 pb-3 pt-2">
+              <div className="flex items-center gap-2">
+                <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={() => setSettingsSubView(null)}>
+                  <BackChevron className="size-4" />
+                </Button>
+                <span className={`${scaleFont ? "text-[1.25rem]" : "text-[0.8125rem] tracking-[2px] uppercase"} font-semibold`}>{t(lang, "sync.title")}</span>
+              </div>
+              <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
+                <X className="size-4" />
+              </Button>
+            </div>
+            <AccountPanel lang={lang} email={syncEmail} signedIn={syncSignedIn} onSignOut={onSignOut} />
           </div>
         </div>
       </div>

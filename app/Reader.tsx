@@ -14,6 +14,19 @@ import { APP_VERSION, AYAH_FLASH_MS, DESKTOP_NOTICE_FREQUENCY, FIRST_PAGE, LAST_
 import { COOKIE, readCookie, writeCookie, rootFontScale, pageToParam } from "./lib/reader-cookies";
 import { useWakeLock } from "./lib/use-wake-lock";
 import { defaultEditionId, editionsForLang, readEditionMap, saveSelectedEdition } from "./lib/translation-editions";
+import { useAuth } from "./lib/use-auth";
+import { syncConfigured } from "./lib/supabase/client";
+import {
+  diffBookmarks,
+  diffCells,
+  hasMerged,
+  mergeLocalIntoRemote,
+  pullSnapshot,
+  queueOp,
+  signOut as syncSignOut,
+  startFlushOnReconnect,
+  type LocalSnapshot,
+} from "./lib/sync";
 import {
   type ActiveSheet,
   type AyahFlash,
@@ -124,7 +137,7 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const [pageInput, setPageInput] = useState("");
   const [activeMushafKey, setActiveMushafKey] = useState<MushafKey>(initialMushafKey);
-  const [settingsSubView, setSettingsSubView] = useState<"display" | "fontsize" | "mushaf" | "about" | "language" | "install" | "translation" | null>(null);
+  const [settingsSubView, setSettingsSubView] = useState<"display" | "fontsize" | "mushaf" | "about" | "language" | "install" | "translation" | "sync" | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showTajweedRules, setShowTajweedRules] = useState(false);
   const [lang, setLang] = useState<Lang>(initialLang);
@@ -146,6 +159,23 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
 
   // Keep the screen lit for 2 minutes after the last touch instead of iOS's ~30s.
   useWakeLock(WAKE_LOCK_MS);
+
+  // Optional cross-device sync. Signed out (the default), everything below is
+  // inert and the reader behaves exactly as it does without Supabase.
+  const { user } = useAuth();
+  // Key sync effects on the id, not the User object: the auth client can hand
+  // back a fresh object for the same person, which would re-run them for nothing.
+  const userId = user?.id ?? null;
+
+  // Last state known to match the server. While null, the write effects persist
+  // to localStorage without emitting sync ops — which is what keeps the initial
+  // localStorage load from being mistaken for a burst of user edits.
+  const syncBaseline = useRef<Omit<LocalSnapshot, "prefs"> | null>(null);
+
+  // Mirrors current reader state so the sign-in effect can read it without
+  // listing it as a dependency (which would re-run the merge on every edit).
+  // Updated in an effect, never during render — the compiler forbids the latter.
+  const liveState = useRef<Omit<LocalSnapshot, "prefs">>({ bookmarks: {}, highlights: {}, rakat: {} });
 
   const lineBandsMap = useMemo<Record<string, LineBand[]>>(() => {
     const coordsMap = activeMushaf.lineCoordinates as Record<string, LineCoord[]>;
@@ -374,20 +404,108 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
     if (window.location.pathname !== path) window.history.replaceState(null, "", path);
   }, [mounted, page]);
 
+  // localStorage stays the source of truth for rendering. When a sync baseline
+  // exists (signed in and merged), each write also emits the delta against that
+  // baseline — so sync piggybacks on the existing persistence effects instead of
+  // instrumenting every mutation site.
   useEffect(() => {
     if (!mounted) return;
     localStorage.setItem("quran13-bookmarks", JSON.stringify(bookmarks));
+    const base = syncBaseline.current;
+    if (base) {
+      for (const op of diffBookmarks(base.bookmarks, bookmarks)) queueOp(op);
+      base.bookmarks = bookmarks;
+    }
   }, [bookmarks, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
     localStorage.setItem("quran13-highlights", JSON.stringify(highlights));
+    const base = syncBaseline.current;
+    if (base) {
+      for (const op of diffCells(base.highlights, highlights, "hl")) queueOp(op);
+      base.highlights = highlights;
+    }
   }, [highlights, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
     localStorage.setItem("quran13-rakat", JSON.stringify(rakatMarkers));
+    const base = syncBaseline.current;
+    if (base) {
+      for (const op of diffCells(base.rakat, rakatMarkers, "rk")) queueOp(op);
+      base.rakat = rakatMarkers;
+    }
   }, [rakatMarkers, mounted]);
+
+  // Keep the mirror current for the sign-in effect below.
+  useEffect(() => {
+    liveState.current = { bookmarks, highlights, rakat: rakatMarkers };
+  }, [bookmarks, highlights, rakatMarkers]);
+
+  // Retry queued writes whenever connectivity returns.
+  useEffect(() => {
+    if (!mounted) return;
+    return startFlushOnReconnect();
+  }, [mounted]);
+
+  // Sign-in / sign-out. On first sign-in for an account, local state is merged
+  // up (a union — nothing is discarded); afterwards the server copy is pulled
+  // down. Either way the result becomes the new baseline.
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (!userId) {
+      syncBaseline.current = null; // stop emitting ops while signed out
+      return;
+    }
+
+    let cancelled = false;
+    void (async () => {
+      const local = liveState.current;
+      const snapshot = hasMerged(userId)
+        ? await pullSnapshot()
+        : await mergeLocalIntoRemote({
+            ...local,
+            prefs: {
+              theme, lang, mushaf: activeMushafKey, fontSize,
+              lastPage: page, translationEditions,
+            },
+          });
+
+      if (cancelled) return;
+
+      // No snapshot means the baseline is never set, so every later write
+      // silently skips sync. Say so — a quiet no-op here is indistinguishable
+      // from "sync is working and there is nothing to send".
+      if (!snapshot) {
+        console.warn(
+          "[sync] signed in but could not reach the server; edits stay local. " +
+            "Check that the Supabase session exists and RLS allows this user.",
+        );
+        return;
+      }
+
+      setBookmarks(snapshot.bookmarks);
+      setHighlights(snapshot.highlights);
+      setRakatMarkers(snapshot.rakat);
+
+      // Set last so the state updates above are folded into the baseline rather
+      // than being re-emitted as fresh ops by the write effects.
+      syncBaseline.current = {
+        bookmarks: snapshot.bookmarks,
+        highlights: snapshot.highlights,
+        rakat: snapshot.rakat,
+      };
+    })();
+
+    return () => { cancelled = true; };
+  }, [mounted, userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSignOut = useCallback(async () => {
+    await syncSignOut();
+    syncBaseline.current = null;
+  }, []);
 
   useEffect(() => {
     if (!mounted) return;
@@ -828,6 +946,10 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
               translationEdition={translationEdition}
               isStandalone={isStandalone}
               appVersion={APP_VERSION}
+              syncAvailable={syncConfigured}
+              syncSignedIn={Boolean(userId)}
+              syncEmail={user?.email ?? null}
+              onSignOut={handleSignOut}
               onClose={() => setActiveSheet(null)}
               onMushafChange={(key) => { setActiveMushafKey(key); setMissingImages({}); }}
               onThemeChange={setTheme}

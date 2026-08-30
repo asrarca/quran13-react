@@ -128,5 +128,28 @@
     "small": "Petite",
     "medium": "Moyenne",
     "large": "Grande"
+  },
+  "sync": {
+    "title": "Synchronisation",
+    "row": "Synchroniser mes appareils",
+    "on": "Activée",
+    "off": "Désactivée",
+    "offDescription": "Vos favoris, surlignages et réglages sont enregistrés uniquement sur cet appareil. Connectez-vous pour les retrouver sur tous vos appareils.",
+    "onDescription": "Vos favoris, surlignages et réglages sont enregistrés dans votre compte et synchronisés sur tous vos appareils.",
+    "google": "Continuer avec Google",
+    "or": "ou",
+    "emailLabel": "Adresse e-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "sendCode": "Recevoir un code par e-mail",
+    "codeSent": "Nous avons envoyé un code de connexion à {email}.",
+    "codeLabel": "Saisissez le code",
+    "verify": "Vérifier",
+    "changeEmail": "Utiliser une autre adresse",
+    "signedIn": "Connecté",
+    "signOut": "Se déconnecter",
+    "signOutNote": "Vos pages enregistrées restent sur cet appareil.",
+    "errorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+    "errorSend": "Impossible d'envoyer le code. Vérifiez l'adresse et réessayez.",
+    "errorCode": "Ce code est invalide ou a expiré."
   }
 }

@@ -128,5 +128,28 @@
     "small": "Pequeño",
     "medium": "Mediano",
     "large": "Grande"
+  },
+  "sync": {
+    "title": "Sincronización",
+    "row": "Sincronizar entre dispositivos",
+    "on": "Activada",
+    "off": "Desactivada",
+    "offDescription": "Tus marcadores, resaltados y ajustes se guardan solo en este dispositivo. Inicia sesión para tenerlos en todos tus dispositivos.",
+    "onDescription": "Tus marcadores, resaltados y ajustes se guardan en tu cuenta y se mantienen actualizados en todos tus dispositivos.",
+    "google": "Continuar con Google",
+    "or": "o",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "sendCode": "Enviarme un código",
+    "codeSent": "Enviamos un código de acceso a {email}.",
+    "codeLabel": "Introduce el código",
+    "verify": "Verificar",
+    "changeEmail": "Usar otro correo",
+    "signedIn": "Sesión iniciada",
+    "signOut": "Cerrar sesión",
+    "signOutNote": "Tus páginas guardadas permanecen en este dispositivo.",
+    "errorGeneric": "Algo salió mal. Inténtalo de nuevo.",
+    "errorSend": "No se pudo enviar el código. Comprueba la dirección e inténtalo de nuevo.",
+    "errorCode": "Ese código no es válido o ha caducado."
   }
 }
