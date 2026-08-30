@@ -479,6 +479,48 @@ select 'sessions=' || (select count(*) from auth.sessions)
 
 ## 10. Operations
 
+### Dependency pinning (do not "fix" these to `^` ranges)
+
+```json
+"@supabase/ssr": "0.12.0",
+"@supabase/supabase-js": "2.109.0"
+```
+
+Both are pinned **exactly**, on purpose. The two packages are coupled through a
+peer dependency, and the version matrix collides with the Node version:
+
+| Package | Requires |
+|---|---|
+| `supabase-js@2.109.0` | Node ≥ 20 |
+| `supabase-js@2.110.0`+ | **Node ≥ 22** |
+| `ssr@0.12.0` | peer `supabase-js ^2.108.0` |
+| `ssr@0.12.3` | peer `supabase-js ^2.110.5` |
+| `ssr@0.12.5` | peer `supabase-js ^2.112.4` |
+
+With caret ranges, npm resolves `ssr@0.12.5`, whose peer forces a `supabase-js`
+that requires Node 22. On a Node 20 builder that produces a lock file npm
+considers invalid, and `npm ci` fails the Amplify build with:
+
+```
+npm error `npm ci` can only install packages when your package.json and
+package-lock.json are in sync.
+npm error Invalid: lock file's @supabase/supabase-js@2.109.0
+          does not satisfy @supabase/supabase-js@2.112.4
+```
+
+Note this fails **only under `npm ci`** — `npm install` downgrades the same peer
+conflict to a warning, so local development looks fine while deploys break.
+
+**To move to newer Supabase packages, upgrade Node to 22 first** (locally, and in
+the Amplify build image), then raise both pins together. Raising one alone
+reintroduces the conflict.
+
+After any dependency change, validate the way Amplify will:
+
+```bash
+npm ci --cache .npm --prefer-offline --dry-run
+```
+
 ### Migrations
 
 ```bash

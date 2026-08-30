@@ -71,6 +71,34 @@ All persisted via `localStorage`. Only written after `mounted` is true (hydratio
 
 **Important**: Pages are stored/used internally as 0-based (`page`), but displayed to users as `page + 1`. `TOTAL_PAGES` comes from `NEXT_PUBLIC_TOTAL_PAGES` env var (default 847).
 
+Two further keys belong to cross-device sync (see below): `quran13-sync-queue`
+(pending write ops) and `quran13-sync-merged` (user id already merged on this
+device).
+
+## Cross-Device Sync (optional sign-in)
+
+Signed-in users keep bookmarks, highlights, rakat markers and preferences in step
+across devices via Supabase (Postgres + Auth) and Resend (email). Sign-in is
+**opt-in** — the reader works anonymously exactly as before, and the Sync row is
+hidden entirely when the Supabase env vars are absent.
+
+Read **[../docs/sync-across-devices.md](../docs/sync-across-devices.md)** before
+touching any of it. It covers the schema and RLS model, the Google and
+email-code auth flows, Resend/SMTP configuration and the email template, how the
+diff/op queue works, the full dashboard setup checklist, and a troubleshooting
+table of every failure mode hit while building it.
+
+Highlights worth knowing before reading code:
+
+- `localStorage` stays the render source of truth; Supabase is a background
+  replica. Nothing in the reading path awaits the network.
+- Sync piggybacks on the existing `localStorage` write effects in `Reader.tsx`,
+  which emit **deltas** against a baseline rather than uploading whole state.
+  That is why a stale device cannot erase another device's data.
+- RLS does all authorization, so there are no `app/api/*` routes for sync.
+- Email sign-in uses a **typed code, not a magic link** — a link opens in the
+  system browser, which for an installed PWA is the wrong context.
+
 ## i18n System
 
 **`app/i18n/index.ts`** — flat-JSON translation engine, no external library.
@@ -87,7 +115,9 @@ t(lang, 'header.juzPage', { juz: 5, page: 90 })  // with {var} interpolation
 4. Add `xx: 'xx-XX'` to `langDateLocale` (TypeScript enforces this — will error if missing)
 5. Add entry to `SUPPORTED_LANGS` array
 
-**Current languages** (alphabetical in picker): Arabic (`ar`), English (`en`), German (`de`), Spanish (`es`), French (`fr`), Hindi (`hi`), Russian (`ru`), Turkish (`tr`).
+**Current languages** (7, alphabetical in picker): Arabic (`ar`), English (`en`), German (`de`), Spanish (`es`), French (`fr`), Hindi (`hi`), Urdu (`ur`).
+
+`app/i18n/` also contains `ru.json` and `tr.json`, but **Russian and Turkish are not wired up** — they are absent from the `Lang` union, `dicts`, and `SUPPORTED_LANGS`, so nothing imports them. When adding keys across languages, edit the 7 registered files only; adding to `ru`/`tr` has no effect until they are registered per the 5 steps above.
 
 **JSON key structure** (same across all language files):
 ```
@@ -107,24 +137,34 @@ installApp.{step1,step2,step3,step4}
 misc.{imageUnavailable,langName,tajweedRulesAlt}
 ```
 
-## Settings Sheet — 5-Panel Slide System
+## Settings Sheet — Panel Slide System
 
-The settings sheet (`SettingsSheet.tsx`) uses a pure-CSS slide animation (no library). The container is `width: 500%` with 5 `w-1/5` panels side by side. `settingsSubView` drives `translateX` via the `TRANSLATE_X` lookup object:
+The settings sheet (`SettingsSheet.tsx`) uses a pure-CSS slide animation (no library). Panels sit side by side in a strip; `settingsSubView` drives `translateX` via the `PANEL_INDEX` lookup, and `translateX` direction flips for RTL languages.
 
-| `settingsSubView` | `translateX` | Panel shown |
+**Do not hardcode the panel count.** `PANEL_COUNT` is derived as `Object.keys(PANEL_INDEX).length + 1` (the `+ 1` is the main list), and each panel's width comes from it via an inline style rather than a Tailwind class. Adding a panel therefore means one edit — a new `PANEL_INDEX` entry plus the panel markup in matching DOM order.
+
+| `settingsSubView` | `PANEL_INDEX` | Panel shown |
 |---|---|---|
-| `null` | `0` | Main settings list |
-| `"mushaf"` | `-20%` | Mushaf picker |
-| `"about"` | `-40%` | About / how-to |
-| `"language"` | `-60%` | Language picker |
-| `"install"` | `-80%` | Install App instructions |
+| `null` | — | Main settings list |
+| `"display"` | 1 | Theme picker |
+| `"fontsize"` | 2 | Font size picker |
+| `"mushaf"` | 3 | Mushaf picker |
+| `"about"` | 4 | About / how-to |
+| `"language"` | 5 | Language picker |
+| `"install"` | 6 | Install App instructions |
+| `"translation"` | 7 | Translation edition picker |
+| `"sync"` | 8 | Sync / account (`AccountPanel`) |
 
 Settings rows (Panel 1 order):
 1. **Install App** → install sub-panel (hidden when `isStandalone === true`)
-2. **Mushaf** → mushaf sub-panel
-3. **Tajweed Rules** → fullscreen image overlay in page.tsx (only visible when `activeMushafKey === "original_tajweed"`)
-4. **Language** → language sub-panel (shows current `misc.langName`)
-5. **About** → about sub-panel (shows `vAppVersion`)
+2. **Sync across devices** → sync sub-panel (hidden unless `syncConfigured`; shows On/Off)
+3. **Mushaf** → mushaf sub-panel
+4. **Tajweed Rules** → fullscreen image overlay (only when `activeMushafKey === "original_tajweed"`)
+5. **Theme** → display sub-panel
+6. **Font Size** → fontsize sub-panel
+7. **Language** → language sub-panel (shows current `misc.langName`)
+8. **Translation** → translation sub-panel (only when the language has >1 edition)
+9. **About** → about sub-panel (shows `vAppVersion`)
 
 `isStandalone` is detected on mount: `window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true`. When true, the Install App row is hidden entirely.
 
