@@ -7,8 +7,37 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/app/lib/supabase/server";
 
+// A forwarded header may carry a comma-separated chain when several proxies are
+// involved; the client-facing value is the first one.
+function firstHeaderValue(raw: string | null): string | null {
+  return raw?.split(",")[0]?.trim() || null;
+}
+
+/**
+ * The origin the *browser* is on.
+ *
+ * NOT `new URL(request.url).origin`. Behind Amplify's SSR proxy the Next.js
+ * server runs on an internal host — `localhost:3000` — so `request.url` is that
+ * internal address, and redirecting to it sends every user on every device to
+ * localhost after signing in. Only the forwarded headers carry the public site.
+ *
+ * Locally there is no proxy and the two are identical, which is exactly why this
+ * class of bug survives development and only appears once deployed.
+ */
+function publicOrigin(request: Request): string {
+  const url = new URL(request.url);
+  const host =
+    firstHeaderValue(request.headers.get("x-forwarded-host")) ??
+    firstHeaderValue(request.headers.get("host")) ??
+    url.host;
+  const proto =
+    firstHeaderValue(request.headers.get("x-forwarded-proto")) ?? url.protocol.replace(":", "");
+  return `${proto}://${host}`;
+}
+
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = publicOrigin(request);
   const code = searchParams.get("code");
 
   // Providers report a refused/failed consent here rather than sending a code.

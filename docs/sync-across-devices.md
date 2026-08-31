@@ -415,6 +415,12 @@ None of this lives in the repo.
   - `http://localhost:3000/auth/callback`
   - `http://localhost:3001/auth/callback`
 
+**Site URL must be the production URL, never localhost.** It is the fallback for
+every redirect that fails to match the allowlist, and the base for links in auth
+emails. Left as `http://localhost:3000`, a production sign-in that misses the
+allowlist silently dumps the user on localhost. Development hosts belong in
+Redirect URLs only.
+
 **Mind the dev port.** `signInWithGoogle` builds the redirect from
 `window.location.origin`. Port 3000 on this machine is usually taken by the
 separate asrar.ca project, so Next falls back to **3001** — and `localhost:3001`
@@ -454,6 +460,8 @@ Every row here is a failure actually hit while building this.
 |---|---|---|
 | **No "Sync across devices" row in Settings** | `NEXT_PUBLIC_SUPABASE_*` missing when the dev server booted — `syncConfigured` is evaluated at module load | Restart the dev server after any `.env.local` change |
 | **Signed in with Google but tables stay empty** | Redirect URL not allowlisted (wrong port, or a query string on `redirectTo`). Supabase silently falls back to the Site URL and drops the code | `select count(*) from auth.sessions` — **user row but zero sessions** is the signature |
+| **Production sign-in redirects to `localhost:3000` (all devices)** | **Not a Supabase problem.** `/auth/callback` derived its redirect from `new URL(request.url).origin`; behind Amplify's SSR proxy that is the *internal* server address, `localhost:3000` | Fixed — the route now reads `x-forwarded-host` / `x-forwarded-proto`. Verify with the curl below |
+| **Production sign-in redirects to some other wrong host** | Site URL is the fallback when a redirect fails to match the allowlist; whatever host you land on *is* the Site URL | Set Site URL to `https://quran13.asrar.ca` and add the production callback to Redirect URLs |
 | **`POST /auth/v1/otp` → 500 `"Error sending magic link email"`** | SMTP failing. Usually the sender address is on an unverified domain | Probe Resend directly (§6). Also verify Username is the literal `resend` |
 | **Email arrives with a link, not a code** | Template still renders `{{ .ConfirmationURL }}` | Switch it to `{{ .Token }}` (§6) |
 | **Code in the email is longer than the input accepts** | Supabase OTP Length set above 6 | Already handled — input accepts 6–10. If it recurs, check `OTP_MIN/MAX_LENGTH` |
@@ -463,6 +471,21 @@ Every row here is a failure actually hit while building this.
 | **Device B doesn't show Device A's new bookmark** | No pull while the app stays open | Reload B. See §11 |
 | **`psql` cannot resolve `db.<ref>.supabase.co`** | That host is IPv6-only | Use `DB_POOLER_URL` (§10) |
 | **`psql` auth fails oddly** | macOS `psql` on PATH may be ancient (9.3, pre-SCRAM) | Use `/usr/local/opt/libpq/bin/psql` |
+
+### Check where the deployed callback actually redirects
+
+The single most useful probe, because it tests the app's own redirect logic with
+no Supabase involvement and no browser state:
+
+```bash
+curl -sS -i https://quran13.asrar.ca/auth/callback | grep -i '^location'
+```
+
+Expect `https://quran13.asrar.ca/?sync_error=missing_code`. Anything else — in
+particular a `localhost` host — means the route is reconstructing the origin from
+the internal request URL instead of the forwarded headers. Amplify's SSR compute
+runs Next on `localhost:3000` internally, and this is invisible locally because
+there the internal and public origins are identical.
 
 Useful one-liner:
 
