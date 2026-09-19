@@ -47,6 +47,7 @@ app/
     ru.json         — Russian
     ar.json         — Arabic
     hi.json         — Hindi
+    uk.json         — Ukrainian
 data/
   quran-data.json   — surahs, juz, mushaf definitions (lineCoordinates, aspectRatio, etc.)
 lib/
@@ -115,9 +116,15 @@ t(lang, 'header.juzPage', { juz: 5, page: 90 })  // with {var} interpolation
 4. Add `xx: 'xx-XX'` to `langDateLocale` (TypeScript enforces this — will error if missing)
 5. Add entry to `SUPPORTED_LANGS` array
 
-**Current languages** (7, alphabetical in picker): Arabic (`ar`), English (`en`), German (`de`), Spanish (`es`), French (`fr`), Hindi (`hi`), Urdu (`ur`).
+**Current languages** (8, alphabetical in picker): Arabic (`ar`), English (`en`), German (`de`), Spanish (`es`), French (`fr`), Hindi (`hi`), Ukrainian (`uk`), Urdu (`ur`).
 
-`app/i18n/` also contains `ru.json` and `tr.json`, but **Russian and Turkish are not wired up** — they are absent from the `Lang` union, `dicts`, and `SUPPORTED_LANGS`, so nothing imports them. When adding keys across languages, edit the 7 registered files only; adding to `ru`/`tr` has no effect until they are registered per the 5 steps above.
+A registered language also needs a Quran translation edition whose `id` equals its
+code (`data/translations/<code>.json` + a row in `app/lib/translation-editions.ts`),
+since `defaultEditionId()` falls back to the language code and the sheet imports
+that file by name. Editions are built by `scripts/build-translations.mjs` from the
+Quran Foundation catalog (PROD creds in `.env.local`).
+
+`app/i18n/` also contains `ru.json` and `tr.json`, but **Russian and Turkish are not wired up** — they are absent from the `Lang` union, `dicts`, and `SUPPORTED_LANGS`, so nothing imports them. When adding keys across languages, edit the 8 registered files only; adding to `ru`/`tr` has no effect until they are registered per the 5 steps above.
 
 **JSON key structure** (same across all language files):
 ```

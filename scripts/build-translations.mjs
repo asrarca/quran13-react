@@ -28,6 +28,7 @@ const TRANSLATIONS = {
   es: { id: 83, name: "Sheikh Isa Garcia" },
   de: { id: 27, name: "Frank Bubenheim and Nadeem Elyas" },
   hi: { id: 122, name: "Maulana Azizul Haque al-Umari" },
+  uk: { id: 217, name: "Dr. Mikhailo Yaqubovic" },
   ur: { id: 234, name: "Fatah Muhammad Jalandhari" },
   ar: { id: 1014, name: "Tafsir al-Muyassar (translation mode)" },
 };

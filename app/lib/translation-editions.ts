@@ -26,6 +26,7 @@ export const TRANSLATION_EDITIONS: TranslationEdition[] = [
   { id: "es", lang: "es", label: "Isa Garcia", source: "Sheikh Isa Garcia" },
   { id: "fr", lang: "fr", label: "Hamidullah", source: "Muhammad Hamidullah" },
   { id: "hi", lang: "hi", label: "Azizul Haque", source: "Maulana Azizul Haque al-Umari" },
+  { id: "uk", lang: "uk", label: "Yaqubovic", source: "Dr. Mikhailo Yaqubovic" },
   { id: "ur", lang: "ur", label: "Jalandhari", source: "Fatah Muhammad Jalandhari" },
 ];
 

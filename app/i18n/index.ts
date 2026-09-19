@@ -4,11 +4,12 @@ import es from './es.json';
 import de from './de.json';
 import ar from './ar.json';
 import hi from './hi.json';
+import uk from './uk.json';
 import ur from './ur.json';
 
-export type Lang = 'en' | 'fr' | 'es' | 'de' | 'ar' | 'hi' | 'ur';
+export type Lang = 'en' | 'fr' | 'es' | 'de' | 'ar' | 'hi' | 'uk' | 'ur';
 
-const dicts = { en, fr, es, de, ar, hi, ur } as const;
+const dicts = { en, fr, es, de, ar, hi, uk, ur } as const;
 
 function getByPath(obj: Record<string, unknown>, path: string): string {
   let cur: unknown = obj;
@@ -36,6 +37,7 @@ export const langDateLocale: Record<Lang, string> = {
   de: 'de-DE',
   ar: 'ar-SA',
   hi: 'hi-IN',
+  uk: 'uk-UA',
   ur: 'ur-PK',
 };
 
@@ -46,6 +48,7 @@ export const SUPPORTED_LANGS: { code: Lang; label: string; rtl?: boolean; scaleF
   { code: 'es', label: 'Español' },
   { code: 'fr', label: 'Français' },
   { code: 'hi', label: 'हिन्दी', scaleFont: true },
+  { code: 'uk', label: 'Українська' },
   { code: 'ur', label: 'اردو', rtl: true, scaleFont: true },
 ];
 
