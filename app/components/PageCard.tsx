@@ -7,6 +7,8 @@ import quranData from "@/data/quran-data.json";
 type MushafKey = keyof typeof quranData.mushafs;
 type Mushaf = (typeof quranData.mushafs)[MushafKey];
 
+const PAGE_EDGE_LINES = 5; // stacked-page lines drawn on the turnable edge
+
 function imagePath(page: number, mushaf: Mushaf) {
   const { dir, filePrefix, fileExtension, pageOffset } = mushaf;
   return `${dir}/${filePrefix}${String(page + pageOffset).padStart(3, "0")}.${fileExtension}`;
@@ -109,6 +111,18 @@ export function PageCard({
             draggable={false}
             priority
             onError={() => onMissingImage(candidate)}
+          />
+          {/* Page-stack edge, like Quran.com: a few 1px gray lines, 1px apart, on
+              the side the page turns from in a physical mushaf — left on odd
+              (displayed) pages, right on even ones. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0"
+            style={{
+              [(candidate + 1) % 2 === 1 ? "left" : "right"]: 0,
+              width: PAGE_EDGE_LINES * 2 - 1,
+              backgroundImage: "repeating-linear-gradient(to right, rgba(128,128,128,0.55) 0 1px, transparent 1px 2px)",
+            }}
           />
           <div
             className="absolute inset-0"
