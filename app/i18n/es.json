@@ -101,9 +101,10 @@
     "example3": "no hay coacción en la religión",
     "example4": "24:35",
     "pageLabel": "Página",
+    "recite": "Recitar",
     "listening": "Escuchando…",
     "voiceUnsupported": "La entrada de voz no es compatible con este navegador.",
-    "voiceError": "No se pudo captar tu voz — escribe tu pregunta."
+    "voiceError": "No se pudo captar tu voz — toca Recitar para intentarlo de nuevo."
   },
   "translation": {
     "title": "Traducción",

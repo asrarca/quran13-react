@@ -198,6 +198,31 @@
   animation: ayah-flash ease-out forwards;
 }
 
+/* Voice recite: rings radiate out from the microphone while listening.
+   Each ring gets a staggered animation-delay inline. */
+@keyframes mic-ring {
+  0% { transform: scale(1); opacity: 0.45; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+.animate-mic-ring {
+  animation: mic-ring 2.1s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+}
+
+@keyframes mic-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.animate-mic-breathe {
+  animation: mic-breathe 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-mic-ring { animation: none; opacity: 0; }
+  .animate-mic-breathe { animation: none; }
+}
+
 .font-amiri {
   font-family: var(--font-amiri), serif;
 }

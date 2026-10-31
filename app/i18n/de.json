@@ -101,9 +101,10 @@
     "example3": "kein Zwang im Glauben",
     "example4": "24:35",
     "pageLabel": "Seite",
+    "recite": "Rezitieren",
     "listening": "Höre zu…",
     "voiceUnsupported": "Spracheingabe wird von diesem Browser nicht unterstützt.",
-    "voiceError": "Deine Stimme konnte nicht erfasst werden — bitte tippe stattdessen."
+    "voiceError": "Deine Stimme konnte nicht erfasst werden — tippe auf Rezitieren, um es erneut zu versuchen."
   },
   "translation": {
     "title": "Übersetzung",
