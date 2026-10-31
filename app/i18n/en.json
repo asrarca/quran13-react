@@ -101,9 +101,10 @@
     "example3": "no compulsion in religion",
     "example4": "24:35",
     "pageLabel": "Page",
+    "recite": "Recite",
     "listening": "Listening…",
     "voiceUnsupported": "Voice input isn't supported in this browser.",
-    "voiceError": "Couldn't capture your voice — please type instead."
+    "voiceError": "Couldn't capture your voice — tap Recite to try again."
   },
   "translation": {
     "title": "Translation",

@@ -23,6 +23,7 @@ type SpeechResultEvent = {
 };
 type SpeechRecognitionLike = {
   lang: string;
+  continuous: boolean;
   interimResults: boolean;
   maxAlternatives: number;
   onresult: ((e: SpeechResultEvent) => void) | null;
@@ -96,15 +97,20 @@ async function fetchNavigate(q: string, voice: boolean): Promise<Resolved> {
   return data as Resolved;
 }
 
-const VOICE_SILENCE_MS = 1500; // stop listening this long after the last speech
-const VOICE_MAX_WAIT_MS = 6000; // stop if nothing was heard at all (iOS never auto-stops)
+const VOICE_SILENCE_MS = 1000; // stop and submit this long after the last speech
+const VOICE_MAX_WAIT_MS = 6000; // cancel if nothing was heard at all (iOS never auto-stops)
 
 export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState<{ q: string; voice: boolean } | null>(null);
   // Lazy initializers: voice support is known at mount, so the unsupported
   // message / listening state start correct without a setState-in-effect.
-  const [listening, setListening] = useState(() => voice && getSpeechRecognition() !== null);
+  // Voice mode: opened by long-press on a browser that supports recognition. The
+  // text box is replaced by a Recite button; unsupported browsers fall back to typing.
+  const [voiceMode] = useState(() => voice && getSpeechRecognition() !== null);
+  const [listening, setListening] = useState(voiceMode);
+  // Bumped by the Recite button to start a fresh listening session.
+  const [session, setSession] = useState(voiceMode ? 1 : 0);
   const [voiceError, setVoiceError] = useState<string | null>(() =>
     voice && getSpeechRecognition() === null ? t(lang, "ask.voiceUnsupported") : null
   );
@@ -139,8 +145,15 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
     setSubmitted({ q: n, voice: fromVoice });
   }
 
+  function recite() {
+    setQuery("");
+    setVoiceError(null);
+    setListening(true);
+    setSession((s) => s + 1);
+  }
+
   useEffect(() => {
-    if (!voice) return;
+    if (!session) return;
     const Recognition = getSpeechRecognition();
     if (!Recognition) return; // unsupported message already set by the initializer
     const rec = new Recognition();
@@ -148,11 +161,14 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
     // Voice input is a recitation of the Quran itself, so always recognize Arabic
     // regardless of the app language.
     rec.lang = "ar-SA";
+    // Continuous, so a pause between phrases (which yields a final result) doesn't
+    // end the session — we decide when the recitation is over, not the browser.
+    rec.continuous = true;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
-    // iOS never stops a session on its own, so we manage the lifecycle: stop as
-    // soon as a final result lands, or after VOICE_SILENCE_MS without new speech.
-    let final = "";
+    // We manage the lifecycle ourselves (iOS never stops on its own): cancel after
+    // VOICE_MAX_WAIT_MS if nothing is heard; once speech arrives, keep listening
+    // until VOICE_SILENCE_MS passes with no new speech, then stop and submit.
     let latest = "";
     let silenceTimer: number | null = null;
     const clearSilenceTimer = () => {
@@ -164,16 +180,13 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
       silenceTimer = window.setTimeout(() => rec.stop(), ms);
     };
     rec.onresult = (e) => {
-      let interim = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const r = e.results[i];
-        if (r.isFinal) final += r[0].transcript;
-        else interim += r[0].transcript;
-      }
-      latest = final.trim() ? final : interim;
+      // Rebuild from every result (final + interim) rather than appending from
+      // resultIndex: some browsers re-deliver earlier results in continuous mode.
+      let text = "";
+      for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      latest = text.trim();
       setQuery(latest);
-      if (e.results[e.results.length - 1]?.isFinal) rec.stop();
-      else armSilenceTimer(VOICE_SILENCE_MS);
+      armSilenceTimer(VOICE_SILENCE_MS);
     };
     rec.onerror = (e) => {
       // "no-speech" / "aborted" just fall back to typing; anything else gets a message
@@ -197,14 +210,14 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
       rec.abort();
       recognitionRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="animate-pop-in absolute left-1/2 top-20 z-50 flex w-[21rem] max-w-[92vw] -translate-x-1/2 flex-col rounded-3xl bg-(--bg) p-5.5 shadow-[0_20px_60px_rgba(0,0,0,0.32)]">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-lg font-semibold">
-          <Sparkles className="size-4.5 text-(--fg2)" />
-          {t(lang, "ask.title")}
+          {voice ? <Mic className="size-4.5 text-(--fg2)" /> : <Sparkles className="size-4.5 text-(--fg2)" />}
+          {t(lang, voice ? "ask.recite" : "ask.title")}
         </span>
         <Button size="icon-sm" variant="ghost" className="rounded-full bg-(--bg2)" onClick={onClose}>
           <X className="size-4" />
@@ -212,53 +225,82 @@ export function AskSheet({ lang, voice = false, onClose, onNavigate }: Props) {
       </div>
       <span className="mt-1 text-[0.8125rem] text-(--fg2)">{t(lang, voice ? "ask.subtitleVoice" : "ask.subtitle")}</span>
 
+      {listening && (
+        // While reciting, the text box stays mounted (it still receives the live
+        // transcript) but hidden; a large animated mic makes the wait for audio
+        // unmistakable. Tapping the mic stops listening and submits what was heard.
+        <div className="mt-6 mb-2 flex flex-col items-center">
+          <button
+            type="button"
+            onClick={() => recognitionRef.current?.stop()}
+            className="relative flex size-32 items-center justify-center"
+            aria-label={t(lang, "ask.listening")}
+          >
+            {[0, 0.7, 1.4].map((delay) => (
+              <span
+                key={delay}
+                className="animate-mic-ring absolute inset-0 rounded-full bg-red-500"
+                style={{ animationDelay: `${delay}s` }}
+              />
+            ))}
+            <span className="animate-mic-breathe relative flex size-32 items-center justify-center rounded-full bg-red-500 text-white shadow-[0_10px_30px_rgba(239,68,68,0.45)]">
+              <Mic className="size-14" strokeWidth={1.75} />
+            </span>
+          </button>
+          <span className="mt-6 animate-pulse text-[1.0625rem] font-medium text-(--fg)">{t(lang, "ask.listening")}</span>
+          <span
+            dir="rtl"
+            className="font-amiri mt-2 min-h-8 max-w-full truncate text-center text-xl text-(--fg2)"
+          >
+            {query}
+          </span>
+        </div>
+      )}
+
+      {voiceMode && !listening && (
+        <button
+          type="button"
+          onClick={recite}
+          disabled={isFetching}
+          className="mt-4 flex h-12 items-center justify-center gap-2 rounded-[14px] bg-red-500 text-[0.9375rem] font-semibold text-white active:bg-red-600 disabled:opacity-60"
+        >
+          {isFetching ? <Loader2 className="size-5 animate-spin" /> : <Mic className="size-5" />}
+          {t(lang, "ask.recite")}
+        </button>
+      )}
+
       <form
-        className="mt-4 flex items-center gap-2 rounded-[14px] bg-(--bg2) px-3"
+        className={`mt-4 flex items-center gap-2 rounded-[14px] bg-(--bg2) px-3 ${voiceMode ? "hidden" : ""}`}
         onSubmit={(e) => {
           e.preventDefault();
           submit(query);
         }}
       >
-        {listening ? (
-          <Mic className="size-4.5 shrink-0 animate-pulse text-red-500" />
-        ) : (
-          <Search className="size-4.5 shrink-0 text-(--fg2)" />
-        )}
+        <Search className="size-4.5 shrink-0 text-(--fg2)" />
         <input
           autoFocus={!voice}
           dir="auto"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           maxLength={500}
-          placeholder={t(lang, listening ? "ask.listening" : "ask.placeholder")}
+          placeholder={t(lang, "ask.placeholder")}
           className="h-12 min-w-0 flex-1 bg-transparent text-[0.9375rem] text-(--fg) outline-none placeholder:text-(--fg3)"
         />
-        {listening ? (
-          <button
-            type="button"
-            onClick={() => recognitionRef.current?.stop()}
-            className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg)"
-            aria-label={t(lang, "ask.listening")}
-          >
-            <X className="size-4" />
-          </button>
-        ) : (
-          <button
-            type="submit"
-            disabled={!query.trim() || isFetching}
-            className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg) disabled:opacity-30"
-            aria-label={t(lang, "ask.title")}
-          >
-            {isFetching ? <Loader2 className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />}
-          </button>
-        )}
+        <button
+          type="submit"
+          disabled={!query.trim() || isFetching}
+          className="flex size-8 items-center justify-center rounded-full bg-(--fg) text-(--bg) disabled:opacity-30"
+          aria-label={t(lang, "ask.title")}
+        >
+          {isFetching ? <Loader2 className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />}
+        </button>
       </form>
 
       {voiceError && !listening && !result && !error && !isFetching && (
         <div className="mt-3 rounded-[14px] bg-(--bg2) px-3.5 py-3 text-[0.8125rem] text-(--fg2)">{voiceError}</div>
       )}
 
-      {!result && !error && !isFetching && !listening && !voiceError && (
+      {!voiceMode && !result && !error && !isFetching && !voiceError && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {examples.map((ex) => (
             <button

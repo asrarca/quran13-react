@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { Bookmark, BookOpen, Hash, Languages, Layers, Settings, Sparkles, X } from "lucide-react";
+import { Bookmark, BookOpen, Hash, Languages, Layers, Mic, Settings, Sparkles, X } from "lucide-react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -54,6 +54,11 @@ import { DesktopNotice } from "./components/DesktopNotice";
 // Number of pages pre-rendered on each side of the active page. The Swiper
 // holds 2 * SLIDE_RADIUS + 1 slides with the active page centered, so the user
 // can swipe this many pages before reaching a slide edge.
+// Feature flag: the bottom nav's middle slot shows Recite (opens Ask in voice
+// mode, same as long-pressing the header Ask button) instead of Page (go-to-page
+// keypad). Set to false to bring the Page button back.
+const NAV_RECITE_ENABLED = true;
+
 const SLIDE_RADIUS = 10;
 const CENTER_SLIDE = SLIDE_RADIUS;
 const SLIDE_OFFSETS = Array.from({ length: 2 * SLIDE_RADIUS + 1 }, (_, i) => i - SLIDE_RADIUS);
@@ -839,14 +844,26 @@ export function Reader({ initialTheme, initialLang, initialPage, initialMushafKe
             <Layers className="size-5.5" />
             <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.juz")}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => { setPageInput(""); setActiveSheet("page"); }}
-            className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
-          >
-            <Hash className="size-5.5" />
-            <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.page")}</span>
-          </button>
+          {NAV_RECITE_ENABLED ? (
+            // Same as long-pressing the header Ask button: open Ask in voice mode.
+            <button
+              type="button"
+              onClick={() => { setAskVoice(true); setActiveSheet("ask"); }}
+              className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
+            >
+              <Mic className="size-5.5" />
+              <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "ask.recite")}</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setPageInput(""); setActiveSheet("page"); }}
+              className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)"
+            >
+              <Hash className="size-5.5" />
+              <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.page")}</span>
+            </button>
+          )}
           <button type="button" onClick={() => setActiveSheet("bookmarks")} className="flex flex-col items-center justify-center gap-1 py-1 text-(--fg2)">
             <Bookmark className="size-5.5" fill={activeSheet === "bookmarks" ? "currentColor" : "none"} />
             <span className={`${needsFontScale(lang) ? 'text-[1.0625rem]' : 'text-[0.6875rem]'} font-medium`}>{t(lang, "nav.saved")}</span>
